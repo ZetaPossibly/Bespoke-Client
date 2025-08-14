@@ -1,11 +1,6 @@
 (function () {
   "use strict";
 
-  const aiDefinitions = {
-    default: "https://raw.githubusercontent.com/jeeliz/jeelizFaceFilter/refs/heads/master/neuralNets/NN_DEFAULT.json",
-    veryLight: "https://raw.githubusercontent.com/jeeliz/jeelizFaceFilter/refs/heads/master/neuralNets/NN_VERYLIGHT_1.json",
-    wideAngles: "https://raw.githubusercontent.com/jeeliz/jeelizFaceFilter/refs/heads/master/neuralNets/deprecated/NN_WIDEANGLES_0.json",
-  }
   const config = {
     pitch: {
       enabled: true,
@@ -49,7 +44,7 @@
       default: 0,
       sensitivity: 1.25,
     },
-    algorithm: aiDefinitions.default
+    algorithm: window.bespokeClient.data.jeelizModels.default
   };
 
   const clampToWithinBounds = function (value, min, max) {

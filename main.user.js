@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Eschaton Client 
+// @name         Bespoke Client 
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  A bespoke client for GeoFS, by Zeta
@@ -12,16 +12,32 @@
 (async function() {
     "use strict";
 
-    const baseUrl = "https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/heads/main/*?token=GHSAT0AAAAAADJFBJVXZY3CAVEK345TPJSA2E42A5Q";
-    const getUrl = (path) => baseUrl.replace("*", path);
+    let prefix = "";
+    const baseUrl = "https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/heads/main/*";
+    const getUrl = (path) => `${prefix}${baseUrl.replace("*", path)}`;
 
+    prefix = "libraries/"
     const dependencies = {
-        jeeliz: getUrl("libraries/jeeliz/lib.js"),
+        jeeliz: getUrl("jeeliz/lib.js"),
     }
 
+    prefix = "mods/"
     const mods = {
         lookout: getUrl("mods/lookout/main.js"),
         hmd: getUrl("mods/hmd/main.js"),
+    }
+
+    prefix = "data/"
+    const data = {
+        jeelizModels: {
+            default: getUrl("jeeliz/models/default.json"),
+            veryLight: getUrl("jeeliz/models/light.json"),
+            wideAngles: getUrl("jeeliz/models/wideAngles.json"),
+        }
+    }
+
+    window.bespokeClient = {
+        data: data,
     }
 
     async function addCode(url, place = "body") {
@@ -34,7 +50,7 @@
 
             (place === "head") ? document.head.appendChild(scriptEl) : document.body.appendChild(scriptEl)
         } catch (err) {
-            console.error("Fetch error:", err);
+            alert("Fetch error:", err);
         }
     }
 
@@ -44,7 +60,6 @@
         }
     }
 
-    // I WANT TO LOAD THESE ONE BEFORE ANOTHER
     await loadScripts(dependencies)
     await loadScripts(mods);
 
