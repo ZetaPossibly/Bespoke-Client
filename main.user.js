@@ -16,8 +16,8 @@
     const baseUrl = "https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/heads/main/*";
     const getUrl = (path) => `${prefix}${baseUrl.replace("*", path)}`;
 
-    prefix = "libraries/"
-    const dependencies = {
+    prefix = "helpers/"
+    const helpers = {
         jeeliz: getUrl("jeeliz/lib.js"),
     }
 
@@ -60,7 +60,7 @@
         }
     }
 
-    await loadScripts(dependencies)
+    await loadScripts(helpers)
     await loadScripts(mods);
 
 })();
