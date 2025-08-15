@@ -1,23 +1,25 @@
 Copyright © 2025 Zeta (@zetainbeta_43414). All rights reserved.
 
-1. Scope
-This licence applies to all files in this project unless marked otherwise by another licence in the respective file or folder with specially licenced content.
+NOTICE: The word "Code" refers to the files and their contents within this project.
 
-2. Restrictions (restricted portions)
+1. Scope
+This licence applies to all files in this project (These files are "Restricted Portions" of the project) unless marked otherwise by another licence in the respective file or folder with specially licenced content. 
+
+2. Restrictions
 You may not, under any circumstances:
-- Copy, redistribute, or publish the restricted portions of the code, whether modified or unmodified.
+- Copy, redistribute, or publish the restricted portions of the Code, whether modified or unmodified.
 - Use the restricted portions in your own projects, products, or services.
 - Use the restricted portions for any commercial purpose.
 - Create derivative works of the restricted portions intended for distribution.
 
 3. Third-Party Components
-This project includes code from third parties under the Apache License, Version 2.0. Such code is licensed to you under the terms of the Apache License, which allows copying, modification, and redistribution, provided that you comply with its terms. The full text of the Apache 2.0 licence is included in the folder(s) where it is applied as per Section 1, Scope.
+This project includes Code from third parties under the Apache License, Version 2.0. Such Code is licensed to you under the terms of the Apache License, which allows copying, modification, and redistribution, provided that you comply with its terms. The full text of the Apache 2.0 licence is included in the folder(s) where it is applied as per Section 1, Scope.
 
 4. Ownership
-All rights, title, and interest in the restricted portions of the code remain with the copyright holder. Third-party components remain the property of their respective authors.
+All rights, title, and interest in the restricted portions of the Code remain with the copyright holder. Third-party components remain the property of their respective authors.
 
 5. Termination
-This licence is automatically terminated if you breach any of its terms. Upon termination, you must delete all restricted portions of the code in your possession.
+This licence is automatically terminated if you breach any of its terms. Upon termination, you must delete all restricted portions of the Code in your possession.
 
 6. No Warranty
-The code is provided “as is,” without warranty of any kind
+The Code is provided “as is,” without warranty of any kind
