@@ -14,4 +14,7 @@ This project is **UNDER-DEVELOPMENT** and is not even close to finished. The cur
 - Lookout - Webcam based head tracking
 
 ## Contact
-Talk to me via discord, @zetainbeta_43414. I am open to suggestions. Please ensure bugs get to me as soon as noticed.
+Talk to me via discord, @zetainbeta_43414. I am open to suggestions. Please ensure bugs get to me as soon as noticed. 
+
+## Plan
+The vision is an integrated, seamless experience for GeoFS with a modular and scalable design. I have a lot planned. 
