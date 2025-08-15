@@ -136,4 +136,4 @@ function updateHMD() {
   }
 }
 
-const hmdInterval = setInterval(updateHMD, 100);
+const hmdInterval = setInterval(updateHMD, 250);

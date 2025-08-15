@@ -1,9 +1,13 @@
-# An Eschaton Project.
-Made by zeta.
+> # An Eschaton Project.
+> Made by zeta.
 
 **LICENCE is very important. Make sure to read it.**
 
+Bespoke Client *(Pre-Alpha)* v0.1
+
 ----
+## NOTE
+This project is **UNDER-DEVELOPMENT** and is not even close to finished. The current state of it is a framework to integrate and build further scripts for GeoFS with a unified UI system. 
 
 ## Current Support
 - Helmet Mounted Display

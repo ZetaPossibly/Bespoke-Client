@@ -63,7 +63,7 @@ const addCanvas = function (id) {
 const transformFaceData = function (faceData, config) {
   return config.enabled
     ? clampToWithinBounds(faceData * config.sensitivity, config.min, config.max)
-    : 0; // return 0 if not enabled
+    : config.default; // return the resting, "default" values, if not enabled
 };
 
 const applyTransformsToCamera = function (data) {
@@ -115,3 +115,5 @@ const init = function () {
   });
 };
 init();
+
+// Add stabalisation bozo
