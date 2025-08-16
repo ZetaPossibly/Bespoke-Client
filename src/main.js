@@ -47,7 +47,7 @@ const initClient = async function() {
         setTimeout(initClient, 1000);
         return;
     }
-    alert("NOTE: This script does headtracking using your webcam. You may be prompted to allow camera access when you enter cockpit camera mode, this is required for the head-tracking. This is done locally and is under development and not perfect. Ensure your face is well-lit for the best results. ")
+    alert("IMPORTANT NOTICE! This script does headtracking using your webcam when in cockpit camera mode. You may be prompted to allow camera access when you enter cockpit camera mode, this is required for the head-tracking. This is done locally and is under development. It is not perfect. Ensure your face is well-lit for the best results. ")
     await loadScripts(helpers)
     await loadScripts(scripts);
 }
