@@ -21,21 +21,21 @@ const config = {
     sensitivity: 200,
   },
   leftRight: {
-    enabled: true,
+    enabled: false,
     min: -0.5,
     max: 0.5,
     default: 0,
     sensitivity: 1,
   },
   forwardBackward: {
-    enabled: true,
+    enabled: false,
     min: -0.5,
     max: 0.5,
     default: 0,
     sensitivity: 0,
   },
   upDown: {
-    enabled: true,
+    enabled: false,
     min: -0.1,
     max: 0.2,
     default: 0,
@@ -110,10 +110,11 @@ const init = function () {
         confidence: detectState.detected,
       };
 
+      // Add stabalisation bozo, thats half the annoyance to implement
+
       applyTransformsToCamera(transformedFaceData);
     },
   });
 };
 init();
 
-// Add stabalisation bozo
