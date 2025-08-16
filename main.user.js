@@ -21,7 +21,7 @@
 
     const scripts = {
         lookout: getUrl("scripts/lookout/main.js"),
-        hmd: getUrl("scripts/hmd/main.js"),
+        //hmd: getUrl("scripts/hmd/main.js"),
         chatFix: getUrl("scripts/chatFix/main.js")
     }
 
@@ -57,7 +57,16 @@
         }
     }
 
-    await loadScripts(helpers)
-    await loadScripts(scripts);
+    const initClient = async function() {
+        if (typeof geofs === 'undefined') {
+            setTimeout(initClient, 1000);
+            return;
+        }
+
+        await loadScripts(helpers)
+        await loadScripts(scripts);
+    }
+
+    initClient()
 
 })();
