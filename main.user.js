@@ -12,28 +12,24 @@
 (async function() {
     "use strict";
 
-    let prefix = "";
     const baseUrl = "https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/heads/main/*";
-    const getUrl = (path) => `${prefix}${baseUrl.replace("*", path)}`;
+    const getUrl = (path) => `${baseUrl.replace("*", path)}`;
 
-    prefix = "helpers/"
     const helpers = {
-        jeeliz: getUrl("jeeliz/lib.js"),
+        jeeliz: getUrl("helpers/jeeliz/lib.js"),
     }
 
-    prefix = "mods/"
-    const mods = {
-        lookout: getUrl("mods/lookout/main.js"),
-        hmd: getUrl("mods/hmd/main.js"),
-        chatFix: getUrl("mods/chatFix/main.js")
+    const scripts = {
+        lookout: getUrl("scripts/lookout/main.js"),
+        hmd: getUrl("scripts/hmd/main.js"),
+        chatFix: getUrl("scripts/chatFix/main.js")
     }
 
-    prefix = "data/"
     const data = {
         jeelizModels: {
-            default: getUrl("jeeliz/models/default.json"),
-            veryLight: getUrl("jeeliz/models/light.json"),
-            wideAngles: getUrl("jeeliz/models/wideAngles.json"),
+            default: getUrl("helpers/jeeliz/models/default.json"),
+            veryLight: getUrl("helpers/jeeliz/models/light.json"),
+            wideAngles: getUrl("helpers/jeeliz/models/wideAngles.json"),
         }
     }
 
@@ -62,6 +58,6 @@
     }
 
     await loadScripts(helpers)
-    await loadScripts(mods);
+    await loadScripts(scripts);
 
 })();
