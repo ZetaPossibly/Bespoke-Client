@@ -12,6 +12,7 @@ This project is **UNDER-DEVELOPMENT** and is not even close to finished. The cur
 ## Current Support
 - Helmet Mounted Display
 - Lookout - Webcam based head tracking
+- Chat Fix - Adds the "t" keybind for talking in chat, which was recently removed.
 
 ## Contact
 Talk to me via discord, @zetainbeta_43414. I am open to suggestions. Please ensure bugs get to me as soon as noticed. 
