@@ -11,7 +11,7 @@ const config = {
     min: -160,
     max: 160,
     default: 0,
-    sensitivity: 250,
+    sensitivity: 200,
   },
   roll: {
     enabled: true,
@@ -114,10 +114,14 @@ const init = function () {
               confidence: detectState.detected,
             };
 
-            // Add stabalisation bozo, thats half the annoyance to implement
-
             applyTransformsToCamera(transformedFaceData);
           },
+        });
+        JEELIZFACEFILTER.set_stabilizationSettings({
+          translationFactorRange: [0.01, 0.02],
+          rotationFactorRange: [0.05, 0.1],
+          qualityFactorRange: [0.9, 0.98],
+          alphaRange: [0.05, 1.0]
         });
         hasInit = true
       }
