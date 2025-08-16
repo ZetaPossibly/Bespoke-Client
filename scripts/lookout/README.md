@@ -1,12 +1,7 @@
 An Eschaton Project.
 
-
 # Lookout
-A natural user input Interface for GeoFS using webcam-based head tracking. 
-Processes webcam data natively on-device. 
-
-# How to use
-**Reccomended to use with tampermonkey!** Unsure what that is or how to use it? Learn about here: https://www.youtube.com/watch?v=c4m8PMzWa_8
+No extra equipment or setup apart from a webcam. Tracks head rotation and translates into ingame camera manipulation, **locally computed** in real time.  You can rotate your head in all axes with it being translated ingame.
 
 # Requirements
 A webcam, nothing fancy. Placed preferably directly in front of you or in more extreme angles, it will glitch out. 
