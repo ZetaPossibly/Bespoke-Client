@@ -7,7 +7,6 @@ const helpers = {
 
 const scripts = {
     lookout: getUrl("scripts/lookout/main.js"),
-    //hmd: getUrl("scripts/hmd/main.js"),
     chatFix: getUrl("scripts/chatFix/main.js")
 }
 
@@ -48,9 +47,7 @@ const initClient = async function() {
         setTimeout(initClient, 1000);
         return;
     }
-
-    await(addCode("https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/heads/main/manager.js"))
-
+    alert("NOTE: This script does headtracking using your webcam. You may be prompted to allow camera access when you enter cockpit camera mode, this is required for the head-tracking. This is done locally and is under development and not perfect. Ensure your face is well-lit for the best results. ")
     await loadScripts(helpers)
     await loadScripts(scripts);
 }
