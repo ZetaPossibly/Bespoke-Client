@@ -4,13 +4,16 @@
 **The LICENCE is very important. Make sure to read it.**
 
 Bespoke Client __*(Pre-Alpha)*__ v0.1
+*Use the main.user.js file here: https://github.com/ZetaPossibly/Bespoke-Client/blob/main/main.user.js* 
+
 
 ----
-## NOTE
-This project is **UNDER-DEVELOPMENT** and is not even close to finished. The current state of it is a framework to integrate and build further scripts for GeoFS with a unified UI system. 
 
 # How to use
-**Reccomended to use with tampermonkey!** Unsure what that is or how to use it? Learn about here: https://www.youtube.com/watch?v=c4m8PMzWa_8
+**Reccomended to use with tampermonkey!** Unsure what that is or how to use it? Learn about here: https://www.youtube.com/watch?v=c4m8PMzWa_8 . 
+
+## NOTE
+This project is **UNDER-DEVELOPMENT** and is not even close to finished. The current state of it is a framework to integrate and build further scripts for GeoFS with a unified UI system. 
 
 ## Current Support
 - Helmet Mounted Display
