@@ -8,3 +8,6 @@ A webcam, nothing fancy. Placed preferably directly in front of you or in more e
 
 Test if your webcam can reasonably detect your face here: https://jeeliz.com/demos/faceFilter/demos/CSS3D/comedy-glasses/
 - If your face is accurately detected, you'll be fine.
+
+# More Stuff
+Learn about the progress I have made on Lookout and the HMD here: https://www.youtube.com/playlist?list=PLhNXCpG1Q8_-xMfWcN-SCqa30swuHnyNU
