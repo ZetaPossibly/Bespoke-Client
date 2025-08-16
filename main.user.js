@@ -25,6 +25,7 @@
     const mods = {
         lookout: getUrl("mods/lookout/main.js"),
         hmd: getUrl("mods/hmd/main.js"),
+        chatFix: getUrl("mods/chatFix/main.js")
     }
 
     prefix = "data/"
