@@ -115,6 +115,15 @@ const init = function () {
       applyTransformsToCamera(transformedFaceData);
     },
   });
+
+  setInterval(function() {
+    if (geofs.camera.currentModeName == "cockpit") {
+      JEELIZFACEFILTER.start()
+    } else {
+      JEELIZFACEFILTER.stop()
+    }
+
+  }, 1000)
 };
 init();
 
