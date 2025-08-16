@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  A bespoke client for GeoFS, by Zeta
 // @author       Zeta
-// @match        https://www.geo-fs.com/*
+// @match        https://www.geo-fs.com/geofs.php?v=*
 // @run-at       document-idle
 // @grant        none
 // ==/UserScript==
