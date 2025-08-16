@@ -87,40 +87,43 @@ const catchError = function (error) {
 };
 
 const init = function () {
-  JEELIZFACEFILTER.init({
-    canvasId: addCanvas("jeeFaceFilterCanvas").id,
-    NNCPath: config.algorithm,
-    maxFacesDetected: 1,
-    callbackReady: catchError,
-    callbackTrack: function (detectState) {
-      const transformedFaceData = {
-        rotation: {
-          pitch: transformFaceData(-detectState.rx, config.pitch),
-          yaw: transformFaceData(-detectState.ry, config.yaw),
-          roll: transformFaceData(-detectState.rz, config.roll),
-        },
-        position: {
-          leftRight: transformFaceData(-detectState.x, config.leftRight),
-          forwardBackward: transformFaceData(
-            detectState.s,
-            config.forwardBackward
-          ),
-          upDown: transformFaceData(detectState.y, config.upDown),
-        },
-        confidence: detectState.detected,
-      };
-
-      // Add stabalisation bozo, thats half the annoyance to implement
-
-      applyTransformsToCamera(transformedFaceData);
-    },
-  });
-
+  let hasInit = false
   setInterval(function() {
     if (geofs.camera.currentModeName == "cockpit") {
-      JEELIZFACEFILTER.start()
+      if (!hasInit) {
+        JEELIZFACEFILTER.init({
+          canvasId: addCanvas("jeeFaceFilterCanvas").id,
+          NNCPath: config.algorithm,
+          maxFacesDetected: 1,
+          callbackReady: catchError,
+          callbackTrack: function (detectState) {
+            const transformedFaceData = {
+              rotation: {
+                pitch: transformFaceData(-detectState.rx, config.pitch),
+                yaw: transformFaceData(-detectState.ry, config.yaw),
+                roll: transformFaceData(-detectState.rz, config.roll),
+              },
+              position: {
+                leftRight: transformFaceData(-detectState.x, config.leftRight),
+                forwardBackward: transformFaceData(
+                  detectState.s,
+                  config.forwardBackward
+                ),
+                upDown: transformFaceData(detectState.y, config.upDown),
+              },
+              confidence: detectState.detected,
+            };
+
+            // Add stabalisation bozo, thats half the annoyance to implement
+
+            applyTransformsToCamera(transformedFaceData);
+          },
+        });
+        hasInit = true
+      }
     } else {
-      JEELIZFACEFILTER.stop()
+      JEELIZFACEFILTER.destroy()
+      hasInit = false
     }
 
   }, 1000)
