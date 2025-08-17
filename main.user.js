@@ -13,7 +13,7 @@
     "use strict";
     async function loadClient() {
         try {
-            const response = await fetch("https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/heads/main/src/main.js");
+            const response = await fetch("https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/heads/dev/src/main.js");
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const scriptText = await response.text();
             const scriptEl = document.createElement("script");
