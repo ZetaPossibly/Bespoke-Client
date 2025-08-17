@@ -1,10 +1,10 @@
 const prefix = "chatFix"
 const chatFixUi = new window.BUIM("Chat Fix", prefix);
 
-chatFixUi.addItem("Keybind", "keybind", "text", 0, "t", "maxlength='1'")
+chatFixUi.addItem("Keybind", "keybind", "text", 0, "t")
 
-document.getElementById(prefix+"Keybind").addEventListener("change", e => {
-  if (e.target.value === "") {
+document.getElementById(prefix+"Keybind").addEventListener("input", e => {
+  if (e.target.value == "") {
 		e.target.value = "t";
 	} else {
     e.target.value = e.target.value.toLowerCase()
