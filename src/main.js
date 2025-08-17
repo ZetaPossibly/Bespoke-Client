@@ -2,7 +2,8 @@ const baseUrl = "https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/r
 const getUrl = (path) => `${baseUrl.replace("*", path)}`;
 
 const helpers = {
-    jeeliz: getUrl("helpers/jeeliz/lib.js"),
+    jeeliz: getUrl("helpers/jeeliz/main.js"),
+    buim: getUrl("helpers/buim/main.js")
 }
 
 const scripts = {
@@ -48,7 +49,12 @@ const initClient = async function() {
         return;
     }
     alert("IMPORTANT NOTICE! This script(Bespoke Client) does headtracking using your webcam when in cockpit camera mode. You may be prompted to allow camera access when you enter cockpit camera mode, this is required for the head-tracking. This is done locally and is under development. It is not perfect. Ensure your face is well-lit or you will encounter poor accuracy and jittering. ")
+    
+
     await loadScripts(helpers)
+
+    const uiManager = new window.BUIM("My Addon", "myAddon_");
+
     await loadScripts(scripts);
 }
 

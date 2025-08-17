@@ -1,3 +1,7 @@
+
+const prefix = "chatFix"
+const ui = new window.BUIM("Chat Fix", prefix);
+
 window.addEventListener("keyup", function (e) {
   // Only trigger when no input field is focused
   if (
@@ -5,7 +9,7 @@ window.addEventListener("keyup", function (e) {
     document.activeElement.tagName.toLowerCase() !== "textarea"
   ) {
     // T key (keyCode 84)
-    if (e.keyCode === 84) {
+    if (e.keyCode === 84 && this.localStorage.getItem(prefix + "Enabled")) {
       e.stopPropagation();
       ui.chat.showInput();
     }

@@ -3,7 +3,7 @@
 
 **The LICENCE is very important. Make sure to read it.**
 
-Bespoke Client __*(Pre-Alpha)*__ v0.1
+Bespoke Client __*(Pre-Alpha)*__ v0.2 !DEVELOPMENT!
 *Use the main.user.js file here: https://github.com/ZetaPossibly/Bespoke-Client/blob/main/main.user.js* 
 
 

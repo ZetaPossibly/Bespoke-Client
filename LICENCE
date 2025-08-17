@@ -3,7 +3,7 @@ Copyright © 2025 Zeta (@zetainbeta_43414). All rights reserved.
 NOTICE: The word "Code" refers to the files and their contents within this project.
 
 1. Scope
-This licence applies to all files in this project unless marked otherwise by another licence in the respective file or folder with specially licenced content. Files which this licence applies to are "Restricted Portions" of the project.
+Files which this licence applies to are "Restricted Portions" of the project. This licence applies to all files in this project unless marked otherwise by another licence in the respective file(as a comment in the file) or folder(as a file labelled "LICENCE") with specially licenced content. If a folder has a "LICENCE" file, every file in the folder is affected by the written licence.
 
 2. Restrictions
 You may not, under any circumstances:

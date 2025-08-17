@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Bespoke Client 
+// @name         Bespoke Client [DEVELOPMENT]
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  A bespoke client for GeoFS, by Zeta
 // @author       Zeta
 // @match        https://www.geo-fs.com/geofs.php?v=*
