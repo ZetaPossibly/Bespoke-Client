@@ -1,4 +1,4 @@
-const baseUrl = "https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/dev/main/src/*";
+const baseUrl = "https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/heads/dev/src/*";
 const getUrl = (path) => `${baseUrl.replace("*", path)}`;
 
 const helpers = {
