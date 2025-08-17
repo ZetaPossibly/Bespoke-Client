@@ -1,15 +1,16 @@
-const prefix = "chatFix"
+const prefix = "chatFix";
 const chatFixUi = new window.BUIM("Chat Fix", prefix);
 
-chatFixUi.addItem("Keybind", "keybind", "text", 0, "t")
+chatFixUi.addItem("Keybind", "keybind", "text", 0, "t");
 
-document.getElementById(prefix+"Keybind").addEventListener("input", e => {
+document.getElementById(prefix + "Keybind").addEventListener("input", (e) => {
+  console.log(e)
   if (e.target.value == "") {
-		e.target.value = "t";
-	} else {
-    e.target.value = e.target.value.toLowerCase()
+    e.target.value = "t";
+  } else {
+    e.target.value = e.target.value.toLowerCase();
   }
-})
+});
 
 window.addEventListener("keyup", function (e) {
   // Only trigger when no input field is focused
@@ -18,8 +19,11 @@ window.addEventListener("keyup", function (e) {
     document.activeElement.tagName.toLowerCase() !== "textarea"
   ) {
     // T key (keyCode 84)
-    if (e.key.toLowerCase() === this.localStorage.getItem("chatFixKeybind") && this.localStorage.getItem(prefix + "Enabled")) {
-      e.stopPropagation();
+    e.stopPropagation();
+    if (
+      e.key.toLowerCase() === this.localStorage.getItem("chatFixKeybind") &&
+      this.localStorage.getItem(prefix + "Enabled")
+    ) {
       ui.chat.showInput();
     }
   }
