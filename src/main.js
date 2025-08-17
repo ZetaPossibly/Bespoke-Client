@@ -33,7 +33,7 @@ async function addCode(url, place = "body") {
 
         (place === "head") ? document.head.appendChild(scriptEl) : document.body.appendChild(scriptEl)
     } catch (err) {
-        alert("Fetch error:", err);
+        alert("Fetch error:" + url);
     }
 }
 
@@ -53,7 +53,7 @@ const initClient = async function() {
 
     await loadScripts(helpers)
 
-    const uiManager = new window.BUIM("My Addon", "myAddon_");
+    //const uiManager = new window.BUIM("My Addon", "myAddon_");
 
     await loadScripts(scripts);
 }
