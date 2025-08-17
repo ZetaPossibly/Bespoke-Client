@@ -1,7 +1,7 @@
 const prefix = "chatFix";
 const chatFixUi = new window.BUIM("Chat Fix", prefix);
 
-chatFixUi.addItem("Keybind", "keybind", "text", 0, "t");
+chatFixUi.addItem("Keybind", "Keybind", "text", 0, "t");
 
 document.getElementById(prefix + "Keybind").addEventListener("input", (e) => {
   console.log(e)
