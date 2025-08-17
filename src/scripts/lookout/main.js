@@ -1,4 +1,4 @@
-const config = {
+let config = {
   pitch: {
     enabled: true,
     min: -80,
@@ -133,4 +133,11 @@ const init = function () {
   }, 1000)
 };
 init();
+
+
+const lookoutUi = new window.BUIM("Lookout", "lookout")
+
+lookoutUi.addButton("Calibrate", function() {
+
+})
 

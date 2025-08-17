@@ -30,21 +30,20 @@ window._buim.waitForElm = function (selector) {
 };
 
 window._buim.toggleMenu = function () {
-  window._buim.isOpen = !window._buim.isOpen;
-  window._buim.menuDiv.style.display = window._buim.isOpen ? "block" : "none";
-  
   if (window._buim.isOpen) {
-    // Update all input values from localStorage
+    window._buim.isOpen = false;
+    window._buim.menuDiv.style.display = "none";
+  } else {
+    window._buim.isOpen = true;
+    window._buim.menuDiv.style.display = "block";
     for (let i = 0; i < window._buim.allLS.length; i++) {
       let currLS = window._buim.allLS[i];
-      const element = document.getElementById(currLS[0]);
-      if (element) {
-        if (currLS[1]) { // is checkbox
-          element.checked = localStorage.getItem(currLS[0]) === "true";
-        } else {
-          element.value = localStorage.getItem(currLS[0]) || "";
-        }
-      }
+      currLS[1]
+        ? (document.getElementById(currLS[0]).checked =
+            localStorage.getItem(currLS[0]) == "true")
+        : (document.getElementById(currLS[0]).value = localStorage.getItem(
+            currLS[0]
+          ));
     }
   }
 };
@@ -75,47 +74,25 @@ window.BUIM = class {
   // Called automatically, initializes the button, menu div, and a couple of other things
   initialize() {
     window._buim.isGMenuInit = true; //Prevent other instances from initializing this window
+    var bottomDiv = document.getElementsByClassName("geofs-ui-bottom")[0];
+    window._buim.btn = document.createElement("div");
+    window._buim.btn.id = "gamenu";
+    window._buim.btn.classList = "mdl-button mdl-js-button geofs-f-standard-ui";
+    window._buim.btn.style.padding = "0px";
+    bottomDiv.appendChild(window._buim.btn);
+    window._buim.btn.innerHTML = `<img src="https://raw.githubusercontent.com/tylerbmusic/GPWS-files_geofs/refs/heads/main/s_icon.png" style="width: 30px">`;
+    document.getElementById("gamenu").onclick = () => {
+      window._buim.toggleMenu();
+    };
     if (!window._buim.menuDiv) {
-      const container = document.createElement("div");
-      container.style.position = "fixed";
-      container.style.top = "10px";
-      container.style.right = "10px";
-      container.style.zIndex = "1000";
-      container.style.backgroundColor = "#fff";
-      container.style.borderRadius = "5px";
-      container.style.boxShadow = "0 2px 10px rgba(0,0,0,0.1)";
-      container.style.width = "300px";
-      
-      const header = document.createElement("div");
-      header.style.padding = "10px";
-      header.style.backgroundColor = "#f0f0f0";
-      header.style.borderRadius = "5px 5px 0 0";
-      header.style.cursor = "pointer";
-      header.style.display = "flex";
-      header.style.justifyContent = "space-between";
-      header.style.alignItems = "center";
-      header.innerHTML = `
-        <span style="font-weight: bold;">BUIM Settings</span>
-        <span class="dropdown-arrow" style="transition: transform 0.3s">▼</span>
-      `;
-      
       window._buim.menuDiv = document.createElement("div");
       window._buim.menuDiv.id = "ggamergguyDiv";
-      window._buim.menuDiv.classList = "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
-      window._buim.menuDiv.style.display = "none";
-      window._buim.menuDiv.style.padding = "15px";
-      window._buim.menuDiv.style.maxHeight = "80vh";
-      window._buim.menuDiv.style.overflowY = "auto";
-      
-      container.appendChild(header);
-      container.appendChild(window._buim.menuDiv);
-      document.body.appendChild(container);
-      
-      header.onclick = () => {
-        window._buim.toggleMenu();
-        const arrow = header.querySelector('.dropdown-arrow');
-        arrow.style.transform = window._buim.isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-      };
+      window._buim.menuDiv.classList =
+        "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
+      window._buim.menuDiv.style.zIndex = "100";
+      window._buim.menuDiv.style.position = "fixed";
+      window._buim.menuDiv.style.width = "30%";
+      document.body.appendChild(window._buim.menuDiv);
     }
   }
 

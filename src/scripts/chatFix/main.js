@@ -12,19 +12,18 @@ document.getElementById(prefix + "Keybind").addEventListener("change", (e) => {
   }
 });
 
-window.addEventListener("keyup", function (e) {
+window.addEventListener("keydown", function (e) {
   // Only trigger when no input field is focused
   if (
     document.activeElement.tagName.toLowerCase() !== "input" &&
     document.activeElement.tagName.toLowerCase() !== "textarea"
   ) {
-    // T key (keyCode 84)
-    e.stopPropagation();
     if (
       e.key.toLowerCase() === this.localStorage.getItem("chatFixKeybind") &&
       this.localStorage.getItem(prefix + "Enabled")
     ) {
       ui.chat.showInput();
+      e.stopPropagation();
     }
   }
 });
