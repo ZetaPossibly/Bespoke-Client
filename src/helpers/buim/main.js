@@ -99,16 +99,19 @@ window.BUIM = class {
       const style = document.createElement('style');
       style.textContent = `
         .buim-dropdown {
-          border: 1px solid #444;
           margin: 5px;
           border-radius: 4px;
-          background: rgba(0, 0, 0, 0.7);
-          font-family: "Gill Sans", sans-serif
+          background: rgba(0, 0, 0, 0.5);
+          font-family: Suisse, sans-serif;
+          letter-spacing: -0.1em;
         }
         .buim-header {
           padding: 10px;
           cursor: pointer;
           user-select: none;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
         .buim-header:hover {
           background: rgba(255, 255, 255, 0.1);
@@ -132,11 +135,11 @@ window.BUIM = class {
       window._buim.allHTML[this.htmlIndex] = `
             <div class="buim-dropdown" style="color: white;">
               <div class="buim-header" onclick="document.getElementById('${this.prefix}Content').classList.toggle('buim-content-visible')">
-              <input id="${this.prefix}Enabled" type="checkbox" 
-                    checked="${localStorage.getItem(this.prefix + "Enabled") == "true"}" 
-                    onchange="localStorage.setItem('${this.prefix}Enabled', this.checked)" 
-                    style="width: 30px; height: 30px;">  
-              <h2 style="display: inline-block; margin: 15px; color: white;">${this.name}</h1>
+                <input id="${this.prefix}Enabled" type="checkbox" 
+                        checked="${localStorage.getItem(this.prefix + "Enabled") == "true"}" 
+                        onchange="localStorage.setItem('${this.prefix}Enabled', this.checked)" 
+                        style="width: 30px; height: 30px;">  
+                <h4 style="display: inline-block; margin: 15px; color: white;">${this.name}</h1>
               </div>
               <div id="${this.prefix}Content" class="buim-content">
                 ${this.html}
