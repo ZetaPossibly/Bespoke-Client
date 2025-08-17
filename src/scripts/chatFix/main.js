@@ -1,6 +1,6 @@
 
 const prefix = "chatFix"
-const ui = new window.BUIM("Chat Fix", prefix);
+const chatFixUi = new window.BUIM("Chat Fix", prefix);
 
 window.addEventListener("keyup", function (e) {
   // Only trigger when no input field is focused
