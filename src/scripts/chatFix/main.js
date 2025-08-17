@@ -3,9 +3,9 @@ const chatFixUi = new window.BUIM("Chat Fix", prefix);
 
 chatFixUi.addItem("Keybind", "Keybind", "text", 0, "t");
 
-document.getElementById(prefix + "Keybind").addEventListener("input", (e) => {
+document.getElementById(prefix + "Keybind").addEventListener("change", (e) => {
   console.log(e)
-  if (e.target.value == "") {
+  if (e.target.value == "" || e.target.value.length > 1) {
     e.target.value = "t";
   } else {
     e.target.value = e.target.value.toLowerCase();
