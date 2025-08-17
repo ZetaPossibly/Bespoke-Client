@@ -86,12 +86,13 @@ window.BUIM = class {
     };
     if (!window._buim.menuDiv) {
       window._buim.menuDiv = document.createElement("div");
-      window._buim.menuDiv.id = "ggamergguyDiv";
+      window._buim.menuDiv.id = "ggamergguyDiv"; // tribute to the chad
       window._buim.menuDiv.classList =
         "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
       window._buim.menuDiv.style.zIndex = "100";
       window._buim.menuDiv.style.position = "fixed";
       window._buim.menuDiv.style.width = "30%";
+      window._buim.menuDiv.style.background = "rgba(0, 0, 0, 0.5)"
       document.body.appendChild(window._buim.menuDiv);
       
       // Add styles for BUIM dropdowns
@@ -102,6 +103,7 @@ window.BUIM = class {
           margin: 5px;
           border-radius: 4px;
           background: rgba(0, 0, 0, 0.7);
+          font-family: "Gill Sans", sans-serif
         }
         .buim-header {
           padding: 10px;
@@ -126,16 +128,15 @@ window.BUIM = class {
 
   updateHTML() {
     if (!window._buim.isOpen) {
+        // <span>Enabled: </span>
       window._buim.allHTML[this.htmlIndex] = `
-            <div class="buim-dropdown">
+            <div class="buim-dropdown" style="color: white;">
               <div class="buim-header" onclick="document.getElementById('${this.prefix}Content').classList.toggle('buim-content-visible')">
-                <h1 style="display: inline-block; margin-right: 10px;">${this.name}</h1>
-                <span>Enabled: </span>
-                <input id="${this.prefix}Enabled" type="checkbox" checked="${
-        localStorage.getItem(this.prefix + "Enabled") == "true"
-      }" onchange="localStorage.setItem('${
-        this.prefix
-      }Enabled', this.checked)" style="width: 30px; height: 30px;">
+              <input id="${this.prefix}Enabled" type="checkbox" 
+                    checked="${localStorage.getItem(this.prefix + "Enabled") == "true"}" 
+                    onchange="localStorage.setItem('${this.prefix}Enabled', this.checked)" 
+                    style="width: 30px; height: 30px;">  
+              <h2 style="display: inline-block; margin: 15px; color: white;">${this.name}</h1>
               </div>
               <div id="${this.prefix}Content" class="buim-content">
                 ${this.html}
