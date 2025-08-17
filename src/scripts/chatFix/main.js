@@ -10,6 +10,7 @@ document.getElementById(prefix + "Keybind").addEventListener("change", (e) => {
   } else {
     e.target.value = e.target.value.toLowerCase();
   }
+  localStorage.setItem(prefix+"Keybind", e.target.value)
 });
 
 window.addEventListener("keydown", function (e) {
