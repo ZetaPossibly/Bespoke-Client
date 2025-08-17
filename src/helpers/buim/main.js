@@ -49,7 +49,11 @@ window._buim.toggleMenu = function () {
 };
 
 window._buim.compileAllHTML = function () {
-  window._buim.menuDiv.innerHTML = ``; //Clear the HTML to refresh it
+  window._buim.menuDiv.innerHTML = `
+        <h3>Bespoke Client. </h3>
+        <h6>An <strong>Eschaton Project.</strong></p>
+        <p>Made by Zeta. <i>@zetainbeta_43414 on Discord</i></p>
+      `; //Clear the HTML to refresh it
   for (let i = 0; i < window._buim.allHTML.length; i++) {
     let h = window._buim.allHTML[i]; //Current block of HTML
     window._buim.menuDiv.innerHTML += `<div style: "margin: 1em">`; //Inner div
@@ -93,11 +97,6 @@ window.BUIM = class {
       window._buim.menuDiv.style.position = "fixed";
       window._buim.menuDiv.style.width = "30%";
       window._buim.menuDiv.style.background = "rgba(0, 0, 0, 0.5)"
-      window._buim.menuDiv.innerHTML = `
-        <h3>Bespoke Client. </h3>
-        <h6>An <strong>Eschaton Project.</strong></p>
-        <p>Made by Zeta. <i>@zetainbeta_43414 on Discord</i></p>
-      `
       document.body.appendChild(window._buim.menuDiv);
       
       // Add styles for BUIM dropdowns
