@@ -86,7 +86,7 @@ const catchError = function (error) {
   alert("An error occurred: " + error);
 };
 
-const transformedFaceData = {
+let transformedFaceData = {
   rotation: {
     pitch: 0,
     yaw: 0,
