@@ -148,7 +148,7 @@ init();
 const lookoutUi = new window.BUIM("Lookout", "lookout")
 
 lookoutUi.addButton("Calibrate", function() {
-  config.pitch.default = transformFaceData.rotation.pitch * -1
+  config.pitch.default = transformedFaceData.rotation.pitch * -1
   config.yaw.default = transformedFaceData.rotation.yaw * -1
   config.roll.default = transformedFaceData.rotation.roll * -1
   config.leftRight.default = transformedFaceData.position.leftRight * -1
