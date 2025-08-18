@@ -62,7 +62,11 @@ const addCanvas = function (id) {
 
 const transformFaceData = function (faceData, config) {
   return config.enabled
-    ? clampToWithinBounds(faceData * config.sensitivity, config.min, config.max) + config.default
+    ? clampToWithinBounds(
+        faceData * config.sensitivity,
+        config.min,
+        config.max
+      ) + config.default
     : config.default; // return the resting, "default" values, if not enabled
 };
 
@@ -100,9 +104,10 @@ let transformedFaceData = {
 };
 
 const init = function () {
-  let hasInit = false
-  setInterval(function() {
-    if (geofs.camera.currentModeName == "cockpit" && !hasInit && localStorage.getItem("lookoutEnabled") == "true") {
+  let hasInit = false;
+  setInterval(function () {
+    if (geofs.camera.currentModeName == "cockpit") {
+      if (!hasInit && localStorage.getItem("lookoutEnabled") == "true") {
         JEELIZFACEFILTER.init({
           canvasId: addCanvas("jeeFaceFilterCanvas").id,
           NNCPath: config.algorithm,
@@ -134,25 +139,24 @@ const init = function () {
         //   qualityFactorRange: [0.9, 0.98],
         //   alphaRange: [0.05, 1.0]
         // });
-        hasInit = true
+        hasInit = true;
+      }
     } else {
-      JEELIZFACEFILTER.destroy()
-      hasInit = false
+      JEELIZFACEFILTER.destroy();
+      hasInit = false;
     }
-
-  }, 1000)
+  }, 1000);
 };
 init();
 
+const lookoutUi = new window.BUIM("Lookout", "lookout");
 
-const lookoutUi = new window.BUIM("Lookout", "lookout")
-
-lookoutUi.addButton("Calibrate", function() {
-  config.pitch.default = transformedFaceData.rotation.pitch * -1
-  config.yaw.default = transformedFaceData.rotation.yaw * -1
-  config.roll.default = transformedFaceData.rotation.roll * -1
-  config.leftRight.default = transformedFaceData.position.leftRight * -1
-  config.forwardBackward.default = transformedFaceData.position.forwardBackward * -1
-  config.upDown.default = transformedFaceData.position.upDown * -1
-})
-
+lookoutUi.addButton("Calibrate", function () {
+  config.pitch.default = transformedFaceData.rotation.pitch * -1;
+  config.yaw.default = transformedFaceData.rotation.yaw * -1;
+  config.roll.default = transformedFaceData.rotation.roll * -1;
+  config.leftRight.default = transformedFaceData.position.leftRight * -1;
+  config.forwardBackward.default =
+    transformedFaceData.position.forwardBackward * -1;
+  config.upDown.default = transformedFaceData.position.upDown * -1;
+});
