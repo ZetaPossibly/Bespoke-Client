@@ -62,7 +62,7 @@ const addCanvas = function (id) {
 
 const transformFaceData = function (faceData, config) {
   return config.enabled
-    ? clampToWithinBounds(faceData * config.sensitivity, config.min, config.max)
+    ? clampToWithinBounds(faceData * config.sensitivity, config.min, config.max) + config.default
     : config.default; // return the resting, "default" values, if not enabled
 };
 
@@ -86,18 +86,30 @@ const catchError = function (error) {
   alert("An error occurred: " + error);
 };
 
+const transformedFaceData = {
+  rotation: {
+    pitch: 0,
+    yaw: 0,
+    roll: 0,
+  },
+  position: {
+    leftRight: 0,
+    forwardBackward: 0,
+    upDown: 0,
+  },
+};
+
 const init = function () {
   let hasInit = false
   setInterval(function() {
-    if (geofs.camera.currentModeName == "cockpit") {
-      if (!hasInit) {
+    if (geofs.camera.currentModeName == "cockpit" && !hasInit && localStorage.getItem("lookoutEnabled") == "true") {
         JEELIZFACEFILTER.init({
           canvasId: addCanvas("jeeFaceFilterCanvas").id,
           NNCPath: config.algorithm,
           maxFacesDetected: 1,
           callbackReady: catchError,
           callbackTrack: function (detectState) {
-            const transformedFaceData = {
+            transformedFaceData = {
               rotation: {
                 pitch: transformFaceData(-detectState.rx, config.pitch),
                 yaw: transformFaceData(-detectState.ry, config.yaw),
@@ -111,7 +123,6 @@ const init = function () {
                 ),
                 upDown: transformFaceData(detectState.y, config.upDown),
               },
-              confidence: detectState.detected,
             };
 
             applyTransformsToCamera(transformedFaceData);
@@ -124,7 +135,6 @@ const init = function () {
         //   alphaRange: [0.05, 1.0]
         // });
         hasInit = true
-      }
     } else {
       JEELIZFACEFILTER.destroy()
       hasInit = false
@@ -138,6 +148,11 @@ init();
 const lookoutUi = new window.BUIM("Lookout", "lookout")
 
 lookoutUi.addButton("Calibrate", function() {
-
+  config.pitch.default = transformFaceData.rotation.pitch * -1
+  config.yaw.default = transformedFaceData.rotation.yaw * -1
+  config.roll.default = transformedFaceData.rotation.roll * -1
+  config.leftRight.default = transformedFaceData.position.leftRight * -1
+  config.forwardBackward.default = transformedFaceData.position.forwardBackward * -1
+  config.upDown.default = transformedFaceData.position.upDown * -1
 })
 
