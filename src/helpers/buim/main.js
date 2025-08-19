@@ -27,6 +27,13 @@ const DESIGN = {
         .buim-content-visible {
         display: block !important;
         }
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.15); /* semi-transparent layer */
+            backdrop-filter: blur(15px);          /* blur what's behind */
+            -webkit-backdrop-filter: blur(15px);  /* Safari support */
+            border-radius: 12px;                  /* rounded edges */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* optional subtle edge */
+        }
     `,
     HTML: {
         optionsMenuTitle: `
@@ -124,7 +131,7 @@ window.BUIM = class {
       window._buim.menuDiv = document.createElement("div");
       window._buim.menuDiv.id = "ggamergguyDiv"; // tribute to the chad
       window._buim.menuDiv.classList =
-        "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
+        "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences liquid-glass";
       window._buim.menuDiv.style.zIndex = "100";
       window._buim.menuDiv.style.position = "fixed";
       window._buim.menuDiv.style.width = "30%";
@@ -133,35 +140,7 @@ window.BUIM = class {
       
       // Add styles for BUIM dropdowns
       const style = document.createElement('style');
-      style.textContent = `
-        .buim-dropdown {
-          margin: 5px;
-          border-radius: 4px;
-          background: linear-gradient(to bottom, black 0%, rgb(0 0 0 / 0%));
-          backdrop-filter: blur(10px);
-          font-family: Suisse, sans-serif;
-          letter-spacing: -0.1em;
-        }
-        .buim-header {
-          padding: 10px;
-          cursor: pointer;
-          user-select: none;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        .buim-header:hover {
-          background: rgba(255, 255, 255, 0.1);
-        }
-        .buim-content {
-          display: none;
-          padding: 10px;
-          border-top: 1px solid #444;
-        }
-        .buim-content-visible {
-          display: block !important;
-        }
-      `;
+      style.textContent = DESIGN.CSS;
       document.head.appendChild(style);
     }
   }
