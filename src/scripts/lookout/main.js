@@ -107,7 +107,7 @@ const init = function () {
   let hasInit = false;
   setInterval(function () {
     if (geofs.camera.currentModeName == "cockpit") {
-      if (!hasInit && localStorage.getItem("lookoutEnabled") == "true") {
+      if (!hasInit && localStorage.getItem("lookoutEnabled") === "true") {
         JEELIZFACEFILTER.init({
           canvasId: addCanvas("jeeFaceFilterCanvas").id,
           NNCPath: config.algorithm,
@@ -151,7 +151,7 @@ init();
 
 const lookoutUi = new window.BUIM("Lookout", "lookout");
 
-lookoutUi.addButton("Calibrate", function () {
+lookoutUi.addButton("Calibrate", function() {
   config.pitch.default = transformedFaceData.rotation.pitch * -1;
   config.yaw.default = transformedFaceData.rotation.yaw * -1;
   config.roll.default = transformedFaceData.rotation.roll * -1;
