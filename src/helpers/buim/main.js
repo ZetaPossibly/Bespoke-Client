@@ -37,16 +37,14 @@ const DESIGN = {
     }
 }
 
-(function () {
-  "use strict";
-  if (!window._buim) {
-    window._buim = {};
-  }
-  window._buim.isGMenuInit = false; // This will be set to true when the first GMenu is added
-  window._buim.isOpen = false;
-  window._buim.allHTML = []; // All HTML blocks
-  window._buim.allLS = []; //All localStorage values (it's a 2d array: [lsValue_str, isCheckbox_bool])
-})();
+if (!window._buim) {
+window._buim = {};
+}
+window._buim.isGMenuInit = false; // This will be set to true when the first GMenu is added
+window._buim.isOpen = false;
+window._buim.allHTML = []; // All HTML blocks
+window._buim.allLS = []; //All localStorage values (it's a 2d array: [lsValue_str, isCheckbox_bool])
+
  
 window._buim.waitForElm = function (selector) {
   return new Promise((resolve) => {
@@ -89,8 +87,8 @@ window._buim.toggleMenu = function () {
 };
 
 window._buim.compileAllHTML = function () {
-  window._buim.menuDiv.innerHTML = DESIGN.html.optionsMenuTitle
-  
+  window._buim.menuDiv.innerHTML = DESIGN.HTML.optionsMenuTitle
+
   for (let i = 0; i < window._buim.allHTML.length; i++) {
     window._buim.menuDiv.innerHTML += window._buim.allHTML[i];
   }
