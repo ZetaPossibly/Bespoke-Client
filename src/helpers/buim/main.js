@@ -1,5 +1,5 @@
 const DESIGN = {
-    CSS: `
+  CSS: `
         .buim-dropdown {
         margin: 5px;
         border-radius: 4px;
@@ -35,24 +35,64 @@ const DESIGN = {
             border: 1px solid rgba(255, 255, 255, 0.3); /* optional subtle edge */
         }
     `,
-    HTML: {
-        optionsMenuTitle: `
-            <h3>Bespoke Client. </h3>
-            <h6>An <strong>Eschaton Project.</strong></p>
-            <p>Made by Zeta. <i>@zetainbeta_43414 on Discord</i></p>
-        ` 
+  HTML: {
+    optionsMenuTitle: `
+          <h3>Bespoke Client. </h3>
+          <h6>An <strong>Eschaton Project.</strong></p>
+          <p>Made by Zeta. <i>@zetainbeta_43414 on Discord</i></p>
+        `,
+    individualDropdown: function (prefix, name, html) {
+      return `
+            <div class="buim-dropdown" style="color: white;">
+              <div class="buim-header" onclick="document.getElementById('${prefix}Content').classList.toggle('buim-content-visible')">
+                <input id="${prefix}Enabled" type="checkbox" 
+                        checked="${
+                          localStorage.getItem(prefix + "Enabled") == "true"
+                        }" 
+                        onchange="localStorage.setItem('${prefix}Enabled', this.checked)" 
+                        onclick="event.stopPropagation()"
+                        style="width: 30px; height: 30px;">  
+                <h4 style="display: inline-block; margin: 15px; color: white;">${name}</h1>
+              </div>
+              <div id="${prefix}Content" class="buim-content">
+                ${html}
+                <button id="${prefix}Reset">RESET</button>
+              </div>
+            </div>
+          `;
+    },
+    item: function (level, description, idName, type) {
+      return `
+            <span style=" text-indent: ${level}rem">${description}</span>
+            <input id="${idName}" type="${type}" onchange="localStorage.setItem('${idName}', this.value)">
+            <br>
+          `;
+    },
+    checkbox: function (level, description, idName) {
+      return `
+            <span style="text-indent: ${level}rem">${description}</span>
+            <input id="${idName}" type="checkbox" onchange="localStorage.setItem('${idName}', this.checked)" 
+                style="width: 30px; height: 30px;">
+            <br>
+          `;
+    },
+    button: function (prefix, title, options) {
+      return `<button id="${prefix}${title}" ${options || ""}>${title}</button><br>`;
+    },
+    header: function (level, text) {
+      return `<h${level}>${text}</h${level}>`
     }
-}
+  },
+};
 
 if (!window._buim) {
-window._buim = {};
+  window._buim = {};
 }
 window._buim.isGMenuInit = false; // This will be set to true when the first GMenu is added
 window._buim.isOpen = false;
 window._buim.allHTML = []; // All HTML blocks
 window._buim.allLS = []; //All localStorage values (it's a 2d array: [lsValue_str, isCheckbox_bool])
 
- 
 window._buim.waitForElm = function (selector) {
   return new Promise((resolve) => {
     if (document.querySelector(selector)) {
@@ -94,7 +134,7 @@ window._buim.toggleMenu = function () {
 };
 
 window._buim.compileAllHTML = function () {
-  window._buim.menuDiv.innerHTML = DESIGN.HTML.optionsMenuTitle
+  window._buim.menuDiv.innerHTML = DESIGN.HTML.optionsMenuTitle;
 
   for (let i = 0; i < window._buim.allHTML.length; i++) {
     window._buim.menuDiv.innerHTML += window._buim.allHTML[i];
@@ -135,11 +175,11 @@ window.BUIM = class {
       window._buim.menuDiv.style.zIndex = "100";
       window._buim.menuDiv.style.position = "fixed";
       window._buim.menuDiv.style.width = "30%";
-      window._buim.menuDiv.style.background = "rgba(0, 0, 0, 0.5)"
+      window._buim.menuDiv.style.background = "rgba(0, 0, 0, 0.5)";
       document.body.appendChild(window._buim.menuDiv);
-      
+
       // Add styles for BUIM dropdowns
-      const style = document.createElement('style');
+      const style = document.createElement("style");
       style.textContent = DESIGN.CSS;
       document.head.appendChild(style);
     }
@@ -147,42 +187,31 @@ window.BUIM = class {
 
   updateHTML() {
     if (!window._buim.isOpen) {
-        // <span>Enabled: </span>
-      window._buim.allHTML[this.htmlIndex] = `
-            <div class="buim-dropdown" style="color: white;">
-              <div class="buim-header" onclick="document.getElementById('${this.prefix}Content').classList.toggle('buim-content-visible')">
-                <input id="${this.prefix}Enabled" type="checkbox" 
-                        checked="${localStorage.getItem(this.prefix + "Enabled") == "true"}" 
-                        onchange="localStorage.setItem('${this.prefix}Enabled', this.checked)" 
-                        onclick="event.stopPropagation()"
-                        style="width: 30px; height: 30px;">  
-                <h4 style="display: inline-block; margin: 15px; color: white;">${this.name}</h1>
-              </div>
-              <div id="${this.prefix}Content" class="buim-content">
-                ${this.html}
-                <button id="${this.prefix}Reset">RESET</button>
-              </div>
-            </div>
+      // <span>Enabled: </span>
+      window._buim.allHTML[this.htmlIndex] = DESIGN.HTML.individualDropdown(
+        this.prefix,
+        this.name,
+        this.html
+      );
 
-            `;
       window._buim.compileAllHTML();
+      
       if (localStorage.getItem(this.prefix + "Enabled") == null) {
         localStorage.setItem(this.prefix + "Enabled", "true");
       }
+      
       window._buim.waitForElm(`#${this.prefix}Reset`).then((elm) => {
         setTimeout(() => {
-          console.log("Menu stuff added");
           document.getElementById(this.prefix + "Enabled").checked =
             localStorage.getItem(this.prefix + "Enabled") == "true";
 
-          console.log(document.getElementById(this.prefix + "Reset"));
           document
             .getElementById(this.prefix + "Reset")
             .addEventListener("click", () => {
-              console.log(this.prefix + " reset");
               for (let i = 0; i < this.defaults.length; i++) {
                 let currD = this.defaults[i]; //currD[0] = idName, currD[1] = defaultValue, currD[2] = isCheckbox
                 localStorage.setItem(currD[0], currD[1]);
+      
                 if (currD[2]) {
                   //if it's a checkbox
                   document.getElementById(currD[0]).checked = currD[1];
@@ -193,7 +222,6 @@ window.BUIM = class {
               window._buim.toggleMenu();
               window._buim.toggleMenu(); //Reload the menu
             });
-          console.log(document.getElementById(this.prefix + "Reset").onclick);
         }, 500);
       });
       return true;
@@ -206,65 +234,34 @@ window.BUIM = class {
   addItem(description, lsName, type, level, defaultValue, options) {
     let idName = this.prefix + lsName;
     this.defaults.push([idName, defaultValue, type == "checkbox"]); //Checkboxes are... "special." (elem.value doesn't work on them, they require elem.checked)
+    
     if (localStorage.getItem(idName) == null) {
       localStorage.setItem(idName, defaultValue);
     }
     window._buim.allLS.push([idName, type == "checkbox"]);
+    
     if (type !== "checkbox") {
       options == options || "";
-      this.html += `
-            <span style=" text-indent: ${level}rem">${description}</span>
-            <input id="${idName}" type="${type}" onchange="localStorage.setItem('${idName}', this.value)">
-            <br>
-            `;
+      this.html += DESIGN.HTML.item(level, description, idName, type);
     } else {
-      //if (type == "checkbox")
-      this.html += `
-            <span style="text-indent: ${level}rem">${description}</span>
-            <input id="${idName}" type="${type}" onchange="localStorage.setItem('${idName}', this.checked)" 
-                style="width: 30px; height: 30px;">
-            <br>
-            `;
+      this.html += DESIGN.HTML.checkbox(level, description, idName);
     }
-    this.updateHTML();
-  }
 
-  //Adds a keyboard shortcut to the menu (this method is similar to the addItem method, but adds a keydown listener and function).
-  addKBShortcut(description, lsName, level, defaultValue, fn) {
-    let idName = this.prefix + lsName;
-    this.defaults.push([idName, defaultValue, false]);
-    if (localStorage.getItem(idName) == null) {
-      console.log(idName + " is null, setting to " + defaultValue);
-      localStorage.setItem(idName, defaultValue);
-    }
-    window._buim.allLS.push([idName, false]);
-    this.html += `<span style="text-indent: ${level}rem">${description}</span>
-        <input id="${idName}" type="text" onchange="localStorage.setItem('${idName}', this.value)"><br>`;
     this.updateHTML();
-    document.addEventListener("keydown", function (event) {
-      if (
-        event.key == localStorage.getItem(idName) ||
-        event.code == localStorage.getItem(idName)
-      ) {
-        //The user can either type in the key or the code
-        console.log(event.key + " pressed");
-        fn();
-      }
-    });
   }
 
   //Adds a button to the menu. Options: title: String, the button's title; fn: A function to be run when the button is clicked
   addButton(title, fn, options) {
-    this.html += `<button id="${this.prefix}${title}" ${
-      options || ""
-    }>${title}</button><br>`;
+    this.html += DESIGN.HTML.button(this.prefix, title, options)
     this.updateHTML();
     document.getElementById(this.prefix + title).onclick = fn;
   }
 
   //Adds a header of the specified level (from 1 to 6, but it is recommended to start at 2 as h1 is used for the addon titles)
   addHeader(level, text) {
-    this.html += `<h${level}>${text}</h${level}>`;
+    this.html += DESIGN.HTML.header(level, text)
     this.updateHTML();
   }
 };
+
+console.log(loadScripts)
