@@ -1,3 +1,42 @@
+const DESIGN = {
+    CSS: `
+        .buim-dropdown {
+        margin: 5px;
+        border-radius: 4px;
+        background: linear-gradient(to bottom, black 0%, rgb(0 0 0 / 0%));
+        backdrop-filter: blur(10px);
+        font-family: Suisse, sans-serif;
+        letter-spacing: -0.1em;
+        }
+        .buim-header {
+        padding: 10px;
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        }
+        .buim-header:hover {
+        background: rgba(255, 255, 255, 0.1);
+        }
+        .buim-content {
+        display: none;
+        padding: 10px;
+        border-top: 1px solid #444;
+        }
+        .buim-content-visible {
+        display: block !important;
+        }
+    `,
+    HTML: {
+        optionsMenuTitle: `
+            <h3>Bespoke Client. </h3>
+            <h6>An <strong>Eschaton Project.</strong></p>
+            <p>Made by Zeta. <i>@zetainbeta_43414 on Discord</i></p>
+        ` 
+    }
+}
+
 (function () {
   "use strict";
   if (!window._buim) {
@@ -8,6 +47,7 @@
   window._buim.allHTML = []; // All HTML blocks
   window._buim.allLS = []; //All localStorage values (it's a 2d array: [lsValue_str, isCheckbox_bool])
 })();
+ 
 window._buim.waitForElm = function (selector) {
   return new Promise((resolve) => {
     if (document.querySelector(selector)) {
@@ -49,16 +89,10 @@ window._buim.toggleMenu = function () {
 };
 
 window._buim.compileAllHTML = function () {
-  window._buim.menuDiv.innerHTML = `
-        <h3>Bespoke Client. </h3>
-        <h6>An <strong>Eschaton Project.</strong></p>
-        <p>Made by Zeta. <i>@zetainbeta_43414 on Discord</i></p>
-      `; //Clear the HTML to refresh it
+  window._buim.menuDiv.innerHTML = DESIGN.html.optionsMenuTitle
+  
   for (let i = 0; i < window._buim.allHTML.length; i++) {
-    let h = window._buim.allHTML[i]; //Current block of HTML
-    window._buim.menuDiv.innerHTML += `<div style: "margin: 1em">`; //Inner div
-    window._buim.menuDiv.innerHTML += h;
-    window._buim.menuDiv.innerHTML += `</div>`; // <div style="background: darkgray; height: 2px; margin: 10px;"></div>
+    window._buim.menuDiv.innerHTML += window._buim.allHTML[i];
   }
 };
 
@@ -105,7 +139,8 @@ window.BUIM = class {
         .buim-dropdown {
           margin: 5px;
           border-radius: 4px;
-          background: rgba(0, 0, 0, 0.5);
+          background: linear-gradient(to bottom, black 0%, rgb(0 0 0 / 0%));
+          backdrop-filter: blur(10px);
           font-family: Suisse, sans-serif;
           letter-spacing: -0.1em;
         }
@@ -142,6 +177,7 @@ window.BUIM = class {
                 <input id="${this.prefix}Enabled" type="checkbox" 
                         checked="${localStorage.getItem(this.prefix + "Enabled") == "true"}" 
                         onchange="localStorage.setItem('${this.prefix}Enabled', this.checked)" 
+                        onclick="event.stopPropagation()"
                         style="width: 30px; height: 30px;">  
                 <h4 style="display: inline-block; margin: 15px; color: white;">${this.name}</h1>
               </div>
