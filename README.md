@@ -25,3 +25,9 @@ Talk to me via discord, @zetainbeta_43414. I am open to suggestions. Please ensu
 
 ## Plan
 The vision is an integrated, seamless experience for GeoFS with a modular and scalable design. I have a lot planned. Currently there's no UI, no customisation, no actual features, just a stupid script loading system with some things I made and decided to make public. Learn about the progress I have made on Lookout and the HMD here: https://www.youtube.com/playlist?list=PLhNXCpG1Q8_-xMfWcN-SCqa30swuHnyNU
+
+----
+
+### Credits
+@tylerbmusic on Github for his UI system. Heavily reworked however, at its core, its his work and it shouldn't go unoticed!
+<a href="https://www.flaticon.com/free-icons/settings" title="settings icons">Settings icons created by Pixel perfect - Flaticon</a>

@@ -106,8 +106,8 @@ let transformedFaceData = {
 const init = function () {
   let hasInit = false;
   setInterval(function () {
-    if (geofs.camera.currentModeName == "cockpit") {
-      if (!hasInit && localStorage.getItem("lookoutEnabled") === "true") {
+    if (geofs.camera.currentModeName == "cockpit" && localStorage.getItem("lookoutEnabled") === "true") {
+      if (!hasInit) {
         JEELIZFACEFILTER.init({
           canvasId: addCanvas("jeeFaceFilterCanvas").id,
           NNCPath: config.algorithm,
@@ -152,11 +152,10 @@ init();
 const lookoutUi = new window.BUIM("Lookout", "lookout");
 
 lookoutUi.addButton("Calibrate", function() {
-  config.pitch.default = transformedFaceData.rotation.pitch * -1;
-  config.yaw.default = transformedFaceData.rotation.yaw * -1;
-  config.roll.default = transformedFaceData.rotation.roll * -1;
-  config.leftRight.default = transformedFaceData.position.leftRight * -1;
-  config.forwardBackward.default =
-    transformedFaceData.position.forwardBackward * -1;
-  config.upDown.default = transformedFaceData.position.upDown * -1;
+  config.pitch.default = -lastDetectState.rx * config.pitch.sensitivity;
+  config.yaw.default   = -lastDetectState.ry * config.yaw.sensitivity;
+  config.roll.default  = -lastDetectState.rz * config.roll.sensitivity;
+  config.leftRight.default      = -lastDetectState.x * config.leftRight.sensitivity;
+  config.forwardBackward.default = lastDetectState.s * config.forwardBackward.sensitivity;
+  config.upDown.default         = lastDetectState.y * config.upDown.sensitivity;
 });

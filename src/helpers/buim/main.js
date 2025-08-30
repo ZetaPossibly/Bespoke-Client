@@ -28,11 +28,19 @@ const DESIGN = {
         display: block !important;
         }
         .liquid-glass {
-            background: rgba(255, 255, 255, 0.15); /* semi-transparent layer */
-            backdrop-filter: blur(15px);          /* blur what's behind */
-            -webkit-backdrop-filter: blur(15px);  /* Safari support */
-            border-radius: 12px;                  /* rounded edges */
-            border: 1px solid rgba(255, 255, 255, 0.3); /* optional subtle edge */
+          background: rgba(255, 255, 255, 0.15); /* semi-transparent layer */
+          backdrop-filter: blur(15px);          /* blur what's behind */
+          -webkit-backdrop-filter: blur(15px);  /* Safari support */
+          border-radius: 12px;                  /* rounded edges */
+          border: 1px solid rgba(255, 255, 255, 0.3); /* optional subtle edge */
+        }
+        #gamenu {
+          padding: 0;
+          cursor: pointer; /* optional */
+        }
+
+        #gamenu img {
+          width: 30px;
         }
     `,
   HTML: {
@@ -81,7 +89,14 @@ const DESIGN = {
     },
     header: function (level, text) {
       return `<h${level}>${text}</h${level}>`
-    }
+    },
+    openBuimBtn: `
+      <div id="bottomDiv">
+        <div id="gamenu" class="mdl-button mdl-js-button geofs-f-standard-ui">
+            <img src="https://raw.githubusercontent.com/tylerbmusic/GPWS-files_geofs/refs/heads/main/s_icon.png">
+        </div>
+      </div>
+    `
   },
 };
 
@@ -155,6 +170,36 @@ window.BUIM = class {
   }
 
   // Called automatically, initializes the button, menu div, and a couple of other things
+  _initialize() {
+    window._buim.isGMenuInit = true; //Prevent other instances from initializing this window
+    var bottomDiv = document.getElementsByClassName("geofs-ui-bottom")[0];
+    window._buim.btn = document.createElement("div");
+    window._buim.btn.id = "gamenu";
+    window._buim.btn.classList = "mdl-button mdl-js-button geofs-f-standard-ui";
+    window._buim.btn.style.padding = "0px";
+    bottomDiv.appendChild(window._buim.btn);
+    window._buim.btn.innerHTML = `<img src="https://raw.githubusercontent.com/tylerbmusic/GPWS-files_geofs/refs/heads/main/s_icon.png" style="width: 30px">`;
+    document.getElementById("gamenu").onclick = () => {
+      window._buim.toggleMenu();
+    };
+    if (!window._buim.menuDiv) {
+      window._buim.menuDiv = document.createElement("div");
+      window._buim.menuDiv.id = "ggamergguyDiv"; // tribute to the chad
+      window._buim.menuDiv.classList =
+        "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences liquid-glass";
+      window._buim.menuDiv.style.zIndex = "100";
+      window._buim.menuDiv.style.position = "fixed";
+      window._buim.menuDiv.style.width = "30%";
+      window._buim.menuDiv.style.background = "rgba(0, 0, 0, 0.5)";
+      document.body.appendChild(window._buim.menuDiv);
+
+      // Add styles for BUIM dropdowns
+      const style = document.createElement("style");
+      style.textContent = DESIGN.CSS;
+      document.head.appendChild(style);
+    }
+  }
+
   initialize() {
     window._buim.isGMenuInit = true; //Prevent other instances from initializing this window
     var bottomDiv = document.getElementsByClassName("geofs-ui-bottom")[0];
