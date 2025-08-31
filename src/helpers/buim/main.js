@@ -84,8 +84,8 @@ const DESIGN = {
             <br>
           `;
     },
-    button: function (prefix, title, options) {
-      return `<button id="${prefix}${title}" ${options || ""}>${title}</button><br>`;
+    button: function (prefix, title, options, fn) {
+      return `<button id="${prefix}${title}" ${options || ""} onclick="${fn()}">${title}</button><br>`;
     },
     header: function (level, text) {
       return `<h${level}>${text}</h${level}>`
@@ -297,9 +297,9 @@ window.BUIM = class {
 
   //Adds a button to the menu. Options: title: String, the button's title; fn: A function to be run when the button is clicked
   addButton(title, fn, options) {
-    this.html += DESIGN.HTML.button(this.prefix, title, options)
+    this.html += DESIGN.HTML.button(this.prefix, title, options, fn)
     this.updateHTML();
-    document.getElementById(this.prefix + title).onclick = fn;
+    //document.getElementById(this.prefix + title).onclick = fn;
   }
 
   //Adds a header of the specified level (from 1 to 6, but it is recommended to start at 2 as h1 is used for the addon titles)
