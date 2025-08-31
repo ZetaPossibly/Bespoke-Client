@@ -1,4 +1,4 @@
-let config = {
+window.config = {
   pitch: {
     enabled: true,
     min: -80,
@@ -61,13 +61,13 @@ const addCanvas = function (id) {
 };
 
 const transformFaceData = function (faceData, config) {
-  return config.enabled
+  return window.config.enabled
     ? clampToWithinBounds(
-        faceData * config.sensitivity,
-        config.min,
-        config.max
-      ) + config.default
-    : config.default; // return the resting, "default" values, if not enabled
+        faceData * window.config.sensitivity,
+        window.config.min,
+        window.config.max
+      ) + window.config.default
+    : window.config.default; // return the resting, "default" values, if not enabled
 };
 
 const applyTransformsToCamera = function (data) {
@@ -110,23 +110,23 @@ const init = function () {
       if (!hasInit) {
         JEELIZFACEFILTER.init({
           canvasId: addCanvas("jeeFaceFilterCanvas").id,
-          NNCPath: config.algorithm,
+          NNCPath: window.config.algorithm,
           maxFacesDetected: 1,
           callbackReady: catchError,
           callbackTrack: function (detectState) {
             transformedFaceData = {
               rotation: {
-                pitch: transformFaceData(-detectState.rx, config.pitch),
-                yaw: transformFaceData(-detectState.ry, config.yaw),
-                roll: transformFaceData(-detectState.rz, config.roll),
+                pitch: transformFaceData(-detectState.rx, window.config.pitch),
+                yaw: transformFaceData(-detectState.ry, window.config.yaw),
+                roll: transformFaceData(-detectState.rz, window.config.roll),
               },
               position: {
-                leftRight: transformFaceData(-detectState.x, config.leftRight),
+                leftRight: transformFaceData(-detectState.x, window.config.leftRight),
                 forwardBackward: transformFaceData(
                   detectState.s,
-                  config.forwardBackward
+                  window.config.forwardBackward
                 ),
-                upDown: transformFaceData(detectState.y, config.upDown),
+                upDown: transformFaceData(detectState.y, window.config.upDown),
               },
             };
 
@@ -152,10 +152,18 @@ init();
 const lookoutUi = new window.BUIM("Lookout", "lookout");
 
 lookoutUi.addButton("Calibrate", function() {
-  config.pitch.default = -lastDetectState.rx * config.pitch.sensitivity;
-  config.yaw.default   = -lastDetectState.ry * config.yaw.sensitivity;
-  config.roll.default  = -lastDetectState.rz * config.roll.sensitivity;
-  config.leftRight.default      = -lastDetectState.x * config.leftRight.sensitivity;
-  config.forwardBackward.default = lastDetectState.s * config.forwardBackward.sensitivity;
-  config.upDown.default         = lastDetectState.y * config.upDown.sensitivity;
+  console.log("running!")
+  // window.config.pitch.default = -lastDetectState.rx * window.config.pitch.sensitivity;
+  // window.config.yaw.default   = -lastDetectState.ry * window.config.yaw.sensitivity;
+  // window.config.roll.default  = -lastDetectState.rz * window.config.roll.sensitivity;
+  // window.config.leftRight.default      = -lastDetectState.x * window.config.leftRight.sensitivity;
+  // window.config.forwardBackward.default = lastDetectState.s * window.config.forwardBackward.sensitivity;
+  // window.config.upDown.default         = lastDetectState.y * window.config.upDown.sensitivity;
+
+  window.config.pitch.default = -transformedFaceData.rotation.pitch;
+  window.config.yaw.default = -transformedFaceData.rotation.yaw;
+  window.config.roll.default = -transformedFaceData.rotation.roll;
+  window.config.leftRight.default = -transformedFaceData.position.leftRight;
+  window.config.forwardBackward.default = -transformedFaceData.position.forwardBackward;
+  window.config.upDown.default = -transformedFaceData.position.upDown;
 });
