@@ -299,7 +299,7 @@ window.BUIM = class {
   addButton(title, fn, options) {
     this.html += DESIGN.HTML.button(this.prefix, title, options)
     this.updateHTML();
-    document.getElementById(this.prefix + title).onclick = fn;
+    document.getElementById(this.prefix + title).onclick = () => {fn()};
   }
 
   //Adds a header of the specified level (from 1 to 6, but it is recommended to start at 2 as h1 is used for the addon titles)
