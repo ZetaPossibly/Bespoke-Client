@@ -34,12 +34,12 @@ const DESIGN = {
           border-radius: 12px;                  /* rounded edges */
           border: 1px solid rgba(255, 255, 255, 0.3); /* optional subtle edge */
         }
-        #gamenu {
+        #buim_gamenu {
           padding: 0;
           cursor: pointer; /* optional */
         }
 
-        #gamenu img {
+        #buim_gamenu img {
           width: 30px;
         }
     `,
@@ -92,7 +92,7 @@ const DESIGN = {
     },
     openBuimBtn: `
       <div id="bottomDiv">
-        <div id="gamenu" class="mdl-button mdl-js-button geofs-f-standard-ui">
+        <div id="buim_gamenu" class="mdl-button mdl-js-button geofs-f-standard-ui">
             <img src="https://raw.githubusercontent.com/tylerbmusic/GPWS-files_geofs/refs/heads/main/s_icon.png">
         </div>
       </div>
@@ -174,12 +174,12 @@ window.BUIM = class {
     window._buim.isGMenuInit = true; //Prevent other instances from initializing this window
     var bottomDiv = document.getElementsByClassName("geofs-ui-bottom")[0];
     window._buim.btn = document.createElement("div");
-    window._buim.btn.id = "gamenu";
+    window._buim.btn.id = "buim_gamenu";
     window._buim.btn.classList = "mdl-button mdl-js-button geofs-f-standard-ui";
     window._buim.btn.style.padding = "0px";
     bottomDiv.appendChild(window._buim.btn);
     window._buim.btn.innerHTML = `<img src="https://raw.githubusercontent.com/tylerbmusic/GPWS-files_geofs/refs/heads/main/s_icon.png" style="width: 30px">`;
-    document.getElementById("gamenu").onclick = () => {
+    document.getElementById("buim_gamenu").onclick = () => {
       window._buim.toggleMenu();
     };
     if (!window._buim.menuDiv) {
@@ -204,12 +204,12 @@ window.BUIM = class {
     window._buim.isGMenuInit = true; //Prevent other instances from initializing this window
     var bottomDiv = document.getElementsByClassName("geofs-ui-bottom")[0];
     window._buim.btn = document.createElement("div");
-    window._buim.btn.id = "gamenu";
+    window._buim.btn.id = "buim_gamenu";
     window._buim.btn.classList = "mdl-button mdl-js-button geofs-f-standard-ui";
     window._buim.btn.style.padding = "0px";
     bottomDiv.appendChild(window._buim.btn);
     window._buim.btn.innerHTML = `<img src="https://raw.githubusercontent.com/tylerbmusic/GPWS-files_geofs/refs/heads/main/s_icon.png" style="width: 30px">`;
-    document.getElementById("gamenu").onclick = () => {
+    document.getElementById("buim_gamenu").onclick = () => {
       window._buim.toggleMenu();
     };
     if (!window._buim.menuDiv) {
