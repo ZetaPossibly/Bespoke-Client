@@ -41,7 +41,7 @@ let config = {
     default: 0,
     sensitivity: 1.25,
   },
-  algorithm: window.bespokeClient.data.jeelizModels.veryLight,
+  algorithm: window.bespokeClient.data.jeelizModels.default,
 };
 
 const clampToWithinBounds = function (value, min, max) {
