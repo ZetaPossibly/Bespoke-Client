@@ -41,7 +41,7 @@ let config = {
     default: 0,
     sensitivity: 1.25,
   },
-  algorithm: window.bespokeClient.data.jeelizModels.default,
+  algorithm: window.bespokeClient.data.jeelizModels.veryLight,
 };
 
 const clampToWithinBounds = function (value, min, max) {
@@ -153,12 +153,6 @@ const lookoutUi = new window.BUIM("Lookout", "lookout");
 
 window.calibrateLookout = function() {
   console.log("running!")
-  // config.pitch.default = -lastDetectState.rx * config.pitch.sensitivity;
-  // config.yaw.default   = -lastDetectState.ry * config.yaw.sensitivity;
-  // config.roll.default  = -lastDetectState.rz * config.roll.sensitivity;
-  // config.leftRight.default      = -lastDetectState.x * config.leftRight.sensitivity;
-  // config.forwardBackward.default = lastDetectState.s * config.forwardBackward.sensitivity;
-  // config.upDown.default         = lastDetectState.y * config.upDown.sensitivity;
 
   config.pitch.default = -transformedFaceData.rotation.pitch;
   config.yaw.default = -transformedFaceData.rotation.yaw;
@@ -168,3 +162,4 @@ window.calibrateLookout = function() {
   config.upDown.default = -transformedFaceData.position.upDown;
 }
 lookoutUi.addButton("Calibrate", "calibrateLookout");
+lookoutUi.addItem("")

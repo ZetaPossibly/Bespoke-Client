@@ -25,6 +25,7 @@ window.addEventListener("keydown", function (e) {
       e.key.toLowerCase() === localStorage.getItem(prefix + "Keybind") &&
       localStorage.getItem(prefix + "Enabled") === "true"
     ) {
+      e.preventDefault()
       e.stopPropagation();
       ui.chat.showInput();
     }
