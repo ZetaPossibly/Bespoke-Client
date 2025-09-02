@@ -85,7 +85,7 @@ const DESIGN = {
           `;
     },
     button: function (prefix, title, options, fn) {
-      return `<button id="${prefix}${title}" ${options || ""} onclick="${fn()}">${title}</button><br>`;
+      return `<button id="${prefix}${title}" ${options || ""} onclick="${fn}()">${title}</button><br>`;
     },
     header: function (level, text) {
       return `<h${level}>${text}</h${level}>`

@@ -151,7 +151,7 @@ init();
 
 const lookoutUi = new window.BUIM("Lookout", "lookout");
 
-lookoutUi.addButton("Calibrate", function() {
+window.calibrateLookout = function() {
   console.log("running!")
   // config.pitch.default = -lastDetectState.rx * config.pitch.sensitivity;
   // config.yaw.default   = -lastDetectState.ry * config.yaw.sensitivity;
@@ -166,4 +166,5 @@ lookoutUi.addButton("Calibrate", function() {
   config.leftRight.default = -transformedFaceData.position.leftRight;
   config.forwardBackward.default = -transformedFaceData.position.forwardBackward;
   config.upDown.default = -transformedFaceData.position.upDown;
-});
+}
+lookoutUi.addButton("Calibrate", "calibrateLookout");
