@@ -154,12 +154,12 @@ const lookoutUi = new window.BUIM("Lookout", "lookout");
 window.calibrateLookout = function() {
   console.log("running!")
 
-  config.pitch.default = -transformedFaceData.rotation.pitch;
-  config.yaw.default = -transformedFaceData.rotation.yaw;
-  config.roll.default = -transformedFaceData.rotation.roll;
-  config.leftRight.default = -transformedFaceData.position.leftRight;
-  config.forwardBackward.default = -transformedFaceData.position.forwardBackward;
-  config.upDown.default = -transformedFaceData.position.upDown;
+  config.pitch.default = -transformedFaceData.rotation.pitch - config.pitch.default ;
+  config.yaw.default = -transformedFaceData.rotation.yaw - config.yaw.default;
+  config.roll.default = -transformedFaceData.rotation.roll - config.roll.default;
+  config.leftRight.default = -transformedFaceData.position.leftRight - config.leftRight.default;
+  config.forwardBackward.default = -transformedFaceData.position.forwardBackward - config.forwardBackward.default;
+  config.upDown.default = -transformedFaceData.position.upDown - config.upDown.default;
 }
 lookoutUi.addButton("Calibrate", "calibrateLookout");
 lookoutUi.addItem("")
