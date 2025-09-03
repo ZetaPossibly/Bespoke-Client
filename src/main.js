@@ -20,7 +20,7 @@ const getUrl = (path) => `${baseUrl.replace("*", path)}`;
 	};
 })();
 
-window.addEventListener("ocalstorage-changed", function(e) {
+window.addEventListener("localstorage-changed", function(e) {
     console.log(`Key ${e.key} set to`, e.value);
 })
 
