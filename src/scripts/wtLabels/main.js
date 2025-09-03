@@ -108,5 +108,5 @@ function wt_init() {
   multiplayer.start();
 
   const wtUi = new window.BUIM("War Thunder Styled Labels", "wtLabels");
-  wtUi.add_item("Enable Outline", "outline", "checkbox", 1, "onchange='multiplayer.stop(); multiplayer.start()'") //   addItem(description, lsName, type, level, defaultValue, options) 
+  wtUi.addItem("Enable Outline", "outline", "checkbox", 1, "onchange='multiplayer.stop(); multiplayer.start()'") //   addItem(description, lsName, type, level, defaultValue, options) 
 }
