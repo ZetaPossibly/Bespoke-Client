@@ -27,13 +27,6 @@ const DESIGN = {
         .buim-content-visible {
         display: block !important;
         }
-        .liquid-glass {
-          background: rgba(255, 255, 255, 0.15); /* semi-transparent layer */
-          backdrop-filter: blur(15px);          /* blur what's behind */
-          -webkit-backdrop-filter: blur(15px);  /* Safari support */
-          border-radius: 12px;                  /* rounded edges */
-          border: 1px solid rgba(255, 255, 255, 0.3); /* optional subtle edge */
-        }
         #buim_gamenu {
           padding: 0;
           cursor: pointer; /* optional */
@@ -85,7 +78,7 @@ const DESIGN = {
           `;
     },
     button: function (prefix, title, options, fn) {
-      return `<button id="${prefix}${title}" ${options || ""} onclick="${fn()}">${title}</button><br>`;
+      return `<button id="${prefix}${title}" ${options || ""} onclick="${fn}()">${title}</button><br>`;
     },
     header: function (level, text) {
       return `<h${level}>${text}</h${level}>`
@@ -186,7 +179,7 @@ window.BUIM = class {
       window._buim.menuDiv = document.createElement("div");
       window._buim.menuDiv.id = "ggamergguyDiv"; // tribute to the chad
       window._buim.menuDiv.classList =
-        "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences liquid-glass";
+        "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
       window._buim.menuDiv.style.zIndex = "100";
       window._buim.menuDiv.style.position = "fixed";
       window._buim.menuDiv.style.width = "30%";
@@ -216,7 +209,7 @@ window.BUIM = class {
       window._buim.menuDiv = document.createElement("div");
       window._buim.menuDiv.id = "ggamergguyDiv"; // tribute to the chad
       window._buim.menuDiv.classList =
-        "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences liquid-glass";
+        "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
       window._buim.menuDiv.style.zIndex = "100";
       window._buim.menuDiv.style.position = "fixed";
       window._buim.menuDiv.style.width = "30%";
