@@ -65,15 +65,7 @@ const DESIGN = {
     item: function (level, description, idName, type) {
       return `
             <span style=" text-indent: ${level}rem">${description}</span>
-            <input id="${idName}" type="${type}" onchange="localStorage.setItem('${idName}', this.value)">
-            <br>
-          `;
-    },
-    checkbox: function (level, description, idName) {
-      return `
-            <span style="text-indent: ${level}rem">${description}</span>
-            <input id="${idName}" type="checkbox" onchange="localStorage.setItem('${idName}', this.checked)" 
-                style="width: 30px; height: 30px;">
+            <input id="${idName}" type="${type}" onchange="localStorage.setItem('${idName}', ${(type === "checkbox") ? "this.checked" : "this.value"})  ">
             <br>
           `;
     },
@@ -269,7 +261,7 @@ window.BUIM = class {
 
   //Note: The defaultValue should always be a string, and ALL LOCALSTORAGE VALUES ARE STRINGS. This means that checkbox values, for instance, will be either "true" or "false".
   //Adds an item to the menu. Options: description: String, a very short description;  lsName: String, the name used for localStorage retrieval/storage (also the id name), will be automatically prefixed by the prefix;  type: any of the standard HTML input types;  level: Integer, the indentation of the item, where 0 is no indentation;  defaultValue: Self explanatory, the value if the item was not set or was reset
-  addItem(description, lsName, type, level, defaultValue, options) {
+  addItem(description, lsName, type, level, defaultValue) {
     let idName = this.prefix + lsName;
     this.defaults.push([idName, defaultValue, type == "checkbox"]); //Checkboxes are... "special." (elem.value doesn't work on them, they require elem.checked)
     
@@ -277,13 +269,7 @@ window.BUIM = class {
       localStorage.setItem(idName, defaultValue);
     }
     window._buim.allLS.push([idName, type == "checkbox"]);
-    
-    if (type !== "checkbox") {
-      options == options || "";
-      this.html += DESIGN.HTML.item(level, description, idName, type);
-    } else {
-      this.html += DESIGN.HTML.checkbox(level, description, idName);
-    }
+    this.html += DESIGN.HTML.item(level, description, idName, type);
 
     this.updateHTML();
   }
