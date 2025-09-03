@@ -44,7 +44,12 @@ function wt_init() {
           var n = [a[0], a[1], a[2]];
           var to_add = "";
           if (o.distance < 50000) {
-            to_add = "\n" + aircraft_codes.get(o.aircraft.toString()) + " \n \n " + (o.distance / 1000).toFixed(2) + " km";
+            to_add =
+              "\n" +
+              aircraft_codes.get(o.aircraft.toString()) +
+              " \n \n " +
+              (o.distance / 1000).toFixed(2) +
+              " km";
           }
 
           o.label.text = o.callsign + to_add;
@@ -58,36 +63,35 @@ function wt_init() {
     }
   };
 
-  geofs.api.setLabelPosition = function(e, t) {
-        if (e) {
-            if (!V3.isValid(t)) {
-                geofs.api.removeLabel(e)
-                console.log(e)
-                geofs.debug.debugger();
-                return
-            }
-            e.position = new Cesium.Cartesian3.fromDegrees(t[1],t[0],t[2])
-            e.pixelOffset.y = 22
-            return
-        }
+  geofs.api.setLabelPosition = function (e, t) {
+    if (e) {
+      if (!V3.isValid(t)) {
+        geofs.api.removeLabel(e);
+        console.log(e);
+        geofs.debug.debugger();
+        return;
+      }
+      e.position = new Cesium.Cartesian3.fromDegrees(t[1], t[0], t[2]);
+      e.pixelOffset.y = 22;
+      return;
     }
+  };
 
   multiplayer.User.prototype.addCallsign = function (e, t) {
-    if (!(e == "Foo" || e == "") && localStorage.getItem("wtLabelsEnabled") === "true") {
-      if (
-        ((this.label = geofs.api.addLabel(
-          e,
-          null,
-          multiplayer.labelOptions[t]
-        )),
-        multiplayer.iconOptions[t])
-      ) {
-        var a = Object.assign({}, multiplayer.iconOptions[t], {
-          pixelOffset: new Cesium.Cartesian2(-(4 * e.length + 5), 0),
-        });
-        this.icon = new geofs.api.billboard(null, null, a);
+    if (localStorage.getItem("wtLabelsEnabled") === "true") {
+      if (e == "Foo" || e == "") {
+        return;
       }
-    } 
+    }
+    if (
+      ((this.label = geofs.api.addLabel(e, null, multiplayer.labelOptions[t])),
+      multiplayer.iconOptions[t])
+    ) {
+      var a = Object.assign({}, multiplayer.iconOptions[t], {
+        pixelOffset: new Cesium.Cartesian2(-(4 * e.length + 5), 0),
+      });
+      this.icon = new geofs.api.billboard(null, null, a);
+    }
   };
 
   const colourConfig = {
@@ -97,9 +101,11 @@ function wt_init() {
     verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
     eyeOffset: new Cesium.Cartesian3(0, 0, 0),
     fillColor: Cesium.Color.fromCssColorString("#ab3b35ff"),
-    outlineColor: (localStorage.getItem("wtLabelsOutline" === "true")) ? Cesium.Color.BLACK : Cesium.Color.TRANSPARENT,
+    outlineColor: localStorage.getItem("wtLabelsOutline" === "true")
+      ? Cesium.Color.BLACK
+      : Cesium.Color.TRANSPARENT,
     outlineWidth: 1,
-    disableDepthTestDistance: 50000
+    disableDepthTestDistance: 50000,
   };
   multiplayer.labelOptions.default = colourConfig;
   multiplayer.labelOptions.premium = colourConfig;
@@ -108,5 +114,10 @@ function wt_init() {
   multiplayer.start();
 
   const wtUi = new window.BUIM("War Thunder Styled Labels", "wtLabels");
-  wtUi.addItem("Enable Outline", "outline", "checkbox", 1, "onchange='multiplayer.stop(); multiplayer.start()'") //   addItem(description, lsName, type, level, defaultValue, options) 
+  wtUi.addItem(
+    "Enable Outline",
+    "outline",
+    "checkbox",
+    1,
+  ); //   addItem(description, lsName, type, level, defaultValue)
 }

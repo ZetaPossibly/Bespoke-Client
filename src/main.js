@@ -1,6 +1,29 @@
 const baseUrl = "https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/heads/dev/src/*";
 const getUrl = (path) => `${baseUrl.replace("*", path)}`;
 
+(function() {
+	const originalSetItem = localStorage.setItem;
+	localStorage.setItem = function(key, value) {
+		const event = new Event("localstorage-changed");
+		event.key = key;
+		event.value = value;
+		window.dispatchEvent(event);
+		originalSetItem.apply(this, arguments);
+	};
+
+	const originalRemoveItem = localStorage.removeItem;
+	localStorage.removeItem = function(key) {
+		const event = new Event("localstorage-removed");
+		event.key = key;
+		window.dispatchEvent(event);
+		originalRemoveItem.apply(this, arguments);
+	};
+})();
+
+window.addEventListener("ocalstorage-changed", function(e) {
+    console.log(`Key ${e.key} set to`, e.value);
+})
+
 const helpers = {
     jeeliz: getUrl("helpers/jeeliz/main.js"),
     buim: getUrl("helpers/buim/main.js")
