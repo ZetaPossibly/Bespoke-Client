@@ -71,7 +71,7 @@ async function loadScripts(scripts) {
 }
 
 const initClient = async function() {
-    if (typeof geofs === 'undefined') {
+    if (typeof geofs === 'undefined' || typeof ui === 'undefined') {
         setTimeout(initClient, 1000);
         return;
     }
