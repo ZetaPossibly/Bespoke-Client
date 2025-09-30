@@ -153,11 +153,25 @@ init();
 
 const lookoutUi = new window.BUIM("Lookout", "lookout");
 
-window.calibrateLookout = function() {
-  console.log("Calibrating!")
-  console.log("Before calibration:", JSON.stringify(config, null, 2));
-  console.log("FaceData snapshot:", JSON.stringify(transformedFaceData, null, 2));
+// window.calibrateLookout = function() {
+//   console.log("Calibrating!")
+//   console.log("Before calibration:", JSON.stringify(config, null, 2));
+//   console.log("FaceData snapshot:", JSON.stringify(transformedFaceData, null, 2));
 
+
+//   config.pitch.default = -transformedFaceData.rotation.pitch/2;
+//   config.yaw.default = -transformedFaceData.rotation.yaw/2;
+//   config.roll.default = -transformedFaceData.rotation.roll/2;
+//   config.leftRight.default = -transformedFaceData.position.leftRight/2;
+//   config.forwardBackward.default = -transformedFaceData.position.forwardBackward/2;
+//   config.upDown.default = -transformedFaceData.position.upDown/2;
+
+//   console.log("After calibration:", JSON.stringify(config, null, 2));
+
+// }
+
+window.calibrateLookout = function() {
+  console.log("Calibrating!");
 
   config.pitch.default = -transformedFaceData.rotation.pitch;
   config.yaw.default = -transformedFaceData.rotation.yaw;
@@ -166,7 +180,22 @@ window.calibrateLookout = function() {
   config.forwardBackward.default = -transformedFaceData.position.forwardBackward;
   config.upDown.default = -transformedFaceData.position.upDown;
 
-  console.log("After calibration:", JSON.stringify(config, null, 2));
+  // Force an immediate recompute with new defaults
+  transformedFaceData = {
+    rotation: {
+      pitch: transformFaceData(-0, config.pitch),
+      yaw: transformFaceData(-0, config.yaw),
+      roll: transformFaceData(-0, config.roll),
+    },
+    position: {
+      leftRight: transformFaceData(-0, config.leftRight),
+      forwardBackward: transformFaceData(0, config.forwardBackward),
+      upDown: transformFaceData(0, config.upDown),
+    },
+  };
 
-}
+  console.log("Config after calibration:", JSON.stringify(config, null, 2));
+  console.log("TransformedFaceData reset:", JSON.stringify(transformedFaceData, null, 2));
+};
+
 lookoutUi.addButton("Calibrate", "calibrateLookout");
