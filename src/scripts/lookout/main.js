@@ -21,21 +21,21 @@ let config = {
     sensitivity: 200,
   },
   leftRight: {
-    enabled: false,
+    enabled: true,
     min: -0.5,
     max: 0.5,
     default: 0,
     sensitivity: 1,
   },
   forwardBackward: {
-    enabled: false,
+    enabled: true,
     min: -0.5,
     max: 0.5,
     default: 0,
     sensitivity: 0,
   },
   upDown: {
-    enabled: false,
+    enabled: true,
     min: -0.1,
     max: 0.2,
     default: 0,
@@ -158,11 +158,11 @@ window.calibrateLookout = function() {
   console.log(config)
   console.log(transformedFaceData)
 
-  config.pitch.default = -transformedFaceData.rotation.pitch - config.pitch.default ;
-  config.yaw.default = -transformedFaceData.rotation.yaw - config.yaw.default;
-  config.roll.default = -transformedFaceData.rotation.roll - config.roll.default;
-  config.leftRight.default = -transformedFaceData.position.leftRight - config.leftRight.default;
-  config.forwardBackward.default = -transformedFaceData.position.forwardBackward - config.forwardBackward.default;
-  config.upDown.default = -transformedFaceData.position.upDown - config.upDown.default;
+  config.pitch.default = -transformedFaceData.rotation.pitch;
+  config.yaw.default = -transformedFaceData.rotation.yaw;
+  config.roll.default = -transformedFaceData.rotation.roll;
+  config.leftRight.default = -transformedFaceData.position.leftRight;
+  config.forwardBackward.default = -transformedFaceData.position.forwardBackward;
+  config.upDown.default = -transformedFaceData.position.upDown;
 }
 lookoutUi.addButton("Calibrate", "calibrateLookout");
