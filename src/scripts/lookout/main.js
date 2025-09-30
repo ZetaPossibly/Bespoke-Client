@@ -4,6 +4,7 @@ let config = {
     min: -80,
     max: 170,
     default: 0,
+    calib: 0,
     sensitivity: 175,
   },
   yaw: {
@@ -11,6 +12,7 @@ let config = {
     min: -160,
     max: 160,
     default: 0,
+    calib: 0,
     sensitivity: 200,
   },
   roll: {
@@ -18,6 +20,7 @@ let config = {
     min: -100,
     max: 100,
     default: 0,
+    calib: 0,
     sensitivity: 200,
   },
   leftRight: {
@@ -25,6 +28,7 @@ let config = {
     min: -0.5,
     max: 0.5,
     default: 0,
+    calib: 0,
     sensitivity: 1,
   },
   forwardBackward: {
@@ -32,6 +36,7 @@ let config = {
     min: -0.5,
     max: 0.5,
     default: 0,
+    calib: 0,
     sensitivity: 0,
   },
   upDown: {
@@ -39,6 +44,7 @@ let config = {
     min: -0.1,
     max: 0.2,
     default: 0,
+    calib: 0,
     sensitivity: 1.25,
   },
   algorithm: window.bespokeClient.data.jeelizModels.default,
@@ -66,7 +72,7 @@ const transformFaceData = function (faceData, config) {
         faceData * config.sensitivity,
         config.min,
         config.max
-      ) + config.default
+      ) + config.default - config.calib
     : config.default; // return the resting, "default" values, if not enabled
 };
 
@@ -173,26 +179,12 @@ const lookoutUi = new window.BUIM("Lookout", "lookout");
 window.calibrateLookout = function() {
   console.log("Calibrating!");
 
-  config.pitch.default = -transformedFaceData.rotation.pitch;
-  config.yaw.default = -transformedFaceData.rotation.yaw;
-  config.roll.default = -transformedFaceData.rotation.roll;
-  config.leftRight.default = -transformedFaceData.position.leftRight;
-  config.forwardBackward.default = -transformedFaceData.position.forwardBackward;
-  config.upDown.default = -transformedFaceData.position.upDown;
-
-  // Force an immediate recompute with new defaults
-  transformedFaceData = {
-    rotation: {
-      pitch: transformFaceData(-0, config.pitch),
-      yaw: transformFaceData(-0, config.yaw),
-      roll: transformFaceData(-0, config.roll),
-    },
-    position: {
-      leftRight: transformFaceData(-0, config.leftRight),
-      forwardBackward: transformFaceData(0, config.forwardBackward),
-      upDown: transformFaceData(0, config.upDown),
-    },
-  };
+  config.pitch.calib = -transformedFaceData.rotation.pitch;
+  config.yaw.calib = -transformedFaceData.rotation.yaw;
+  config.roll.calib = -transformedFaceData.rotation.roll;
+  config.leftRight.calib = -transformedFaceData.position.leftRight;
+  config.forwardBackward.calib = -transformedFaceData.position.forwardBackward;
+  config.upDown.calib = -transformedFaceData.position.upDown;
 
   console.log("Config after calibration:", JSON.stringify(config, null, 2));
   console.log("TransformedFaceData reset:", JSON.stringify(transformedFaceData, null, 2));
