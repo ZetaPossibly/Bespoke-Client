@@ -155,8 +155,9 @@ const lookoutUi = new window.BUIM("Lookout", "lookout");
 
 window.calibrateLookout = function() {
   console.log("Calibrating!")
-  console.log(config)
-  console.log(transformedFaceData)
+  console.log("Before calibration:", JSON.stringify(config, null, 2));
+  console.log("FaceData snapshot:", JSON.stringify(transformedFaceData, null, 2));
+
 
   config.pitch.default = -transformedFaceData.rotation.pitch;
   config.yaw.default = -transformedFaceData.rotation.yaw;
@@ -164,5 +165,8 @@ window.calibrateLookout = function() {
   config.leftRight.default = -transformedFaceData.position.leftRight;
   config.forwardBackward.default = -transformedFaceData.position.forwardBackward;
   config.upDown.default = -transformedFaceData.position.upDown;
+
+  console.log("After calibration:", JSON.stringify(config, null, 2));
+
 }
 lookoutUi.addButton("Calibrate", "calibrateLookout");
