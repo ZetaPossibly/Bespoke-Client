@@ -1,4 +1,4 @@
-print("Loaded!")
+console.log("Loaded!")
 const baseUrl = "https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/heads/dev/src/*";
 const getUrl = (path) => `${baseUrl.replace("*", path)}`;
 
