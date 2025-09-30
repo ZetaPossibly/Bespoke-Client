@@ -264,7 +264,7 @@ window.BUIM = class {
   //Note: The defaultValue should always be a string, and ALL LOCALSTORAGE VALUES ARE STRINGS. This means that checkbox values, for instance, will be either "true" or "false".
   //Adds an item to the menu. Options: description: String, a very short description;  lsName: String, the name used for localStorage retrieval/storage (also the id name), will be automatically prefixed by the prefix;  type: any of the standard HTML input types;  level: Integer, the indentation of the item, where 0 is no indentation;  defaultValue: Self explanatory, the value if the item was not set or was reset
   addItem(description, lsName, type, level, defaultValue) {
-    console.log(`Adding ${type}... ${text} (${lsName})`)
+    console.log(`Adding ${type}... ${defaultValue} (${lsName})`)
     let idName = this.prefix + lsName;
     this.defaults.push([idName, defaultValue, type == "checkbox"]); //Checkboxes are... "special." (elem.value doesn't work on them, they require elem.checked)
     
@@ -279,7 +279,7 @@ window.BUIM = class {
 
   //Adds a button to the menu. Options: title: String, the button's title; fn: A function to be run when the button is clicked
   addButton(title, fn, options) {
-    console.log(`Adding Button... ${text}`)
+    console.log(`Adding Button... ${title}`)
     this.html += DESIGN.HTML.button(this.prefix, title, options, fn)
     this.updateHTML();
     //document.getElementById(this.prefix + title).onclick = fn;
