@@ -1,3 +1,4 @@
+print("Loaded!")
 const baseUrl = "https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/refs/heads/dev/src/*";
 const getUrl = (path) => `${baseUrl.replace("*", path)}`;
 
@@ -63,7 +64,9 @@ async function addCode(url, place = "body") {
 
 async function loadScripts(scripts) {
     for (const [name, url] of Object.entries(scripts)) {
+        console.log(`Loading "${name}" ...`)
         await addCode(url);
+        console.log("Loaded!")
     }
 }
 

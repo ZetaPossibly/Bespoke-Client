@@ -1,4 +1,5 @@
 let aircraft_codes = new Map();
+console.log("Loading Aircraft Codes...")
 fetch("https://www.geo-fs.com/geofs.php")
   .then((res) => res.text())
   .then((data) => {
@@ -8,7 +9,7 @@ fetch("https://www.geo-fs.com/geofs.php")
     while ((match = aircraftRegex.exec(data)) !== null) {
       aircraft_codes.set(match[1], match[2].trim());
     }
-    console.log(aircraft_codes);
+    console.log("Done!")
     wt_init();
   });
 function wt_init() {
@@ -121,3 +122,4 @@ function wt_init() {
     1,
   ); //   addItem(description, lsName, type, level, defaultValue)
 }
+console.log("WT Labels are setup!")

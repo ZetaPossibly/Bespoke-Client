@@ -18,6 +18,7 @@
             const scriptText = await response.text();
             const scriptEl = document.createElement("script");
             scriptEl.textContent = scriptText;
+            console.log("Loading mod-loader...")
             document.body.appendChild(scriptEl)
         } catch (err) {
             alert("Fetch error:", err);
