@@ -156,7 +156,7 @@ const lookoutUi = new window.BUIM("Lookout", "lookout");
 window.calibrateLookout = function() {
   console.log("Calibrating!")
   console.log(config)
-  console.log(transformFaceData)
+  console.log(transformedFaceData)
 
   config.pitch.default = -transformedFaceData.rotation.pitch - config.pitch.default ;
   config.yaw.default = -transformedFaceData.rotation.yaw - config.yaw.default;
