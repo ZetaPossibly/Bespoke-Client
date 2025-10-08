@@ -123,6 +123,7 @@ function label_init() {
     disableDepthTestDistance: 50000,
   };
 
+  let was_enabled = localStorage.getItem("advLabelsEnabled")
   setInterval(function () {
     if (localStorage.getItem("advLabelsWT") === "true") {
       colourConfig = {
@@ -154,6 +155,15 @@ function label_init() {
       multiplayer.stop();
       multiplayer.start();
     }
+
+    if (was_enabled !== localStorage.getItem("advLabelsEnabled")) {
+      multiplayer.stop();
+      multiplayer.start();
+    }
+
+    was_enabled = localStorage.getItem("advLabelsEnabled")
+
+
   }, 500)
 
   const labUi = new window.BUIM("Advanced Labels", "advLabels");
