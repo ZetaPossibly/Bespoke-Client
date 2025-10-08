@@ -57,6 +57,11 @@ function label_init() {
             o.icon && o.icon.setLocation(n);
           }
         } else {
+          let checkbox = document.getElementById("advLabelsWT")
+          if (checkbox.checked === true) {
+            checkbox.checked = false
+            checkbox.dispatchEvent(new Event("change"))
+          }
           o.model ? (o.elapsedTime = o.elapsedTime + e,
             (a = M3.add(o.referenceCoord, M3.scale(o.correctedVelocity, o.elapsedTime)))[3] = fixAngle(a[3]),
             a[4] = fixAngle(a[4]),
@@ -65,6 +70,7 @@ function label_init() {
             o.referencePoint.lla = o.currentInterpolatedCoord,
             o.model.setPositionOrientationAndScale([a[0], a[1], a[2]], [a[3], a[4], a[5]])) : a = o.lastUpdate.co;
           var n = [a[0], a[1], a[2]];
+          o.label.text = o.callsign
           geofs.api.setLabelPosition(o.label, n),
             o.icon && o.icon.setLocation(n)
         }
