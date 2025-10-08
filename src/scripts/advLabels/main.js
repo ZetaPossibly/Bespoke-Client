@@ -58,26 +58,6 @@ function label_init() {
 
           geofs.api.setLabelPosition(o.label, n);
           o.icon && o.icon.setLocation(n);
-
-        // let to_add = "";
-        // const suffix =
-        //     "\n" +
-        //     aircraft_codes.get(c.aircraft.toString()) +
-        //     " \n \n " +
-        //     (c.distance / 1000).toFixed(2) +
-        //     " km"; // Math.round(c.lastUpdate.st.as).toString() + "knots"
-        // if (aircraftMRP && c.distance < 50000) {
-        //     to_add = " (" + aircraftMRP + ")" + suffix;
-        // }
-        // if (c.distance < 50000) {
-        //     to_add = suffix;
-        // }
-        // var e = [d[0], d[1], d[2] - 10];
-        // c.label.outlineWidth = 5;
-        // c.label.font = "11pt Trebuchet MS";
-        // c.label.text = c.callsign + to_add;
-        // geofs.api.setLabelPosition(c.label, e);
-        // c.icon && c.icon.setLocation(e);
         }
       }
     } catch (r) {
@@ -116,7 +96,7 @@ function label_init() {
     }
   };
 
-  const colourConfig = {
+  let colourConfig = {
     font: "12pt Trebuchet MS",
     style: Cesium.LabelStyle.FILL_AND_OUTLINE,
     horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
