@@ -17,16 +17,17 @@ function label_init() {
     try {
       for (var t in (multiplayer.lastResponse &&
         (multiplayer.updateUsers(multiplayer.lastResponse.users),
-        (multiplayer.lastResponse = null)),
-      multiplayer.nextUpdateTime &&
+          (multiplayer.lastResponse = null)),
+        multiplayer.nextUpdateTime &&
         Date.now() > multiplayer.nextUpdateTime &&
         multiplayer.sendUpdate(),
-      multiplayer.visibleUsers)) {
+        multiplayer.visibleUsers)) {
         var a,
           o = multiplayer.visibleUsers[t];
         o.currentServerTime = multiplayer.getServerTime();
-        if (!(o.callsign === "Foo" || o.callsign === "")) {
-          o.model
+        if (localStorage.getItem("advLabelsEnabled") === "true") {
+          if (!(o.callsign === "Foo" || o.callsign === "")) {
+            o.model
             ? ((o.elapsedTime = o.elapsedTime + e),
               ((a = M3.add(
                 o.referenceCoord,
@@ -43,21 +44,29 @@ function label_init() {
             )
             : (a = o.lastUpdate.co);
 
+            var n = [a[0], a[1], a[2]];
+            var to_add = "\n" +
+              aircraft_codes.get(o.aircraft.toString()) +
+              " \n \n " +
+              (o.distance / 1000).toFixed(2) +
+              " km";;
+
+            o.label.text = o.callsign + to_add;
+
+            geofs.api.setLabelPosition(o.label, n);
+            o.icon && o.icon.setLocation(n);
+          }
+        } else {
+          o.model ? (o.elapsedTime = o.elapsedTime + e,
+            (a = M3.add(o.referenceCoord, M3.scale(o.correctedVelocity, o.elapsedTime)))[3] = fixAngle(a[3]),
+            a[4] = fixAngle(a[4]),
+            a[5] = fixAngle(a[5]),
+            o.currentInterpolatedCoord = a,
+            o.referencePoint.lla = o.currentInterpolatedCoord,
+            o.model.setPositionOrientationAndScale([a[0], a[1], a[2]], [a[3], a[4], a[5]])) : a = o.lastUpdate.co;
           var n = [a[0], a[1], a[2]];
-          var to_add = "\n" +
-            aircraft_codes.get(o.aircraft.toString()) +
-            " \n \n " +
-            (o.distance / 1000).toFixed(2) +
-            " km";;
-          
-            if (localStorage.getItem("advLabelWT") === "true") {
-              
-            }
-
-          o.label.text = o.callsign + to_add;
-
-          geofs.api.setLabelPosition(o.label, n);
-          o.icon && o.icon.setLocation(n);
+          geofs.api.setLabelPosition(o.label, n),
+            o.icon && o.icon.setLocation(n)
         }
       }
     } catch (r) {
@@ -87,7 +96,7 @@ function label_init() {
     }
     if (
       ((this.label = geofs.api.addLabel(e, null, multiplayer.labelOptions[t])),
-      multiplayer.iconOptions[t])
+        multiplayer.iconOptions[t])
     ) {
       var a = Object.assign({}, multiplayer.iconOptions[t], {
         pixelOffset: new Cesium.Cartesian2(-(4 * e.length + 5), 0),
@@ -108,7 +117,7 @@ function label_init() {
     disableDepthTestDistance: 50000,
   };
 
-  setInterval(function() {
+  setInterval(function () {
     if (localStorage.getItem("advLabelsWT") === "true") {
       colourConfig = {
         font: "12pt Trebuchet MS",
@@ -133,9 +142,9 @@ function label_init() {
         outlineWidth: 4,
       }
     }
-    if (multiplayer.labelOptions.default.font != colourConfig.font){
-      multiplayer.labelOptions.default = {...colourConfig};
-      multiplayer.labelOptions.premium = {...colourConfig};
+    if (multiplayer.labelOptions.default.font != colourConfig.font) {
+      multiplayer.labelOptions.default = { ...colourConfig };
+      multiplayer.labelOptions.premium = { ...colourConfig };
       multiplayer.stop();
       multiplayer.start();
     }

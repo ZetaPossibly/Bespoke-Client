@@ -24,7 +24,7 @@ let config = {
     sensitivity: 200,
   },
   leftRight: {
-    enabled: true,
+    enabled: false,
     min: -0.5,
     max: 0.5,
     default: 0,
@@ -32,7 +32,7 @@ let config = {
     sensitivity: 1,
   },
   forwardBackward: {
-    enabled: true,
+    enabled: false,
     min: -0.5,
     max: 0.5,
     default: 0,
@@ -40,7 +40,7 @@ let config = {
     sensitivity: 0,
   },
   upDown: {
-    enabled: true,
+    enabled: false,
     min: -0.1,
     max: 0.2,
     default: 0,
