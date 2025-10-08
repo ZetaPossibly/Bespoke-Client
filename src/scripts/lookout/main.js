@@ -191,4 +191,4 @@ window.calibrateLookout = function() {
 };
 
 // lookoutUi.addButton("Calibrate", "calibrateLookout");
-lookoutUi.addItem("Sensitivity", "Senitivity", "input", 0, 1)
+lookoutUi.addItem("Sensitivity", "Sensitivity", "input", 0, 1)

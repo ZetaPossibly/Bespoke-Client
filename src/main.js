@@ -33,7 +33,7 @@ const helpers = {
 const scripts = {
     lookout: getUrl("scripts/lookout/main.js"),
     chatFix: getUrl("scripts/chatFix/main.js"),
-    wtLabel: getUrl("scripts/wtLabels/main.js")
+    advLabels: getUrl("scripts/advLabels/main.js")
 }
 
 const data = {

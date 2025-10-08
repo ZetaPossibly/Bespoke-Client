@@ -10,9 +10,9 @@ fetch("https://www.geo-fs.com/geofs.php")
       aircraft_codes.set(match[1], match[2].trim());
     }
     console.log("Done!")
-    wt_init();
+    label_init();
   });
-function wt_init() {
+function label_init() {
   multiplayer.update = function (e) {
     try {
       for (var t in (multiplayer.lastResponse &&
@@ -39,24 +39,45 @@ function wt_init() {
               o.model.setPositionOrientationAndScale(
                 [a[0], a[1], a[2]],
                 [a[3], a[4], a[5]]
-              ))
+              )
+            )
             : (a = o.lastUpdate.co);
 
           var n = [a[0], a[1], a[2]];
-          var to_add = "";
-          if (o.distance < 50000) {
-            to_add =
-              "\n" +
-              aircraft_codes.get(o.aircraft.toString()) +
-              " \n \n " +
-              (o.distance / 1000).toFixed(2) +
-              " km";
-          }
+          var to_add = "\n" +
+            aircraft_codes.get(o.aircraft.toString()) +
+            " \n \n " +
+            (o.distance / 1000).toFixed(2) +
+            " km";;
+          
+            if (localStorage.getItem("advLabelWT") === "true") {
+              
+            }
 
           o.label.text = o.callsign + to_add;
 
           geofs.api.setLabelPosition(o.label, n);
           o.icon && o.icon.setLocation(n);
+
+        // let to_add = "";
+        // const suffix =
+        //     "\n" +
+        //     aircraft_codes.get(c.aircraft.toString()) +
+        //     " \n \n " +
+        //     (c.distance / 1000).toFixed(2) +
+        //     " km"; // Math.round(c.lastUpdate.st.as).toString() + "knots"
+        // if (aircraftMRP && c.distance < 50000) {
+        //     to_add = " (" + aircraftMRP + ")" + suffix;
+        // }
+        // if (c.distance < 50000) {
+        //     to_add = suffix;
+        // }
+        // var e = [d[0], d[1], d[2] - 10];
+        // c.label.outlineWidth = 5;
+        // c.label.font = "11pt Trebuchet MS";
+        // c.label.text = c.callsign + to_add;
+        // geofs.api.setLabelPosition(c.label, e);
+        // c.icon && c.icon.setLocation(e);
         }
       }
     } catch (r) {
@@ -79,7 +100,7 @@ function wt_init() {
   };
 
   multiplayer.User.prototype.addCallsign = function (e, t) {
-    if (localStorage.getItem("wtLabelsEnabled") === "true") {
+    if (localStorage.getItem("advLabelsEnabled") === "true") {
       if (e == "Foo" || e == "") {
         return;
       }
@@ -102,24 +123,51 @@ function wt_init() {
     verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
     eyeOffset: new Cesium.Cartesian3(0, 0, 0),
     fillColor: Cesium.Color.fromCssColorString("#ab3b35ff"),
-    outlineColor: localStorage.getItem("wtLabelsOutline" === "true")
-      ? Cesium.Color.BLACK
-      : Cesium.Color.TRANSPARENT,
+    outlineColor: Cesium.Color.TRANSPARENT,
     outlineWidth: 1,
     disableDepthTestDistance: 50000,
   };
-  multiplayer.labelOptions.default = colourConfig;
-  multiplayer.labelOptions.premium = colourConfig;
 
-  multiplayer.stop();
-  multiplayer.start();
+  setInterval(function() {
+    if (localStorage.getItem("advLabelsWT") === "true") {
+      colourConfig = {
+        font: "12pt Trebuchet MS",
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        eyeOffset: new Cesium.Cartesian3(0, 0, 0),
+        fillColor: Cesium.Color.fromCssColorString("#ab3b35ff"),
+        outlineColor: Cesium.Color.TRANSPARENT,
+        outlineWidth: 1,
+        disableDepthTestDistance: 50000,
+      }
+    } else {
+      colourConfig = {
+        font: "bold 12pt sans-serif",
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        eyeOffset: new Cesium.Cartesian3(0, 6, 0),
+        fillColor: Cesium.Color.fromCssColorString("#00597B"),
+        outlineColor: Cesium.Color.WHITE,
+        outlineWidth: 4,
+      }
+    }
+    if (multiplayer.labelOptions.default.font != colourConfig.font){
+      multiplayer.labelOptions.default = {...colourConfig};
+      multiplayer.labelOptions.premium = {...colourConfig};
+      multiplayer.stop();
+      multiplayer.start();
+    }
+  }, 500)
 
-  const wtUi = new window.BUIM("War Thunder Styled Labels", "wtLabels");
-  wtUi.addItem(
-    "Enable Outline",
-    "outline",
+  const labUi = new window.BUIM("Advanced Labels", "advLabels");
+  labUi.addHeader(6, "**IMPORTANT!** Turn off advanced atmosphere or face unexpected rendering issues! Use Basic Mode if you want to use advanced atmosphere.")
+  labUi.addItem(
+    "WT Mode",
+    "WT",
     "checkbox",
     1,
-  ); //   addItem(description, lsName, type, level, defaultValue)
+  ); // addItem(description, lsName, type, level, defaultValue)
 }
-console.log("WT Labels are setup!")
+console.log("Labels are setup!")
