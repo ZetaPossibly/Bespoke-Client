@@ -69,10 +69,10 @@ const addCanvas = function (id) {
 const transformFaceData = function (faceData, config) {
   return config.enabled
     ? clampToWithinBounds(
-        faceData * config.sensitivity,
+        faceData * config.sensitivity * parseFloat(localStorage.getItem("lookoutSensitivity")),
         config.min,
         config.max
-      ) + config.default - config.calib
+      )// + config.default - config.calib
     : config.default; // return the resting, "default" values, if not enabled
 };
 
@@ -190,4 +190,5 @@ window.calibrateLookout = function() {
   console.log("TransformedFaceData reset:", JSON.stringify(transformedFaceData, null, 2));
 };
 
-lookoutUi.addButton("Calibrate", "calibrateLookout");
+// lookoutUi.addButton("Calibrate", "calibrateLookout");
+lookoutUi.addItem("Sensitivity", "Senitivity", "input", 0, 1)
