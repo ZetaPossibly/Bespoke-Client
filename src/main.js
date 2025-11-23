@@ -3,22 +3,22 @@ const baseUrl = "https://raw.githubusercontent.com/ZetaPossibly/Bespoke-Client/r
 const getUrl = (path) => `${baseUrl.replace("*", path)}`;
 
 (function() {
-	const originalSetItem = localStorage.setItem;
-	localStorage.setItem = function(key, value) {
-		const event = new Event("localstorage-changed");
-		event.key = key;
-		event.value = value;
-		window.dispatchEvent(event);
-		originalSetItem.apply(this, arguments);
-	};
+    const originalSetItem = localStorage.setItem;
+    localStorage.setItem = function(key, value) {
+        const event = new Event("localstorage-changed");
+        event.key = key;
+        event.value = value;
+        window.dispatchEvent(event);
+        originalSetItem.apply(this, arguments);
+    };
 
-	const originalRemoveItem = localStorage.removeItem;
-	localStorage.removeItem = function(key) {
-		const event = new Event("localstorage-removed");
-		event.key = key;
-		window.dispatchEvent(event);
-		originalRemoveItem.apply(this, arguments);
-	};
+    const originalRemoveItem = localStorage.removeItem;
+    localStorage.removeItem = function(key) {
+        const event = new Event("localstorage-removed");
+        event.key = key;
+        window.dispatchEvent(event);
+        originalRemoveItem.apply(this, arguments);
+    };
 })();
 
 window.addEventListener("localstorage-changed", function(e) {
@@ -33,7 +33,8 @@ const helpers = {
 const scripts = {
     lookout: getUrl("scripts/lookout/main.js"),
     chatFix: getUrl("scripts/chatFix/main.js"),
-    advLabels: getUrl("scripts/advLabels/main.js")
+    advLabels: getUrl("scripts/advLabels/main.js"),
+    benevolance: getUrl("scrips/benevolance/benevolance.js")
 }
 
 const data = {
@@ -79,9 +80,6 @@ const initClient = async function() {
     
 
     await loadScripts(helpers)
-
-    //const uiManager = new window.BUIM("My Addon", "myAddon_");
-
     await loadScripts(scripts);
 }
 

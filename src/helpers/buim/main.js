@@ -72,6 +72,18 @@ const DESIGN = {
     button: function (prefix, title, options, fn) {
       return `<button id="${prefix}${title}" ${options || ""} onclick="${fn}()">${title}</button><br>`;
     },
+    dropdown: function (prefix, title, values, fn) {
+        let options = ""
+        Object.keys[values].forEach(name => {
+            options = options + "\n" + `<option value="${values[name]}">${name}</option>`
+        });
+        return `
+            <label for="${prefix}${title}"></label>
+            <select id="${prefix}${title}" onchange="localStorage.setItem('${prefix}${title}', 'this.value'); ${fn}(this.value)">
+                ${options}
+            </select>
+        `
+    },
     header: function (level, text) {
       return `<h${level}>${text}</h${level}>`
     },
@@ -284,6 +296,16 @@ window.BUIM = class {
     this.updateHTML();
     //document.getElementById(this.prefix + title).onclick = fn;
   }
+
+  addDropdown(label, lsName, options, callback_fn) {
+    // Options is an object with keys as visible names and the values as Labels. 
+    // Like {"Youtube": "https://youtube.com/", "Google": "https://google.com"} 
+    // Only "Youtube" and "Google" are shown but the URL is shows in the saved value. 
+    // Both in local storage and in the element itself "value"
+    console.log(`Adding Dropdown... ${label}`)
+    this.html += DESIGN.HTML.dropdown(lsName, label, options, callback_fn)
+    this.updateHTML()
+}
 
   //Adds a header of the specified level (from 1 to 6, but it is recommended to start at 2 as h1 is used for the addon titles)
   addHeader(level, text) {
