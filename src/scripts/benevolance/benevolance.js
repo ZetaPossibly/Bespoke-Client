@@ -67,13 +67,13 @@
     }
 
 
+    let prefix = "benevolance"
+    let benevolanceUi = new window.BUIM("Benevolance", prefix)
+
     geofs.api.map._map._fadeAnimated = false
     geofs.api.map._map.options.maxZoom = 19
     geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset") || "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
     geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
-
-    let prefix = "benevolance"
-    let benevolanceUi = new window.BUIM("Benevolance", prefix)
 
     mapTilesets = {
         "CartoDB Dark": "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
