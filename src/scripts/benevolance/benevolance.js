@@ -72,7 +72,6 @@
 
     geofs.api.map._map._fadeAnimated = false
     geofs.api.map._map.options.maxZoom = 19
-    geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset") || "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
     geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
 
     mapTilesets = {
@@ -81,13 +80,16 @@
         "OSM": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     }
 
+    geofs.api.map._map._layers["25"]._url = mapTilesets["CartoDB Dark"]
+
+
     benevolanceUi.addDropdown("Map Tileset (move the map to update)", prefix+"Tileset", mapTilesets)
     document.getElementById(prefix+"Tileset").addEventListener("change", function() {
         geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset")
     })
 
 
-    benevolanceUi.addItem("Remove Foos", "RemoveFoos", "checkbox", 1)
+    benevolanceUi.addItem("Remove Foos", "RemoveFoos", "checkbox", "true")
     document.getElementById(prefix+"RemoveFoos").addEventListener("change", function() {
         multiplayer.stop()
         multiplayer.start()  
