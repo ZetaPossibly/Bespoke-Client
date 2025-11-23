@@ -74,7 +74,7 @@ const DESIGN = {
     },
     dropdown: function (prefix, title, values, fn) {
         let options = ""
-        Object.keys[values].forEach(name => {
+        Object.keys(values).forEach(name => {
             options = options + "\n" + `<option value="${values[name]}">${name}</option>`
         });
         return `
