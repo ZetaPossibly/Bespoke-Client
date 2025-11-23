@@ -72,15 +72,15 @@ async function loadScripts(scripts) {
 }
 
 const initClient = async function() {
-    if (typeof geofs === 'undefined' || typeof ui === 'undefined') {
+    if (typeof geofs === 'undefined' || typeof ui === 'undefined' || typeof multiplayer === 'undefined' || typeof geofs.api.map === 'undefined') {
         setTimeout(initClient, 1000);
         return;
     }
     alert("IMPORTANT NOTICE! This script(Bespoke Client) does headtracking using your webcam when in cockpit camera mode. You may be prompted to allow camera access when you enter cockpit camera mode, this is required for the head-tracking. This is done locally and is under development. It is not perfect. Ensure your face is well-lit or you will encounter poor accuracy and jittering. ")
-    
-
-    await loadScripts(helpers)
-    await loadScripts(scripts);
+    setTimeout(async () => {
+        await loadScripts(helpers)
+        await loadScripts(scripts);
+    }, 1000);
 }
 
 initClient()
