@@ -72,14 +72,14 @@ const DESIGN = {
     button: function (prefix, title, options, fn) {
       return `<button id="${prefix}${title}" ${options || ""} onclick="${fn}()">${title}</button><br>`;
     },
-    dropdown: function (prefix, title, values, fn) {
+    dropdown: function (prefix, title, values) {
         let options = ""
         Object.keys(values).forEach(name => {
             options = options + "\n" + `<option value="${values[name]}">${name}</option>`
         });
         return `
             <label for="${prefix}${title}"></label>
-            <select id="${prefix}${title}" onchange="localStorage.setItem('${prefix}${title}', 'this.value'); ${fn}(this.value)">
+            <select id="${prefix}${title}" onchange="localStorage.setItem('${prefix}${title}', 'this.value');">
                 ${options}
             </select>
         `
@@ -297,13 +297,13 @@ window.BUIM = class {
     //document.getElementById(this.prefix + title).onclick = fn;
   }
 
-  addDropdown(label, lsName, options, callback_fn) {
+  addDropdown(label, lsName, options) {
     // Options is an object with keys as visible names and the values as Labels. 
     // Like {"Youtube": "https://youtube.com/", "Google": "https://google.com"} 
     // Only "Youtube" and "Google" are shown but the URL is shows in the saved value. 
     // Both in local storage and in the element itself "value"
     console.log(`Adding Dropdown... ${label}`)
-    this.html += DESIGN.HTML.dropdown(lsName, label, options, callback_fn)
+    this.html += DESIGN.HTML.dropdown(lsName, label, options)
     this.updateHTML()
 }
 

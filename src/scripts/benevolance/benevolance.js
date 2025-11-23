@@ -82,7 +82,9 @@
         "OSM": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     }
 
-    benevolanceUi.addDropdown("Map Tileset", "Tileset", mapTilesets, function(url) {
-        geofs.api.map._map._layers["25"]._url = url
+    benevolanceUi.addDropdown("Map Tileset", "Tileset", mapTilesets)
+    document.getElementById(prefix+"Tileset").addEventListener("change", function() {
+        let selectedTileset = this.value
+        geofs.api.map._map._layers["25"]._url = mapTilesets[selectedTileset]
     })
 })();
