@@ -82,7 +82,6 @@
         "OSM": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     }
 
-    label, lsName, options
     benevolanceUi.addDropdown("Map Tileset", prefix+"Tileset", mapTilesets)
     document.getElementById(prefix+"Tileset").addEventListener("change", function() {
         let selectedTileset = this.value
