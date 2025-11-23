@@ -79,7 +79,7 @@ const DESIGN = {
         });
         return `
             <label for="${lsName}">${title}</label>
-            <select id="${lsName}" onchange="localStorage.setItem('${lsName}', 'this.value');">
+            <select id="${lsName}" onchange="localStorage.setItem('${lsName}', this.value);">
                 ${options}
             </select>
         `
