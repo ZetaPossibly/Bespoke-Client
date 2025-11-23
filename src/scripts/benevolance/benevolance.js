@@ -87,7 +87,7 @@
     })
 
 
-    benevolanceUi.addItem("Remove Foos", prefix+"RemoveFoos", "checkbox", 1)
+    benevolanceUi.addItem("Remove Foos", "RemoveFoos", "checkbox", 1)
     document.getElementById(prefix+"RemoveFoos").addEventListener("change", function() {
         multiplayer.stop()
         multiplayer.start()  
