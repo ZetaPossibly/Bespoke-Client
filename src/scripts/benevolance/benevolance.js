@@ -82,7 +82,8 @@
         "OSM": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     }
 
-    benevolanceUi.addDropdown("Map Tileset", "Tileset", mapTilesets)
+    label, lsName, options
+    benevolanceUi.addDropdown("Map Tileset", prefix+"Tileset", mapTilesets)
     document.getElementById(prefix+"Tileset").addEventListener("change", function() {
         let selectedTileset = this.value
         geofs.api.map._map._layers["25"]._url = mapTilesets[selectedTileset]

@@ -72,14 +72,14 @@ const DESIGN = {
     button: function (prefix, title, options, fn) {
       return `<button id="${prefix}${title}" ${options || ""} onclick="${fn}()">${title}</button><br>`;
     },
-    dropdown: function (prefix, title, values) {
+    dropdown: function (lsName, title, values) {
         let options = ""
         Object.keys(values).forEach(name => {
             options = options + "\n" + `<option value="${values[name]}">${name}</option>`
         });
         return `
-            <label for="${prefix}${title}"></label>
-            <select id="${prefix}${title}" onchange="localStorage.setItem('${prefix}${title}', 'this.value');">
+            <label for="${lsName}">${title}</label>
+            <select id="${lsName}" onchange="localStorage.setItem('${lsName}', 'this.value');">
                 ${options}
             </select>
         `
