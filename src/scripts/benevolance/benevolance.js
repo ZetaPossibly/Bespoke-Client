@@ -69,8 +69,7 @@
 
     geofs.api.map._map._fadeAnimated = false
     geofs.api.map._map.options.maxZoom = 19
-    geofs.api.map._map._layers["25"]._url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    geofs.api.map._map._layers["25"]._url = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+    geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset") || "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
     geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
 
     let prefix = "benevolance"
@@ -82,8 +81,44 @@
         "OSM": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     }
 
-    benevolanceUi.addDropdown("Map Tileset", prefix+"Tileset", mapTilesets)
+    benevolanceUi.addDropdown("Map Tileset (move the map to update)", prefix+"Tileset", mapTilesets)
     document.getElementById(prefix+"Tileset").addEventListener("change", function() {
         geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset")
     })
+
+
+    benevolanceUi.addItem("Remove Foos", prefix+"RemoveFoos", "checkbox", 1)
+    document.getElementById(prefix+"RemoveFoos").addEventListener("change", function() {
+        multiplayer.stop()
+        multiplayer.start()  
+    })
+
+    // localStorage.getItem(prefix+"RemoveFoos") === "true"
+    geofs.map.addPlayerMarker = function(e, t, a) {
+        if (!ui.playerMarkers[e]) {
+            var o = {
+                coords: [0, 0],
+                icon: geofs.api.map.getIcon(t, geofs.map.icons[t || "blue"]),
+                label: a || "-"
+            };
+            if (localStorage.getItem(prefix+"RemoveFoos") === "true") {
+                if (o.label !== "-" && multiplayer.users[e].callsign !== "Foo" && multiplayer.users[e].callsign !== "") {
+                    ui.playerMarkers[e] = new geofs.api.map.marker(o)
+                }
+            } else {
+                ui.playerMarkers[e] = new geofs.api.map.marker(o)
+            }
+        }
+
+        if (localStorage.getItem(prefix+"RemoveFoos") === "true") {
+            if (o.label !== "-" && multiplayer.users[e].callsign !== "Foo" && multiplayer.users[e].callsign !== "") {
+                return geofs.api.map._map && this.mapActive && ui.playerMarkers[e].addToMap(),
+                ui.playerMarkers[e]
+            }
+        } else {
+            return geofs.api.map._map && this.mapActive && ui.playerMarkers[e].addToMap(),
+            ui.playerMarkers[e]
+        }
+    }
+
 })();
