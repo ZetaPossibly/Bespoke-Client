@@ -84,7 +84,6 @@
 
     benevolanceUi.addDropdown("Map Tileset", prefix+"Tileset", mapTilesets)
     document.getElementById(prefix+"Tileset").addEventListener("change", function() {
-        let selectedTileset = this.value
-        geofs.api.map._map._layers["25"]._url = mapTilesets[selectedTileset]
+        geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset")
     })
 })();
