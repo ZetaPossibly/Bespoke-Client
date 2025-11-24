@@ -6,7 +6,6 @@ const DESIGN = {
         background: linear-gradient(to bottom, black 0%, rgb(0 0 0 / 0%));
         backdrop-filter: blur(10px);
         font-family: Suisse, sans-serif;
-        letter-spacing: -0.1em;
         }
         .buim-header {
         padding: 10px;
