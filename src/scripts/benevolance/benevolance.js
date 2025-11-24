@@ -82,9 +82,9 @@
 
     geofs.api.map._map._layers["25"]._url = mapTilesets["CartoDB Dark"]
 
-
     benevolanceUi.addDropdown("Map Tileset (move the map to update)", prefix+"Tileset", mapTilesets)
-    document.getElementById(prefix+"Tileset").addEventListener("change", function() {
+    window._buim.waitForElm(`#${prefix}Tileset`).then((elm) => {
+        document.getElementById(prefix+"Tileset").addEventListener("change", function() {
         geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset")
     })
 
