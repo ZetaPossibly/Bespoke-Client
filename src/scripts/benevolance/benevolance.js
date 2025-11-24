@@ -85,8 +85,9 @@
     benevolanceUi.addDropdown("Map Tileset (move the map to update)", prefix+"Tileset", mapTilesets)
     window._buim.waitForElm(`#${prefix}Tileset`).then((elm) => {
         document.getElementById(prefix+"Tileset").addEventListener("change", function() {
-        geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset")
-    })
+            geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset")
+        })
+    });
 
 
     benevolanceUi.addItem("Remove Foos", "RemoveFoos", "checkbox", "true")
