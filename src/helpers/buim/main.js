@@ -49,7 +49,7 @@ const DESIGN = {
                         checked="${
                           localStorage.getItem(prefix + "Enabled") == "true"
                         }" 
-                        onchange="localStorage.setItem('${prefix}Enabled', this.checked)" 
+                        onchange="localStorage.setItem('${prefix}Enabled', this.checked; window.dispatchEvent(new Event('${prefix}Toggled')))" 
                         onclick="event.stopPropagation()"
                         style="width: 30px; height: 30px;">  
                 <h4 style="display: inline-block; margin: 15px; color: white;">${name}</h1>
@@ -81,6 +81,15 @@ const DESIGN = {
             <select id="${lsName}" onchange="localStorage.setItem('${lsName}', this.value);">
                 ${options}
             </select>
+            <script>
+                // Set initial selected value from localStorage (if it exists)
+                (function() {
+                    var saved = localStorage.getItem("${lsName}");
+                    if (saved !== null) {
+                        document.getElementById("${lsName}").value = saved;
+                    }
+                })();
+            </script>
         `
     },
     header: function (level, text) {
