@@ -1,38 +1,58 @@
 const DESIGN = {
   CSS: `
         .buim-dropdown {
-        margin: 5px;
-        border-radius: 4px;
-        background: linear-gradient(to bottom, black 0%, rgb(0 0 0 / 0%));
-        backdrop-filter: blur(10px);
-        font-family: Suisse, sans-serif;
+            margin: 5px;
+            border-radius: 4px;
+            background: linear-gradient(to bottom, black 0%, rgb(0 0 0 / 0%));
+            backdrop-filter: blur(10px);
+            font-family: Suisse, sans-serif;
         }
         .buim-header {
-        padding: 10px;
-        cursor: pointer;
-        user-select: none;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+            padding: 10px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .buim-header:hover {
-        background: rgba(255, 255, 255, 0.1);
+            .buim-header:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
         .buim-content {
-        display: none;
-        padding: 10px;
-        border-top: 1px solid #444;
+            display: none;
+            padding: 10px;
+            border-top: 1px solid #444;
         }
         .buim-content-visible {
-        display: block !important;
+            display: block !important;
         }
         #buim_gamenu {
-          padding: 0;
-          cursor: pointer; /* optional */
+            padding: 0;
+            cursor: pointer; /* optional */
         }
 
         #buim_gamenu img {
-          width: 30px;
+            width: 30px;
+        }
+        
+        .buim-menu {
+            position: absolute;
+            left: 0.625rem;
+            top: 8.5rem;
+            width: 350px;
+            min-width: 150px;
+            background: rgba(0,0,0,0.75);
+            z-index: 9999;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            padding: 6px 12px;
+            backdrop-filter: blur(5px);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+            cursor: pointer;
+            opacity: 1;
+            transition: opacity 0.3s;
         }
     `,
   HTML: {
@@ -177,37 +197,6 @@ window.BUIM = class {
     this.htmlIndex = window._buim.allHTML.length; //This instance's index in the allHTML array
   }
 
-  // Called automatically, initializes the button, menu div, and a couple of other things
-  _initialize() {
-    window._buim.isGMenuInit = true; //Prevent other instances from initializing this window
-    var bottomDiv = document.getElementsByClassName("geofs-ui-bottom")[0];
-    window._buim.btn = document.createElement("div");
-    window._buim.btn.id = "buim_gamenu";
-    window._buim.btn.classList = "mdl-button mdl-js-button geofs-f-standard-ui";
-    window._buim.btn.style.padding = "0px";
-    bottomDiv.appendChild(window._buim.btn);
-    window._buim.btn.innerHTML = `<img src="https://raw.githubusercontent.com/tylerbmusic/GPWS-files_geofs/refs/heads/main/s_icon.png" style="width: 30px">`;
-    document.getElementById("buim_gamenu").onclick = () => {
-      window._buim.toggleMenu();
-    };
-    if (!window._buim.menuDiv) {
-      window._buim.menuDiv = document.createElement("div");
-      window._buim.menuDiv.id = "ggamergguyDiv"; // tribute to the chad
-      window._buim.menuDiv.classList =
-        "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
-      window._buim.menuDiv.style.zIndex = "100";
-      window._buim.menuDiv.style.position = "fixed";
-      window._buim.menuDiv.style.width = "30%";
-      window._buim.menuDiv.style.background = "rgba(0, 0, 0, 0.5)";
-      document.body.appendChild(window._buim.menuDiv);
-
-      // Add styles for BUIM dropdowns
-      const style = document.createElement("style");
-      style.textContent = DESIGN.CSS;
-      document.head.appendChild(style);
-    }
-  }
-
   initialize() {
     window._buim.isGMenuInit = true; //Prevent other instances from initializing this window
     var bottomDiv = document.getElementsByClassName("geofs-ui-bottom")[0];
@@ -216,15 +205,15 @@ window.BUIM = class {
     window._buim.btn.classList = "mdl-button mdl-js-button geofs-f-standard-ui";
     window._buim.btn.style.padding = "0px";
     bottomDiv.appendChild(window._buim.btn);
-    window._buim.btn.innerHTML = `<img src="https://raw.githubusercontent.com/tylerbmusic/GPWS-files_geofs/refs/heads/main/s_icon.png" style="width: 30px">`;
+    window._buim.btn.innerHTML = DESIGN.HTML.openBuimBtn;
     document.getElementById("buim_gamenu").onclick = () => {
       window._buim.toggleMenu();
     };
     if (!window._buim.menuDiv) {
       window._buim.menuDiv = document.createElement("div");
-      window._buim.menuDiv.id = "ggamergguyDiv"; // tribute to the chad
-      window._buim.menuDiv.classList =
-        "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
+      window._buim.menuDiv.id = "ggamergguyDiv"; // tribute to the chad who made the skeleton that BUIM is made on
+      //window._buim.menuDiv.classList = "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
+      window._buim.menuDiv.classList = "buim-menu";
       window._buim.menuDiv.style.zIndex = "100";
       window._buim.menuDiv.style.position = "fixed";
       window._buim.menuDiv.style.width = "30%";
