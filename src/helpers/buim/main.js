@@ -49,7 +49,8 @@ const DESIGN = {
                         checked="${
                           localStorage.getItem(prefix + "Enabled") == "true"
                         }" 
-                        onchange="localStorage.setItem('${prefix}Enabled', this.checked; window.dispatchEvent(new Event('${prefix}Toggled')))" 
+                        onchange="localStorage.setItem('${prefix}Enabled', this.checked); 
+                                window.dispatchEvent(new Event('${prefix}Toggled'));" 
                         onclick="event.stopPropagation()"
                         style="width: 30px; height: 30px;">  
                 <h4 style="display: inline-block; margin: 15px; color: white;">${name}</h1>
@@ -98,7 +99,7 @@ const DESIGN = {
     openBuimBtn: `
       <div id="bottomDiv">
         <div id="buim_gamenu" class="mdl-button mdl-js-button geofs-f-standard-ui">
-            <img src="https://raw.githubusercontent.com/tylerbmusic/GPWS-files_geofs/refs/heads/main/s_icon.png">
+            BESPOKE
         </div>
       </div>
     `
