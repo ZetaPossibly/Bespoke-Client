@@ -5,7 +5,6 @@ const DESIGN = {
             border-radius: 4px;
             background: linear-gradient(to bottom, black 0%, rgb(0 0 0 / 0%));
             backdrop-filter: blur(10px);
-            font-family: Suisse, sans-serif;
         }
         .buim-header {
             padding: 10px;
@@ -15,7 +14,7 @@ const DESIGN = {
             justify-content: center;
             align-items: center;
         }
-            .buim-header:hover {
+        .buim-header:hover {
             background: rgba(255, 255, 255, 0.1);
         }
         .buim-content {
@@ -30,15 +29,11 @@ const DESIGN = {
             padding: 0;
             cursor: pointer; /* optional */
         }
-
-        #buim_gamenu img {
-            width: 30px;
-        }
         
         .buim-menu {
             position: absolute;
             left: 0.625rem;
-            top: 8.5rem;
+            top: 3.125rem;
             width: 350px;
             min-width: 150px;
             background: rgba(0,0,0,0.75);
@@ -215,9 +210,6 @@ window.BUIM = class {
       //window._buim.menuDiv.classList = "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
       window._buim.menuDiv.classList = "buim-menu";
       window._buim.menuDiv.style.zIndex = "100";
-      window._buim.menuDiv.style.position = "fixed";
-      window._buim.menuDiv.style.width = "30%";
-      window._buim.menuDiv.style.background = "rgba(0, 0, 0, 0.5)";
       document.body.appendChild(window._buim.menuDiv);
 
       // Add styles for BUIM dropdowns
