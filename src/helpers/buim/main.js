@@ -14,6 +14,7 @@ const DESIGN = {
             display: flex;
             justify-content: center;
             align-items: center;
+            text-align: left;
         }
         .buim-header:hover {
             background: rgba(255, 255, 255, 0.1);
@@ -48,6 +49,7 @@ const DESIGN = {
             cursor: pointer;
             opacity: 1;
             transition: opacity 0.3s;
+            text-align: center;
         }
     `,
   HTML: {
@@ -68,7 +70,7 @@ const DESIGN = {
                                 window.dispatchEvent(new Event('${prefix}Toggled'));" 
                         onclick="event.stopPropagation()"
                         style="width: 30px; height: 30px;">  
-                <h4 style="display: inline-block; margin: 15px; color: white;">${name}</h1>
+                <h5 style="display: inline-block; margin: 15px; color: white;">${name}</h5>
               </div>
               <div id="${prefix}Content" class="buim-content">
                 ${html}
@@ -107,6 +109,7 @@ const DESIGN = {
                     }
                 })();
             </script>
+            <br>
         `
     },
     header: function (level, text) {
