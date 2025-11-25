@@ -20,7 +20,7 @@ const DESIGN = {
         .buim-content {
             display: none;
             padding: 10px;
-            border-top: 1px solid #444;
+            border-top: 1px solid #444444ff;
         }
         .buim-content-visible {
             display: block !important;
@@ -38,7 +38,7 @@ const DESIGN = {
             min-width: 150px;
             background: rgba(0,0,0,0.75);
             z-index: 9999;
-            font-family: 'Courier New', monospace;
+            font-family: 'Courier New', monospace !important;
             font-size: 13px;
             padding: 6px 12px;
             backdrop-filter: blur(5px);
