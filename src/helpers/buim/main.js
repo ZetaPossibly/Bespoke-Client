@@ -8,6 +8,7 @@ const DESIGN = {
         }
         .buim-header {
             padding: 10px;
+            margin: 5px;
             cursor: pointer;
             user-select: none;
             display: flex;
@@ -38,7 +39,6 @@ const DESIGN = {
             min-width: 150px;
             background: rgba(0,0,0,0.75);
             z-index: 9999;
-            font-family: 'Courier New', monospace !important;
             font-size: 13px;
             padding: 6px 12px;
             backdrop-filter: blur(5px);
@@ -72,6 +72,7 @@ const DESIGN = {
               </div>
               <div id="${prefix}Content" class="buim-content">
                 ${html}
+                <br>
                 <button id="${prefix}Reset">RESET</button>
               </div>
             </div>
