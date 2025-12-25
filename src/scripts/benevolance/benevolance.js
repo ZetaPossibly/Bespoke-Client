@@ -61,7 +61,7 @@
             }
         }
         //geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset") || mapTilesets["CartoDB Dark"]
-        geofs.api.map._map._layers["25"].setUrl(localStorage.getItem(localStorage.getItem(prefix+"Tileset") || mapTilesets["CartoDB Dark"]))
+        geofs.api.map._map._layers["25"].setUrl(localStorage.getItem(prefix+"Tileset") || mapTilesets["CartoDB Dark"])
     }
 
     // Loop through all CSS rules in the sheet
