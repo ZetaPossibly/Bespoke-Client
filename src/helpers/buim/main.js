@@ -214,6 +214,7 @@ window.BUIM = class {
       //window._buim.menuDiv.classList = "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
       window._buim.menuDiv.classList = "buim-menu";
       window._buim.menuDiv.style.zIndex = "100";
+      window._buim.menuDiv.style.display = "none"
       document.body.appendChild(window._buim.menuDiv);
 
       // Add styles for BUIM dropdowns
