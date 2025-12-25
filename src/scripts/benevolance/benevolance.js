@@ -60,8 +60,8 @@
                 rule.style.setProperty("colour", "#d2d2d2ff")
             }
         }
-        geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset") || mapTilesets["CartoDB Dark"]
-        
+        //geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset") || mapTilesets["CartoDB Dark"]
+        geofs.api.map._map._layers["25"].setUrl(localStorage.getItem(localStorage.getItem(prefix+"Tileset") || mapTilesets["CartoDB Dark"]))
     }
 
     // Loop through all CSS rules in the sheet
@@ -101,7 +101,8 @@
                     rule.style.setProperty(propertyName, defaultValue);
                 }
             }
-            geofs.api.map._map._layers["25"]._url = mapTilesets["Default GeoFS"]
+            //geofs.api.map._map._layers["25"]._url = mapTilesets["Default GeoFS"]
+            geofs.api.map._map._layers["25"].setUrl(mapTilesets["Default GeoFS"])
         } else {
             apply_styles()
         }
@@ -110,7 +111,8 @@
     benevolanceUi.addDropdown("Map Tileset (move the map to update)", prefix+"Tileset", mapTilesets)
     window._buim.waitForElm(`#${prefix}Tileset`).then((elm) => {
         document.getElementById(prefix+"Tileset").addEventListener("change", function() {
-            geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset")
+            //geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset")
+            geofs.api.map._map._layers["25"].setUrl(localStorage.getItem(prefix+"Tileset"))
         })
     });
 
