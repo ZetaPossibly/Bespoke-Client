@@ -34,7 +34,9 @@ const scripts = {
     lookout: getUrl("scripts/lookout/main.js"),
     chatFix: getUrl("scripts/chatFix/main.js"),
     advLabels: getUrl("scripts/advLabels/main.js"),
-    benevolance: getUrl("scripts/benevolance/benevolance.js")
+    benevolance: getUrl("scripts/benevolance/benevolance.js"),
+
+    slew: getUrl("scripts/external/slew/slew.js")
 }
 
 const data = {
