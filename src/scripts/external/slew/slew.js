@@ -1,4 +1,4 @@
-const slewMenu = new window.BUIM("Chat Fix", prefix);
+const slewMenu = new window.BUIM("Slew Mode", "slew");
 slewMenu.addItem("Horizontal Speed (in degrees/frame): ", "LatSpeed", 'number', 0, '0.0001');
 slewMenu.addItem("Vertical Speed (in feet/frame): ", "VertSpeed", 'number', 0, '2');
 slewMenu.addItem("Rotate Amount (in degrees): ", "RotAmount", 'number', 0, '2');
