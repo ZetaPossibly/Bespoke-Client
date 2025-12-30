@@ -38,6 +38,12 @@ const DESIGN = {
 
             outline: none;
             transition: border-color 120ms ease, background 120ms ease;
+
+            box-sizing: border-box;
+        }
+
+        .buim-content input:hover {
+            border-color: rgba(255, 255, 255, 0.25);
         }
 
         .buim-content-visible {
