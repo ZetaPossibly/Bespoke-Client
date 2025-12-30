@@ -24,6 +24,22 @@ const DESIGN = {
             padding: 10px;
             border-top: 1px solid #444444ff;
         }
+
+        .buim-content input {
+            background: rgba(255, 255, 255, 0.04);
+            color: #eaeaea;
+
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 6px;
+
+            padding: 6px 8px;
+            font-size: 0.9rem;
+            line-height: 1.2;
+
+            outline: none;
+            transition: border-color 120ms ease, background 120ms ease;
+        }
+
         .buim-content-visible {
             display: block !important;
         }
@@ -52,7 +68,10 @@ const DESIGN = {
             opacity: 1;
             transition: opacity 0.3s;
             text-align: center;
+            scrollbar-color: slategrey transparent;
+            scrollbar-width: thin;
         }
+
     `,
   HTML: {
     optionsMenuTitle: `
