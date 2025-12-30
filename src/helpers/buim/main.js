@@ -38,6 +38,8 @@ const DESIGN = {
             top: 3.125rem;
             width: 350px;
             min-width: 150px;
+            max-height: 70vh;
+            overflow-y: auto;
             background: rgba(0,0,0,0.75);
             z-index: 9999;
             font-size: 13px;
