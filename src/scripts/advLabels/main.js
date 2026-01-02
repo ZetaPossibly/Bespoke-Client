@@ -13,7 +13,14 @@
       console.log("Done!");
       label_init();
     });
+
   function label_init() {
+    const labUi = new window.BUIM("Advanced Labels", "advLabels");
+    labUi.addHeader(
+      6,
+      "**IMPORTANT!** Turn off advanced atmosphere or face unexpected rendering issues! Use Basic Mode if you want to use advanced atmosphere."
+    );
+    labUi.addItem("WT Mode", "WT", "checkbox", 1); // addItem(description, lsName, type, level, defaultValue)
     multiplayer.update = function (e) {
       try {
         for (var t in (multiplayer.lastResponse &&
@@ -177,12 +184,6 @@
       was_enabled = labUi.getItem("Enabled");
     }, 500);
 
-    const labUi = new window.BUIM("Advanced Labels", "advLabels");
-    labUi.addHeader(
-      6,
-      "**IMPORTANT!** Turn off advanced atmosphere or face unexpected rendering issues! Use Basic Mode if you want to use advanced atmosphere."
-    );
-    labUi.addItem("WT Mode", "WT", "checkbox", 1); // addItem(description, lsName, type, level, defaultValue)
   }
   console.log("Labels are setup!");
 })();
