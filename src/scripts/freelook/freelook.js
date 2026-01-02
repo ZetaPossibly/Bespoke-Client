@@ -11,7 +11,7 @@
     freeLookUi.addItem("X Sensitivity: ", "xSens", 'number', 0, '0.2');
     freeLookUi.addItem("Y Sensitivity: ", "ySens", 'number', 0, '0.2');
 
-    freeLookUi.addKBShortcut("Use Freelook: ", "hotkey", 1, 'z', function () { geofs.camera.freelook_hotkey = localStorage.getItem; });
+    freeLookUi.addKBShortcut("Use Freelook: ", "hotkey", 1, 'z', function () { geofs.camera.freelook_hotkey = localStorage.getItem(prefix+"hotkey"); });
 
 
     // Free look feature defaults for follow camera mode
