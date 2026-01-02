@@ -140,6 +140,10 @@
                                     upDown: transformFaceData(detectState.y, config.upDown),
                                 },
                             };
+                            geofs.camera.freeLookBase = [
+                                transformedFaceData.rotation.yaw,
+                                transformedFaceData.rotation.pitch,
+                            ]
 
                             applyTransformsToCamera(transformedFaceData);
                         },
