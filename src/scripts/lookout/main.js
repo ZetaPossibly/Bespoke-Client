@@ -78,7 +78,7 @@
     };
 
     const applyTransformsToCamera = function (data) {
-        if (controls.mouseOnHold) {
+        if (geofs.camera.freeLookEnabled) {
             return;
         }
         geofs.camera.setRotation(

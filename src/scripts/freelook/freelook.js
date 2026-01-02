@@ -15,7 +15,6 @@
 
 
     // Free look feature defaults for follow camera mode
-    // Set geofs.camera.freeLookEnabled = true to activate free look in follow mode
     geofs.camera.freeLookEnabled = false;
     geofs.camera.freeLookOffset = [0, 0]; // [heading offset, tilt offset] for free look adjustments
     geofs.camera.freeLookBase = [
@@ -28,7 +27,7 @@
     geofs.camera.reset_animating = false;
 
     // Threshold for considering the camera reset "close enough"
-    geofs.camera.RESET_THRESHOLD = 0.01;
+    geofs.camera.RESET_THRESHOLD = 0.05;
 
     let isCursorHidden = false;
 
