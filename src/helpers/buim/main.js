@@ -202,7 +202,7 @@ window._buim.toggleMenu = function () {
             currLS[1]
                 ? (document.getElementById(currLS[0]).checked =
                     localStorage.getItem(currLS[0]) == "true")
-                : (document.getElementById(currLS[0]).value = this.getItem(
+                : (document.getElementById(currLS[0]).value = localStorage.getItem(
                     currLS[0]
                 ));
         }
