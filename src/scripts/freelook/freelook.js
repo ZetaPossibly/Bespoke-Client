@@ -5,7 +5,7 @@
     //        It will not overwrite them, and both the freelook and the other action 
     //        will occur simultaneously.
 
-    let hotkey = "z"; // Replace with your choice if you prefer!
+    let hotkey = geofs.camera.freelook_hotkey || "z"; // Replace with your choice if you prefer!
     const prefix = "freelook"
     const freeLookUi = new window.BUIM("Freelook", prefix);
     freeLookUi.addItem("X Sensitivity: ", "xSens", 'number', 0, '0.2');
@@ -43,7 +43,7 @@
 
     // Event listener for key down - detect when Z is pressed
     window.addEventListener("keydown", (e) => {
-        if (e.key.toLowerCase() === hotkey) {
+        if (e.key.toLowerCase() === geofs.camera.freelook_hotkey && document.activeElement.tagName.toLowerCase() !== "input" && document.activeElement.tagName.toLowerCase() !== "textarea") {
             if (geofs.camera.zKeyPressed === false && !geofs.camera.reset_animating) {
                 geofs.camera.freeLookBase = [
                     geofs.camera.currentDefinition.orientations.current[0],
@@ -67,7 +67,7 @@
 
     // Event listener for key up - detect when Z is released
     window.addEventListener("keyup", (e) => {
-        if (e.key.toLowerCase() === hotkey) {
+        if (e.key.toLowerCase() === geofs.camera.freelook_hotkey) {
             geofs.camera.reset_animating = true;
             geofs.camera.zKeyPressed = false;
             geofs.camera.freeLookEnabled = false;
