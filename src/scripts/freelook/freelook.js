@@ -118,8 +118,8 @@
 
     // Add an event listener for mousemove to update free look offsets when enabled
     window.addEventListener("mousemove", (e) => {
-        const xSens = parseFloat(freeLookUi.getItemValue("xSens"));
-        const ySens = parseFloat(freeLookUi.getItemValue("ySens"));
+        const xSens = parseFloat(freeLookUi.getItem("xSens"));
+        const ySens = parseFloat(freeLookUi.getItem("ySens"));
         if (geofs.camera.freeLookEnabled) {
             geofs.camera.freeLookOffset[0] +=
                 e.movementX * xSens;
