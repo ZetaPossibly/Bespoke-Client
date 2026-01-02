@@ -440,9 +440,8 @@ window.BUIM = class {
             }')">${e.ctrlKey ? "Ctrl+" : ""}${e.shiftKey ? "Shift+" : ""}${e.altKey ? "Alt+" : ""
             }${e.metaKey ? "Meta+" : ""}${e.code}</button><br>`;
         this.updateHTML();
-        function t(event) {
-            //I used 't' for the function name for no particular reason
-            let tester = this.getItem(idName).split("&,");
+        const t = (event) => {
+            let tester = localStorage.getItem(idName).split("&,");
             let oldSave = tester.length == 1;
             if (
                 (event.key == tester[0] || event.code == tester[0]) &&
@@ -455,7 +454,7 @@ window.BUIM = class {
                 console.log(event.key + " pressed");
                 fn();
             }
-        }
+        };
         document.addEventListener("keydown", t);
     }
 
