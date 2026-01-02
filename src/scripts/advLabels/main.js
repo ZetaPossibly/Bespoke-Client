@@ -26,7 +26,7 @@
           var a,
             o = multiplayer.visibleUsers[t];
           o.currentServerTime = multiplayer.getServerTime();
-          if (localStorage.getItem("advLabelsEnabled") === "true") {
+          if (labUi.getItem("Enabled") === "true") {
             if (!(o.callsign === "Foo" || o.callsign === "")) {
               o.model
                 ? ((o.elapsedTime = o.elapsedTime + e),
@@ -104,7 +104,7 @@
     };
 
     multiplayer.User.prototype.addCallsign = function (e, t) {
-      if (localStorage.getItem("advLabelsEnabled") === "true") {
+      if (labUi.getItem("Enabled") === "true") {
         if (e == "Foo" || e == "") {
           return;
         }
@@ -136,9 +136,9 @@
       disableDepthTestDistance: 50000,
     };
 
-    let was_enabled = localStorage.getItem("advLabelsEnabled");
+    let was_enabled = labUi.getItem("Enabled");
     setInterval(function () {
-      if (localStorage.getItem("advLabelsWT") === "true") {
+      if (labUi.getItem("WT") === "true") {
         colourConfig = {
           font: "12pt Trebuchet MS",
           style: Cesium.LabelStyle.FILL_AND_OUTLINE,
@@ -169,12 +169,12 @@
         multiplayer.start();
       }
 
-      if (was_enabled !== localStorage.getItem("advLabelsEnabled")) {
+      if (was_enabled !== labUi.getItem("Enabled")) {
         multiplayer.stop();
         multiplayer.start();
       }
 
-      was_enabled = localStorage.getItem("advLabelsEnabled");
+      was_enabled = labUi.getItem("Enabled");
     }, 500);
 
     const labUi = new window.BUIM("Advanced Labels", "advLabels");
