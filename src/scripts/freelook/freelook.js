@@ -1,139 +1,137 @@
 //  !>---[ This script is under the CC BY-NC-ND Licence. Creative Commons Attribution-NonCommercial-NoDerivs. ]---<!
 (function () {
+  /// NOTE: Ensure that this key does not conflict with any other keybinds.
+  //        It will not overwrite them, and both the freelook and the other action
+  //        will occur simultaneously.
 
-    /// NOTE: Ensure that this key does not conflict with any other keybinds. 
-    //        It will not overwrite them, and both the freelook and the other action 
-    //        will occur simultaneously.
+  const prefix = "freelook";
+  const freeLookUi = new window.BUIM("Freelook", prefix);
+  freeLookUi.addItem("X Sensitivity: ", "xSens", "number", 0, "0.2");
+  freeLookUi.addItem("Y Sensitivity: ", "ySens", "number", 0, "0.2");
 
-    let hotkey = geofs.camera.freelook_hotkey || "z"; // Replace with your choice if you prefer!
-    const prefix = "freelook"
-    const freeLookUi = new window.BUIM("Freelook", prefix);
-    freeLookUi.addItem("X Sensitivity: ", "xSens", 'number', 0, '0.2');
-    freeLookUi.addItem("Y Sensitivity: ", "ySens", 'number', 0, '0.2');
+  freeLookUi.addKBShortcut("Use Freelook: ", "hotkey", 1, "z", function () {
+    if (
+      document.activeElement.tagName.toLowerCase() !== "input" &&
+      document.activeElement.tagName.toLowerCase() !== "textarea"
+    ) {
+      if (geofs.camera.zKeyPressed === false && !geofs.camera.reset_animating) {
+        geofs.camera.freeLookBase = [
+          geofs.camera.currentDefinition.orientations.current[0],
+          geofs.camera.currentDefinition.orientations.current[1],
+        ];
+        console.log("Logged!");
+        console.log(geofs.camera.freeLookBase);
+      }
 
-    freeLookUi.addKBShortcut("Use Freelook: ", "hotkey", 1, 'z', function () { geofs.camera.freelook_hotkey = localStorage.getItem(prefix+"hotkey"); });
+      geofs.camera.reset_animating = false;
+      geofs.camera.zKeyPressed = true;
 
-
-    // Free look feature defaults for follow camera mode
-    geofs.camera.freeLookEnabled = false;
-    geofs.camera.freeLookOffset = [0, 0]; // [heading offset, tilt offset] for free look adjustments
-    geofs.camera.freeLookBase = [
-        geofs.camera.currentDefinition.orientations.current[0],
-        geofs.camera.currentDefinition.orientations.current[1],
-    ];
-
-    // Track if the Z key is being pressed
-    geofs.camera.zKeyPressed = false;
-    geofs.camera.reset_animating = false;
-
-    // Threshold for considering the camera reset "close enough"
-    geofs.camera.RESET_THRESHOLD = 0.05;
-
-    let isCursorHidden = false;
-
-    // Create a style element
-    const style = document.createElement("style");
-    style.textContent = `.hide-cursor { cursor: none !important; }`;
-    document.head.appendChild(style);
-
-    function toggleCursor() {
-        isCursorHidden = !isCursorHidden;
-        document.body.classList.toggle("hide-cursor", isCursorHidden);
+      geofs.camera.freeLookEnabled = true;
+      controls.mouseOnHold = true;
+      if (!isCursorHidden) {
+        toggleCursor();
+      }
     }
+  });
 
-    // Event listener for key down - detect when Z is pressed
-    window.addEventListener("keydown", (e) => {
-        if (e.key.toLowerCase() === geofs.camera.freelook_hotkey && document.activeElement.tagName.toLowerCase() !== "input" && document.activeElement.tagName.toLowerCase() !== "textarea") {
-            if (geofs.camera.zKeyPressed === false && !geofs.camera.reset_animating) {
-                geofs.camera.freeLookBase = [
-                    geofs.camera.currentDefinition.orientations.current[0],
-                    geofs.camera.currentDefinition.orientations.current[1],
-                ];
-                console.log("Logged!");
-                console.log(geofs.camera.freeLookBase);
-            }
+  // Free look feature defaults for follow camera mode
+  geofs.camera.freeLookEnabled = false;
+  geofs.camera.freeLookOffset = [0, 0]; // [heading offset, tilt offset] for free look adjustments
+  geofs.camera.freeLookBase = [
+    geofs.camera.currentDefinition.orientations.current[0],
+    geofs.camera.currentDefinition.orientations.current[1],
+  ];
 
-            geofs.camera.reset_animating = false;
-            geofs.camera.zKeyPressed = true;
+  // Track if the Z key is being pressed
+  geofs.camera.zKeyPressed = false;
+  geofs.camera.reset_animating = false;
 
-            geofs.camera.freeLookEnabled = true;
-            controls.mouseOnHold = true
-            if (!isCursorHidden) {
-                toggleCursor()
-            }
+  // Threshold for considering the camera reset "close enough"
+  geofs.camera.RESET_THRESHOLD = 0.05;
 
-        }
-    });
+  let isCursorHidden = false;
 
-    // Event listener for key up - detect when Z is released
-    window.addEventListener("keyup", (e) => {
-        if (e.key.toLowerCase() === geofs.camera.freelook_hotkey) {
-            geofs.camera.reset_animating = true;
-            geofs.camera.zKeyPressed = false;
-            geofs.camera.freeLookEnabled = false;
-            controls.mouseOnHold = false
-            if (isCursorHidden) {
-                toggleCursor()
-            }
-        }
-    });
-    window.freelook_reset_speed = 0.25;
+  // Create a style element
+  const style = document.createElement("style");
+  style.textContent = `.hide-cursor { cursor: none !important; }`;
+  document.head.appendChild(style);
 
-    geofs.api.viewer.scene.preRender.addEventListener(() => {
-        if (geofs.camera.reset_animating === true) {
-            const currentHeading =
-                geofs.camera.currentDefinition.orientations.current[0];
-            const currentTilt = geofs.camera.currentDefinition.orientations.current[1];
-            const targetHeading = geofs.camera.freeLookBase[0];
-            const targetTilt = geofs.camera.freeLookBase[1];
+  function toggleCursor() {
+    isCursorHidden = !isCursorHidden;
+    document.body.classList.toggle("hide-cursor", isCursorHidden);
+  }
 
-            // Calculate new positions with lerp
-            const newHeading = geofs.perlin.lerp(
-                currentHeading,
-                targetHeading,
-                window.freelook_reset_speed,
-            );
-            const newTilt = geofs.perlin.lerp(
-                currentTilt,
-                targetTilt,
-                window.freelook_reset_speed,
-            );
+  // Event listener for key up - detect when Z is released
+  window.addEventListener("keyup", (e) => {
+    if (e.key.toLowerCase() === geofs.camera.freelook_hotkey) {
+      geofs.camera.reset_animating = true;
+      geofs.camera.zKeyPressed = false;
+      geofs.camera.freeLookEnabled = false;
+      controls.mouseOnHold = false;
+      if (isCursorHidden) {
+        toggleCursor();
+      }
+    }
+  });
+  window.freelook_reset_speed = 0.25;
 
-            // Apply the new camera position
-            geofs.camera.lookAround(newHeading, newTilt);
+  geofs.api.viewer.scene.preRender.addEventListener(() => {
+    if (geofs.camera.reset_animating === true) {
+      const currentHeading =
+        geofs.camera.currentDefinition.orientations.current[0];
+      const currentTilt =
+        geofs.camera.currentDefinition.orientations.current[1];
+      const targetHeading = geofs.camera.freeLookBase[0];
+      const targetTilt = geofs.camera.freeLookBase[1];
 
-            // Check if we're close enough to the target to stop animating
-            const isCloseEnough =
-                Math.abs(newHeading - targetHeading) < geofs.camera.RESET_THRESHOLD &&
-                Math.abs(newTilt - targetTilt) < geofs.camera.RESET_THRESHOLD;
+      // Calculate new positions with lerp
+      const newHeading = geofs.perlin.lerp(
+        currentHeading,
+        targetHeading,
+        window.freelook_reset_speed
+      );
+      const newTilt = geofs.perlin.lerp(
+        currentTilt,
+        targetTilt,
+        window.freelook_reset_speed
+      );
 
-            if (isCloseEnough) {
-                geofs.camera.reset_animating = false;
-                // Ensure we set exactly to the target
-                geofs.camera.lookAround(targetHeading, targetTilt);
-            }
-        }
-    });
+      // Apply the new camera position
+      geofs.camera.lookAround(newHeading, newTilt);
 
-    // Add an event listener for mousemove to update free look offsets when enabled
-    window.addEventListener("mousemove", (e) => {
-        const xSens = parseFloat(freeLookUi.getItem("xSens"));
-        const ySens = parseFloat(freeLookUi.getItem("ySens"));
-        if (geofs.camera.freeLookEnabled) {
-            geofs.camera.freeLookOffset[0] +=
-                e.movementX * xSens;
-            geofs.camera.freeLookOffset[1] +=
-                e.movementY * ySens * (geofs.camera.currentModeName === "cockpit" ? -1 : 1);
-            geofs.camera.lookAround(
-                geofs.camera.freeLookBase[0] + geofs.camera.freeLookOffset[0],
-                geofs.camera.freeLookBase[1] + geofs.camera.freeLookOffset[1],
-            );
-        } else {
-            geofs.camera.freeLookOffset = [0, 0];
-        }
-    });
+      // Check if we're close enough to the target to stop animating
+      const isCloseEnough =
+        Math.abs(newHeading - targetHeading) < geofs.camera.RESET_THRESHOLD &&
+        Math.abs(newTilt - targetTilt) < geofs.camera.RESET_THRESHOLD;
 
-    window.addEventListener("mousedown", (e) => {
+      if (isCloseEnough) {
         geofs.camera.reset_animating = false;
-    });
+        // Ensure we set exactly to the target
+        geofs.camera.lookAround(targetHeading, targetTilt);
+      }
+    }
+  });
+
+  // Add an event listener for mousemove to update free look offsets when enabled
+  window.addEventListener("mousemove", (e) => {
+    const xSens = parseFloat(freeLookUi.getItem("xSens"));
+    const ySens = parseFloat(freeLookUi.getItem("ySens"));
+    if (geofs.camera.freeLookEnabled) {
+      geofs.camera.freeLookOffset[0] += e.movementX * xSens;
+      geofs.camera.freeLookOffset[1] +=
+        e.movementY *
+        ySens *
+        (geofs.camera.currentModeName === "cockpit" ? -1 : 1);
+      geofs.camera.lookAround(
+        geofs.camera.freeLookBase[0] + geofs.camera.freeLookOffset[0],
+        geofs.camera.freeLookBase[1] + geofs.camera.freeLookOffset[1]
+      );
+    } else {
+      geofs.camera.freeLookOffset = [0, 0];
+    }
+  });
+
+  window.addEventListener("mousedown", (e) => {
+    geofs.camera.reset_animating = false;
+  });
 })();
