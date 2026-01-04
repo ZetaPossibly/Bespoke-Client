@@ -78,9 +78,6 @@
     };
 
     const applyTransformsToCamera = function (data) {
-        if (geofs.camera.freeLookEnabled) {
-            return;
-        }
         geofs.camera.setRotation(
             data.rotation.yaw,
             data.rotation.pitch,
@@ -125,6 +122,9 @@
                         maxFacesDetected: 1,
                         callbackReady: catchError,
                         callbackTrack: function (detectState) {
+                            if (geofs.camera.freeLookEnabled) {
+                                return;
+                            }
                             transformedFaceData = {
                                 rotation: {
                                     pitch: transformFaceData(-detectState.rx, config.pitch),

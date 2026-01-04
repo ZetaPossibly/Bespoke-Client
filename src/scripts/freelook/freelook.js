@@ -63,7 +63,7 @@
 
   // Event listener for key up - detect when Z is released
   window.addEventListener("keyup", (e) => {
-    if (e.key.toLowerCase() === geofs.camera.freelook_hotkey) {
+    if (e.key.toLowerCase() === freeLookUi.getItem("hotkey")) {
       geofs.camera.reset_animating = true;
       geofs.camera.zKeyPressed = false;
       geofs.camera.freeLookEnabled = false;
