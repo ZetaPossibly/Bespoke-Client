@@ -7,6 +7,7 @@
             default: 0,
             calib: 0,
             sensitivity: 175,
+            deadzone: 0
         },
         yaw: {
             enabled: true,
@@ -15,6 +16,7 @@
             default: 0,
             calib: 0,
             sensitivity: 200,
+            deadzone: 5
         },
         roll: {
             enabled: true,
@@ -23,6 +25,7 @@
             default: 0,
             calib: 0,
             sensitivity: 200,
+            deadzone: 5
         },
         leftRight: {
             enabled: false,
@@ -31,6 +34,7 @@
             default: 0,
             calib: 0,
             sensitivity: 1,
+            deadzone: 5
         },
         forwardBackward: {
             enabled: false,
@@ -39,6 +43,7 @@
             default: 0,
             calib: 0,
             sensitivity: 0,
+            deadzone: 0
         },
         upDown: {
             enabled: false,
@@ -47,6 +52,7 @@
             default: 0,
             calib: 0,
             sensitivity: 1.25,
+            deadzone: 1
         },
         algorithm: window.bespokeClient.data.jeelizModels.default,
     };
@@ -73,7 +79,7 @@
                 faceData * config.sensitivity * parseFloat(localStorage.getItem("lookoutSensitivity")),
                 config.min,
                 config.max
-            )// + config.default - config.calib
+            ) + config.default - config.calib
             : config.default; // return the resting, "default" values, if not enabled
     };
 
@@ -187,17 +193,17 @@
     window.calibrateLookout = function () {
         console.log("Calibrating!");
 
-        config.pitch.calib = -transformedFaceData.rotation.pitch;
-        config.yaw.calib = -transformedFaceData.rotation.yaw;
-        config.roll.calib = -transformedFaceData.rotation.roll;
-        config.leftRight.calib = -transformedFaceData.position.leftRight;
-        config.forwardBackward.calib = -transformedFaceData.position.forwardBackward;
-        config.upDown.calib = -transformedFaceData.position.upDown;
+        config.pitch.calib = -transformedFaceData.rotation.pitch + config.pitch.calib;
+        config.yaw.calib = -transformedFaceData.rotation.yaw + config.yaw.calib;
+        config.roll.calib = -transformedFaceData.rotation.roll + config.roll.calib;
+        config.leftRight.calib = -transformedFaceData.position.leftRight + config.leftRight.calib;
+        config.forwardBackward.calib = -transformedFaceData.position.forwardBackward + config.forwardBackward.calib;
+        config.upDown.calib = -transformedFaceData.position.upDown + config.upDown.calib;
 
         console.log("Config after calibration:", JSON.stringify(config, null, 2));
         console.log("TransformedFaceData reset:", JSON.stringify(transformedFaceData, null, 2));
     };
 
-    // lookoutUi.addButton("Calibrate", "calibrateLookout");
+    lookoutUi.addButton("Calibrate", "calibrateLookout");
     lookoutUi.addItem("Sensitivity", "Sensitivity", "input", 0, 1)
 })()

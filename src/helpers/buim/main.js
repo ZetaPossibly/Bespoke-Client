@@ -409,7 +409,7 @@ window.BUIM = class {
      * @param {string} defaultValue - The default value, prefferably in the format `keyCode`&,`ctrlKey`&,`shiftKey`&,`altKey`&,`metaKey` but also acceptable in the format `keyCode` or `key`.
      * @param {function} fn - The function to be executed when the shortcut is pressed
      */
-    addKBShortcut(description, lsName, level = 0, defaultValue, fn) {
+    addKBShortcut(description, lsName, level = 0, defaultValue, fn, keyUpFn) {
         let idName = this.prefix + lsName;
         this.defaults.push([idName, defaultValue, false]);
         if (this.getItem(lsName) == null) {
@@ -453,9 +453,17 @@ window.BUIM = class {
             ) {
                 console.log(event.key + " pressed");
                 fn();
+
+                if (event.type === "keyup") {
+                    if (!keyUpFn) return;
+                    
+                    console.log(event.key + " released");
+                    keyUpFn();
+                } 
             }
         };
         document.addEventListener("keydown", t);
+        if (keyUpFn) {document.addEventListener("keyup", t)}
     }
 
     changeShortcut(id) {

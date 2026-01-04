@@ -8,31 +8,52 @@
   const freeLookUi = new window.BUIM("Freelook", prefix);
   freeLookUi.addItem("X Sensitivity: ", "xSens", "number", 0, "0.2");
   freeLookUi.addItem("Y Sensitivity: ", "ySens", "number", 0, "0.2");
+  freeLookUi.addItem("Reset Speed: ", "ResetSpeed", "number", 0, "0.25");
 
-  freeLookUi.addKBShortcut("Use Freelook: ", "hotkey", 1, "z", function () {
-    if (
-      document.activeElement.tagName.toLowerCase() !== "input" &&
-      document.activeElement.tagName.toLowerCase() !== "textarea"
-    ) {
-      if (geofs.camera.zKeyPressed === false && !geofs.camera.reset_animating) {
-        geofs.camera.freeLookBase = [
-          geofs.camera.currentDefinition.orientations.current[0],
-          geofs.camera.currentDefinition.orientations.current[1],
-        ];
-        console.log("Logged!");
-        console.log(geofs.camera.freeLookBase);
+  freeLookUi.addKBShortcut(
+    "Use Freelook: ",
+    "hotkey",
+    1,
+    "z",
+    function () {
+      if (
+        document.activeElement.tagName.toLowerCase() !== "input" &&
+        document.activeElement.tagName.toLowerCase() !== "textarea"
+      ) {
+        if (
+          geofs.camera.zKeyPressed === false &&
+          !geofs.camera.reset_animating
+        ) {
+          geofs.camera.freeLookBase = [
+            geofs.camera.currentDefinition.orientations.current[0],
+            geofs.camera.currentDefinition.orientations.current[1],
+          ];
+          console.log("Logged!");
+          console.log(geofs.camera.freeLookBase);
+        }
+
+        geofs.camera.reset_animating = false;
+        geofs.camera.zKeyPressed = true;
+
+        geofs.camera.freeLookEnabled = true;
+        controls.mouseOnHold = true;
+        if (!isCursorHidden) {
+          toggleCursor();
+        }
       }
-
-      geofs.camera.reset_animating = false;
-      geofs.camera.zKeyPressed = true;
-
-      geofs.camera.freeLookEnabled = true;
-      controls.mouseOnHold = true;
-      if (!isCursorHidden) {
-        toggleCursor();
+    },
+    function () {
+      if (e.key.toLowerCase() === freeLookUi.getItem("hotkey")) {
+        geofs.camera.reset_animating = true;
+        geofs.camera.zKeyPressed = false;
+        geofs.camera.freeLookEnabled = false;
+        controls.mouseOnHold = false;
+        if (isCursorHidden) {
+          toggleCursor();
+        }
       }
     }
-  });
+  );
 
   // Free look feature defaults for follow camera mode
   geofs.camera.freeLookEnabled = false;
@@ -61,21 +82,9 @@
     document.body.classList.toggle("hide-cursor", isCursorHidden);
   }
 
-  // Event listener for key up - detect when Z is released
-  window.addEventListener("keyup", (e) => {
-    if (e.key.toLowerCase() === freeLookUi.getItem("hotkey")) {
-      geofs.camera.reset_animating = true;
-      geofs.camera.zKeyPressed = false;
-      geofs.camera.freeLookEnabled = false;
-      controls.mouseOnHold = false;
-      if (isCursorHidden) {
-        toggleCursor();
-      }
-    }
-  });
-  window.freelook_reset_speed = 0.25;
 
   geofs.api.viewer.scene.preRender.addEventListener(() => {
+    window.freelook_reset_speed = localStorage.getItem(prefix+"ResetSpeed") || 0.25;
     if (geofs.camera.reset_animating === true) {
       const currentHeading =
         geofs.camera.currentDefinition.orientations.current[0];
