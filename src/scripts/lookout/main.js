@@ -74,25 +74,30 @@
     };
 
     const transformFaceData = function (faceData, config) {
-        return config.enabled
-            ? clampToWithinBounds(
+        if (config.enabled) {
+            let transformed_value = clampToWithinBounds(
                 faceData * config.sensitivity * parseFloat(localStorage.getItem("lookoutSensitivity")),
                 config.min,
                 config.max
-            ) + config.default - config.calib
-            : config.default; // return the resting, "default" values, if not enabled
+            ) + config.default - config.calib;
+            if (Math.abs(transformed_value - config.default) < config.deadzone) {
+                transformed_value = config.default;
+            }
+            return transformed_value;
+        } 
+        return config.default;
     };
 
     const applyTransformsToCamera = function (data) {
         geofs.camera.setRotation(
-            data.rotation.yaw,
-            data.rotation.pitch,
-            data.rotation.roll
+            transformFaceData(data.rotation.yaw, config.yaw),
+            transformFaceData(data.rotation.pitch, config.pitch),
+            transformFaceData(data.rotation.roll, config.roll)
         );
         geofs.camera.setPosition(
-            data.position.leftRight,
-            data.position.forwardBackward,
-            data.position.upDown
+            transformFaceData(data.position.leftRight, config.leftRight),
+            transformFaceData(data.position.forwardBackward, config.forwardBackward),
+            transformFaceData(data.position.upDown, config.upDown)
         );
     };
 
@@ -133,17 +138,14 @@
                             }
                             transformedFaceData = {
                                 rotation: {
-                                    pitch: transformFaceData(-detectState.rx, config.pitch),
-                                    yaw: transformFaceData(-detectState.ry, config.yaw),
-                                    roll: transformFaceData(-detectState.rz, config.roll),
+                                    pitch: -detectState.rx,
+                                    yaw: -detectState.ry,
+                                    roll: -detectState.rz,
                                 },
                                 position: {
-                                    leftRight: transformFaceData(-detectState.x, config.leftRight),
-                                    forwardBackward: transformFaceData(
-                                        detectState.s,
-                                        config.forwardBackward
-                                    ),
-                                    upDown: transformFaceData(detectState.y, config.upDown),
+                                    leftRight: -detectState.x,
+                                    forwardBackward: detectState.s,
+                                    upDown: detectState.y,
                                 },
                             };
                             geofs.camera.freeLookBase = [
@@ -173,32 +175,15 @@
 
     const lookoutUi = new window.BUIM("Lookout", "lookout");
 
-    // window.calibrateLookout = function() {
-    //   console.log("Calibrating!")
-    //   console.log("Before calibration:", JSON.stringify(config, null, 2));
-    //   console.log("FaceData snapshot:", JSON.stringify(transformedFaceData, null, 2));
-
-
-    //   config.pitch.default = -transformedFaceData.rotation.pitch/2;
-    //   config.yaw.default = -transformedFaceData.rotation.yaw/2;
-    //   config.roll.default = -transformedFaceData.rotation.roll/2;
-    //   config.leftRight.default = -transformedFaceData.position.leftRight/2;
-    //   config.forwardBackward.default = -transformedFaceData.position.forwardBackward/2;
-    //   config.upDown.default = -transformedFaceData.position.upDown/2;
-
-    //   console.log("After calibration:", JSON.stringify(config, null, 2));
-
-    // }
-
     window.calibrateLookout = function () {
         console.log("Calibrating!");
 
-        config.pitch.calib = -transformedFaceData.rotation.pitch + config.pitch.calib;
-        config.yaw.calib = -transformedFaceData.rotation.yaw + config.yaw.calib;
-        config.roll.calib = -transformedFaceData.rotation.roll + config.roll.calib;
-        config.leftRight.calib = -transformedFaceData.position.leftRight + config.leftRight.calib;
-        config.forwardBackward.calib = -transformedFaceData.position.forwardBackward + config.forwardBackward.calib;
-        config.upDown.calib = -transformedFaceData.position.upDown + config.upDown.calib;
+        config.pitch.calib = -transformedFaceData.rotation.pitch
+        config.yaw.calib = -transformedFaceData.rotation.yaw
+        config.roll.calib = -transformedFaceData.rotation.roll
+        config.leftRight.calib = -transformedFaceData.position.leftRight
+        config.forwardBackward.calib = -transformedFaceData.position.forwardBackward
+        config.upDown.calib = -transformedFaceData.position.upDown
 
         console.log("Config after calibration:", JSON.stringify(config, null, 2));
         console.log("TransformedFaceData reset:", JSON.stringify(transformedFaceData, null, 2));
