@@ -84,7 +84,8 @@
 
 
   geofs.api.viewer.scene.preRender.addEventListener(() => {
-    window.freelook_reset_speed = localStorage.getItem(prefix+"ResetSpeed") || 0.25;
+    window.freelook_reset_speed =
+      localStorage.getItem(prefix + "ResetSpeed") || 0.25;
     if (geofs.camera.reset_animating === true) {
       const currentHeading =
         geofs.camera.currentDefinition.orientations.current[0];
@@ -97,12 +98,12 @@
       const newHeading = geofs.perlin.lerp(
         currentHeading,
         targetHeading,
-        window.freelook_reset_speed
+        window.freelook_reset_speed,
       );
       const newTilt = geofs.perlin.lerp(
         currentTilt,
         targetTilt,
-        window.freelook_reset_speed
+        window.freelook_reset_speed,
       );
 
       // Apply the new camera position
@@ -133,7 +134,7 @@
         (geofs.camera.currentModeName === "cockpit" ? -1 : 1);
       geofs.camera.lookAround(
         geofs.camera.freeLookBase[0] + geofs.camera.freeLookOffset[0],
-        geofs.camera.freeLookBase[1] + geofs.camera.freeLookOffset[1]
+        geofs.camera.freeLookBase[1] + geofs.camera.freeLookOffset[1],
       );
     } else {
       geofs.camera.freeLookOffset = [0, 0];

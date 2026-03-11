@@ -157,8 +157,8 @@
                         },
                     });
                     // JEELIZFACEFILTER.set_stabilizationSettings({
-                    //   translationFactorRange: [0.01, 0.02],
-                    //   rotationFactorRange: [0.05, 0.1],
+                    //   translationFactorRange: [0.002, 0.005],
+                    //   rotationFactorRange: [0.015, 0.1],
                     //   qualityFactorRange: [0.9, 0.98],
                     //   alphaRange: [0.05, 1.0]
                     // });

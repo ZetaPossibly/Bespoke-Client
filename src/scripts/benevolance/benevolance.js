@@ -1,67 +1,68 @@
 (function() {
-    const commonCSS = document.styleSheets[2];
-    const defaultCSS = document.styleSheets[2].cssRules; 
-
     let prefix = "benevolance"
     mapTilesets = {
         "CartoDB Dark": "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-        "Default GeoFS": "https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+        "Google": "https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+        "GeoFS": "https://data.geo-fs.com/osm/{z}/{x}/{y}.png",
         "OSM": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     }
     function apply_styles() {
-        for (let rule of commonCSS.cssRules) {
-            if (rule.selectorText === ".geofs-transparentUI .geofs-map-viewport") {
-                rule.style.setProperty("-webkit-mask-image", "linear-gradient(90deg, #ffffffe0 100%, #ffffff00 100%)");         // Change a property
-                rule.style.setProperty("backdrop-filter", "blur(10px)");
+        const style = document.createElement("style");
+        style.id = "BespokeTheme"
+        style.textContent = `
+            .geofs-transparentUI .geofs-map-viewport {
+                -webkit-mask-image: linear-gradient(90deg, #ffffffe0 100%, #ffffff00 100%);
+                backdrop-filter: blur(10px);
             }
 
-            if (rule.selectorText === ".geofs-transparentUI .geofs-ui-bottom") {
-                rule.style.setProperty("background-color", "#0000005e");         // Change a property
-                rule.style.setProperty("backdrop-filter", "blur(5px)");
+            .geofs-transparentUI .geofs-ui-bottom {
+                background-color: #0000005e;
+                backdrop-filter: blur(5px);
             }
 
-            // .geofs-expand-left.geofs-transparentUI .geofs-chat-messages
-            if (rule.selectorText === ".geofs-expand-left.geofs-transparentUI .geofs-chat-messages") {
-                rule.style.setProperty("left", "38%");         // Change a property
+            .geofs-expand-left.geofs-transparentUI .geofs-chat-messages {
+                left: 38%;
             }
 
-            // .geofs-transparentUI .geofs-list background: #0000003b; backdrop-filter:blur(5px)
-            if (rule.selectorText === ".geofs-transparentUI .geofs-list") {
-                rule.style.setProperty("background", "#0000003b");
-                rule.style.setProperty("backdrop-filter", "blur(5px)");
+            .geofs-transparentUI .geofs-list {
+                background: #0000003b;
+                backdrop-filter: blur(5px);
             }
 
-            if (rule.selectorText === ".geofs-transparentUI #Qantas94Heavy-ap") {
-                rule.style.setProperty("background-color", "#000000");
-                rule.style.setProperty("backdrop-filter", "blur(5px)");
+            .geofs-transparentUI #Qantas94Heavy-ap {
+                background-color: #000000;
+                backdrop-filter: blur(5px);
             }
 
-            // html colour white
-            if (rule.selectorText === "html") {
-                rule.style.setProperty("color", "rgb(255 255 255 / 87%)");
+            html {
+                color: rgb(255 255 255 / 87%);
             }
 
-            //.geofs-preferences fieldset box-shadow: 1px 1px 10px #00000085;
-            if (rule.selectorText === ".geofs-preferences fieldset") {
-                rule.style.setProperty("box-shadow", "none");
-                rule.style.setProperty("border", "none");
-                rule.style.setProperty("background", "transparent");
-                rule.style.setProperty("border-radius", "10px");
-            }
-            // .geofs-preferences legend colour white
-            if (rule.selectorText === ".geofs-preferences legend") {
-                rule.style.setProperty("color", "white");
-            }
-            if (rule.selectorText === ".mdl-button") {
-                rule.style.setProperty("color", "white")
+            .geofs-preferences fieldset {
+                box-shadow: none;
+                border: none;
+                background: transparent;
+                border-radius: 10px;
             }
 
-            if (rule.selectorText === ".slider label") {
-                rule.style.setProperty("colour", "#d2d2d2ff")
+            .geofs-preferences legend {
+                color: white;
             }
-        }
-        //geofs.api.map._map._layers["25"]._url = localStorage.getItem(prefix+"Tileset") || mapTilesets["CartoDB Dark"]
-        geofs.api.map._map._layers["25"].setUrl(localStorage.getItem(prefix+"Tileset") || mapTilesets["CartoDB Dark"])
+
+            .mdl-button {
+                color: white;
+            }
+
+            .slider label {
+                color: #d2d2d2ff;
+            }
+        `;
+
+        document.head.appendChild(style);
+
+        geofs.api.map._map._layers["25"].setUrl(
+            localStorage.getItem(prefix + "Tileset") || mapTilesets["CartoDB Dark"]
+        );
     }
 
     // Loop through all CSS rules in the sheet
@@ -83,25 +84,23 @@
 
     let benevolanceUi = new window.BUIM("Benevolance", prefix)
 
-    geofs.api.map._map._fadeAnimated = false
+    benevolanceUi.addItem("Fade in map tiles", "FadeMapTiles", "checkbox", "true")
+    let check_fade = function() {
+        if (localStorage.getItem(prefix+"FadeMapTilesEnabled") === "true") {
+            geofs.api.map._map._fadeAnimated = true
+        } else { geofs.api.map._map._fadeAnimated = false }
+    }
+    check_fade()
+    window.addEventListener(prefix+"FadeMapTiles", function() {
+        check_fade()
+    })
+
     geofs.api.map._map.options.maxZoom = 19
     geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
 
     window.addEventListener(prefix+"Toggled", function() {
-        // Reset all modified styles to default
         if (localStorage.getItem("benevolanceEnabled") === "false") {
-            for (let i = 0; i < commonCSS.cssRules.length; i++) {
-                const rule = commonCSS.cssRules[i];
-                const defaultRule = defaultCSS[i];
-
-                // Loop through all style properties of the rule
-                for (let j = 0; j < defaultRule.style.length; j++) {
-                    const propertyName = defaultRule.style[j];
-                    const defaultValue = defaultRule.style.getPropertyValue(propertyName);
-                    rule.style.setProperty(propertyName, defaultValue);
-                }
-            }
-            //geofs.api.map._map._layers["25"]._url = mapTilesets["Default GeoFS"]
+            document.getElementById("BespokeTheme")?.remove()
             geofs.api.map._map._layers["25"].setUrl(mapTilesets["Default GeoFS"])
         } else {
             apply_styles()
@@ -123,7 +122,6 @@
         multiplayer.start()  
     })
 
-    // localStorage.getItem(prefix+"RemoveFoos") === "true"
     geofs.map.addPlayerMarker = function(e, t, a) {
         if (!ui.playerMarkers[e]) {
             var o = {
