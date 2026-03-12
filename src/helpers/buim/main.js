@@ -411,10 +411,12 @@ window.BUIM = (() => {
      * @returns {function} Unsubscribe function.
      */
     on(event, fn) {
+        console.log("Listening on: " + `${this.#prefix}:${event}`)
       return _emitter.on(`${this.#prefix}:${event}`, fn);
     }
 
     emit(event, data) {
+        console.log("Emitting on: " + `${this.#prefix}:${event}`)
       _emitter.emit(`${this.#prefix}:${event}`, data);
     }
 
