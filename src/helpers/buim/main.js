@@ -337,7 +337,7 @@ window.BUIM = (() => {
     // ── Private helpers ──────────────────────────────────────────────────
 
     #key(lsName) {
-      return this.#prefix + lsName;
+      return this.#prefix + ":" + lsName;
     }
 
     #buildSection() {
