@@ -92,7 +92,7 @@
         document.head.appendChild(style);
 
         geofs.api.map._map._layers["25"].setUrl(
-            localStorage.getItem(prefix + "Tileset") || mapTilesets["CartoDB Dark"]
+            localStorage.getItem(prefix + ":MapStyle") || mapTilesets["CartoDB Dark"]
         );
     }
 
@@ -117,9 +117,9 @@
 
     geofs.api.map._map.options.maxZoom = 19
     geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
-    geofs.api.map._map._layers["25"].setUrl(mapTilesets[benevolanceUi.get("MapStyle")] || mapTilesets["GeoFS"])
+    geofs.api.map._map._layers["25"].setUrl(benevolanceUi.get("MapStyle") || mapTilesets["GeoFS"])
     benevolanceUi.on("MapStyle:change", (tileset) => {
-        geofs.api.map._map._layers["25"].setUrl(mapTilesets[tileset])
+        geofs.api.map._map._layers["25"].setUrl(tileset)
     })
 
     benevolanceUi.on("RemoveFoos:change", () => {
