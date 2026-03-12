@@ -9,9 +9,9 @@
         const style = document.createElement("style");
         style.id = "BespokeTheme"
         style.textContent = `
-        .geofs-transparentUI .geofs-map-viewport {
-            -webkit-mask-image: linear-gradient(90deg, #ffffffe0 100%, #ffffff00 100%);
-            backdrop-filter: blur(10px);
+            .geofs-transparentUI .geofs-map-viewport {
+                -webkit-mask-image: linear-gradient(90deg, #ffffffe0 100%, #ffffff00 100%);
+                backdrop-filter: blur(10px);
             }
             
             .geofs-transparentUI .geofs-ui-bottom {
@@ -79,6 +79,14 @@
                 backdrop-filter: blur(10px);
                 border-radius: 30px
             }
+            .leaflet-popup-content-wrapper {
+                background-color: #000000ca;
+                backdrop-filter: blur(10px);
+            }
+            .mdl-chip {
+                background-color: #000000ca;
+                backdrop-filter: blur(10px);
+            }
         `;
 
         document.head.appendChild(style);
@@ -109,16 +117,20 @@
 
     geofs.api.map._map.options.maxZoom = 19
     geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
-
+    geofs.api.map._map._layers["25"].setUrl(mapTilesets[benevolanceUi.get("MapStyle")] || mapTilesets["GeoFS"])
     benevolanceUi.on("MapStyle:change", (tileset) => {
-        geofs.api.map._map._layers["25"].setUrl(tileset)
+        geofs.api.map._map._layers["25"].setUrl(mapTilesets[tileset])
     })
 
-    benevolanceUi.on("RemoveFoos:toggle", () => {
+    benevolanceUi.on("RemoveFoos:change", () => {
         multiplayer.stop()
-        multiplayer.start()  
+        multiplayer.start()
     })
 
+    benevolanceUi.on("toggle", () => {
+        multiplayer.stop()
+        multiplayer.start()
+    })
 
     var toGo = document.getElementsByClassName('geofs-datasourceSelector');
     while(toGo[0]) {

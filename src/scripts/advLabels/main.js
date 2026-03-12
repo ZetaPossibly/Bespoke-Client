@@ -162,8 +162,8 @@
         multiplayer.start();
     }
 
-    labUi.on("WT:toggle", (isEnabled) => {
-        wt_mode(isEnabled)
+    labUi.on("WT:change", (isEnabled) => {
+        wt_mode(labUi.getBool("WT"))
     })
     wt_mode(labUi.getBool("WT"))
 

@@ -58,7 +58,7 @@
     };
 
     const lookoutUi = new window.BUIM("Lookout", "lookout");
-    lookoutUi.addItem("Sensitivity", "Sensitivity", "input", 0, 1)
+    lookoutUi.addItem("Sensitivity", "Sensitivity", "number", 1)
 
     const clampToWithinBounds = function (value, min, max) {
         if (value < min) return min;
