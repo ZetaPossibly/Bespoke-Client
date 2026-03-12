@@ -136,10 +136,12 @@ window.BUIM = (() => {
    */
   const Store = {
     get(key) {
+      console.log("Getting key: " + key)
       const raw = localStorage.getItem(key);
       return raw === null ? null : raw;
     },
     set(key, value) {
+        console.log("Setting key: " + key + "... to ... " + value.toString())
       localStorage.setItem(key, String(value));
     },
     getOrDefault(key, defaultValue) {
