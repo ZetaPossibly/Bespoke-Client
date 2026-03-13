@@ -130,7 +130,6 @@ const DESIGN = {
                 ${options}
             </select>
             <script>
-                // Set initial selected value from localStorage (if it exists)
                 (function() {
                     var saved = localStorage.getItem("${lsName}");
                     if (saved !== null) {
