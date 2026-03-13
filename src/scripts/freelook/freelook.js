@@ -160,38 +160,44 @@
   // ─── State ────────────────────────────────────────────────────────────────
   let isActive         = false;
   let isResetAnimating = false;
-  let isCursorHidden   = false;
 
-  // Smooth follow: target is where the mouse says to go,
-  // current is where the camera actually is (lerped toward target each frame).
   let targetHeadingOffset  = 0;
   let targetTiltOffset     = 0;
   let currentHeadingOffset = 0;
   let currentTiltOffset    = 0;
 
-  // The base orientation captured at the moment freelook is activated.
   let freeLookBase = [0, 0];
 
-  // ─── Cursor helper ────────────────────────────────────────────────────────
-  const style = document.createElement("style");
-  style.textContent = `.freelook-hide-cursor { cursor: none !important; }`;
-  document.head.appendChild(style);
+  // ─── Angle helper ─────────────────────────────────────────────────────────
+  // Returns the shortest signed delta from `from` to `to` in the range [-180, 180].
+  function shortestDelta(from, to) {
+    let d = (to - from) % 360;
+    if (d >  180) d -= 360;
+    if (d < -180) d += 360;
+    return d;
+  }
 
-  function setCursorHidden(hidden) {
-    if (hidden === isCursorHidden) return;
-    isCursorHidden = hidden;
-    document.body.classList.toggle("freelook-hide-cursor", hidden);
+  // ─── Pointer Lock helpers ─────────────────────────────────────────────────
+  function requestLock() {
+    const canvas = document.querySelector("canvas");
+    if (canvas && document.pointerLockElement !== canvas) {
+      canvas.requestPointerLock();
+    }
+  }
+
+  function releaseLock() {
+    if (document.pointerLockElement) {
+      document.exitPointerLock();
+    }
   }
 
   // ─── Activate / Deactivate ────────────────────────────────────────────────
   function activate() {
-    // Bail out if already active or mid-reset (wait for reset to finish).
     if (isActive) return;
 
     const orientations = geofs.camera.currentDefinition?.orientations?.current;
     if (!orientations) return;
 
-    // Capture base orientation and zero out all offsets.
     freeLookBase         = [orientations[0], orientations[1]];
     targetHeadingOffset  = 0;
     targetTiltOffset     = 0;
@@ -201,7 +207,8 @@
 
     isActive             = true;
     controls.mouseOnHold = true;
-    setCursorHidden(true);
+
+    requestLock();
   }
 
   function deactivate() {
@@ -210,7 +217,8 @@
     isActive             = false;
     isResetAnimating     = true;
     controls.mouseOnHold = false;
-    setCursorHidden(false);
+
+    releaseLock();
   }
 
   // ─── Keybind ──────────────────────────────────────────────────────────────
@@ -219,26 +227,22 @@
     "hotkey",
     1,
     "z",
-    // keydown
     function () {
       const tag = document.activeElement?.tagName?.toLowerCase();
       if (tag === "input" || tag === "textarea") return;
       activate();
     },
-    // keyup  — note the (e) parameter: this was the root cause of the release bug
     function () {
-        deactivate();
+      deactivate();
     }
   );
 
   // ─── Per-frame render loop ────────────────────────────────────────────────
   geofs.api.viewer.scene.preRender.addEventListener(() => {
-    // Read settings once per frame (cheap; avoids stale closures).
     const resetSpeed  = parseFloat(freeLookUi.getItem("ResetSpeed"))  || 0.25;
     const smoothSpeed = parseFloat(freeLookUi.getItem("SmoothSpeed")) || 0.18;
 
     if (isActive) {
-      // Lerp current offsets toward the mouse-driven target for smooth motion.
       currentHeadingOffset += (targetHeadingOffset - currentHeadingOffset) * smoothSpeed;
       currentTiltOffset    += (targetTiltOffset    - currentTiltOffset)    * smoothSpeed;
 
@@ -256,13 +260,16 @@
       const tgtH = freeLookBase[0];
       const tgtT = freeLookBase[1];
 
-      const newH = curH + (tgtH - curH) * resetSpeed;
-      const newT = curT + (tgtT - curT) * resetSpeed;
+      // Use shortest angular path so a 370° position resets like a 10° position.
+      const diffH = shortestDelta(curH, tgtH);
+      const diffT = shortestDelta(curT, tgtT);
+
+      const newH = curH + diffH * resetSpeed;
+      const newT = curT + diffT * resetSpeed;
 
       geofs.camera.lookAround(newH, newT);
 
-      // Snap to exact target once close enough to avoid infinite creep.
-      if (Math.abs(newH - tgtH) < 0.05 && Math.abs(newT - tgtT) < 0.05) {
+      if (Math.abs(diffH) < 0.05 && Math.abs(diffT) < 0.05) {
         geofs.camera.lookAround(tgtH, tgtT);
         isResetAnimating = false;
       }
@@ -270,20 +277,20 @@
   });
 
   // ─── Mouse move ───────────────────────────────────────────────────────────
+  // movementX/Y works correctly whether pointer lock is active or not,
+  // but pointer lock ensures the cursor can't escape the window mid-spin.
   window.addEventListener("mousemove", (e) => {
     if (!isActive) return;
 
-    const xSens     = parseFloat(freeLookUi.getItem("xSens"))     || 0.2;
-    const ySens     = parseFloat(freeLookUi.getItem("ySens"))      || 0.2;
-    const accelOn   = freeLookUi.getItem("MouseAccel") === "true";
-    const accelStr  = parseFloat(freeLookUi.getItem("AccelStr"))   || 0.04;
+    const xSens    = parseFloat(freeLookUi.getItem("xSens"))    || 0.2;
+    const ySens    = parseFloat(freeLookUi.getItem("ySens"))     || 0.2;
+    const accelOn  = freeLookUi.getItem("MouseAccel") === "true";
+    const accelStr = parseFloat(freeLookUi.getItem("AccelStr"))  || 0.04;
 
     let dx = e.movementX;
     let dy = e.movementY;
 
     if (accelOn) {
-      // Acceleration: faster physical movement → higher effective sensitivity.
-      // The multiplier grows with the speed of the raw input.
       const speed      = Math.sqrt(dx * dx + dy * dy);
       const multiplier = 1 + speed * accelStr;
       dx *= multiplier;
@@ -297,7 +304,6 @@
   });
 
   // ─── Cancel reset on canvas click ────────────────────────────────────────
-  // Scoped to the canvas so clicking UI elements doesn't interrupt the reset.
   const canvas = document.querySelector("canvas");
   if (canvas) {
     canvas.addEventListener("mousedown", () => {
