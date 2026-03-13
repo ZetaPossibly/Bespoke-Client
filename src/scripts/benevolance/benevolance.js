@@ -65,7 +65,6 @@
         );
     }
 
-    // Loop through all CSS rules in the sheet
     if (localStorage.getItem(prefix+"Enabled") === "true") {    
         apply_styles()
     }
@@ -83,43 +82,29 @@
 
 
     let benevolanceUi = new window.BUIM("Benevolance", prefix)
-
-    benevolanceUi.addItem("Fade in map tiles", "FadeMapTiles", "checkbox", "true")
-    let check_fade = function() {
-        if (localStorage.getItem(prefix+"FadeMapTilesEnabled") === "true") {
-            geofs.api.map._map._fadeAnimated = true
-        } else { geofs.api.map._map._fadeAnimated = false }
-    }
-    check_fade()
-    window.addEventListener(prefix+"FadeMapTiles", function() {
-        check_fade()
-    })
+    benevolanceUi.addDropdown("Map Tileset (move the map to update)", "Tileset", mapTilesets)
+    benevolanceUi.addItem("Remove Foos", "RemoveFoos", "checkbox", "true")
 
     geofs.api.map._map.options.maxZoom = 19
     geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
 
-    window.addEventListener(prefix+"Toggled", function() {
-        if (localStorage.getItem("benevolanceEnabled") === "false") {
-            document.getElementById("BespokeTheme")?.remove()
-            geofs.api.map._map._layers["25"].setUrl(mapTilesets["Default GeoFS"])
-        } else {
-            apply_styles()
+    document.addEventListener("change", (e) => {
+        if (e.target.id === prefix+"Toggled") {
+            if (localStorage.getItem(prefix+"Enabled") === "false") {
+                document.getElementById("BespokeTheme")?.remove()
+                geofs.api.map._map._layers["25"].setUrl(mapTilesets["GeoFS"])
+            } else {
+                apply_styles()
+            }
+        }
+        if (e.target.id === prefix+"Tileset") {
+            geofs.api.map._map._layers["25"].setUrl(localStorage.getItem(prefix+"Tileset"))
+        }
+        if (e.target.id === prefix+"RemoveFoos") {
+            multiplayer.stop()
+            multiplayer.start()  
         }
     });
-
-    benevolanceUi.addDropdown("Map Tileset (move the map to update)", "Tileset", mapTilesets)
-    window._buim.waitForElm(`${prefix}Tileset`).then((elm) => {
-        document.getElementById(prefix+"Tileset").addEventListener("change", function() {
-            geofs.api.map._map._layers["25"].setUrl(localStorage.getItem(prefix+"Tileset"))
-        })
-    });
-
-
-    benevolanceUi.addItem("Remove Foos", "RemoveFoos", "checkbox", "true")
-    document.getElementById(prefix+"RemoveFoos").addEventListener("change", function() {
-        multiplayer.stop()
-        multiplayer.start()  
-    })
 
     geofs.map.addPlayerMarker = function(e, t, a) {
         if (!ui.playerMarkers[e]) {
