@@ -226,10 +226,8 @@
       activate();
     },
     // keyup  — note the (e) parameter: this was the root cause of the release bug
-    function (e) {
-      if (e.key.toLowerCase() === freeLookUi.getItem("hotkey")) {
+    function () {
         deactivate();
-      }
     }
   );
 
