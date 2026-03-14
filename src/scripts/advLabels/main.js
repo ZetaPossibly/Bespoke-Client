@@ -16,11 +16,11 @@
 
   function label_init() {
     const labUi = new window.BUIM("Advanced Labels", "advLabels");
-    labUi.addHeader(
-      6,
-      "**IMPORTANT!** Turn off advanced atmosphere or face unexpected rendering issues! Use Basic Mode if you want to use advanced atmosphere."
-    );
-    labUi.addItem("WT Mode", "WT", "checkbox", 1); // addItem(description, lsName, type, level, defaultValue)
+    labUi
+        .addHeader(5, "**IMPORTANT!** Turn off advanced atmosphere or face unexpected rendering issues! Do not use WT mode if you want to use advanced atmosphere.")
+        .addItem("WT Mode", "WT", "checkbox", false);
+
+
     multiplayer.update = function (e) {
       try {
         for (var t in (multiplayer.lastResponse &&
@@ -33,7 +33,7 @@
           var a,
             o = multiplayer.visibleUsers[t];
           o.currentServerTime = multiplayer.getServerTime();
-          if (labUi.getItem("Enabled") === "true") {
+          if (labUi.isEnabled()) {
             if (!(o.callsign === "Foo" || o.callsign === "")) {
               o.model
                 ? ((o.elapsedTime = o.elapsedTime + e),
@@ -65,11 +65,6 @@
               o.icon && o.icon.setLocation(n);
             }
           } else {
-            let checkbox = document.getElementById("advLabelsWT");
-            if (checkbox.checked === true) {
-              checkbox.checked = false;
-              checkbox.dispatchEvent(new Event("change"));
-            }
             o.model
               ? ((o.elapsedTime = o.elapsedTime + e),
                 ((a = M3.add(
@@ -105,13 +100,17 @@
           return;
         }
         e.position = new Cesium.Cartesian3.fromDegrees(t[1], t[0], t[2]);
-        e.pixelOffset.y = 22;
+        if (labUi.isEnabled()) {
+            e.pixelOffset.y = 22;
+        } else {
+            e.pixelOffset.y = 0;
+        }
         return;
       }
     };
 
     multiplayer.User.prototype.addCallsign = function (e, t) {
-      if (labUi.getItem("Enabled") === "true") {
+      if (labUi.isEnabled()) {
         if (e == "Foo" || e == "") {
           return;
         }
@@ -131,58 +130,42 @@
       }
     };
 
-    let colourConfig = {
-      font: "12pt Trebuchet MS",
-      style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-      horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-      eyeOffset: new Cesium.Cartesian3(0, 0, 0),
-      fillColor: Cesium.Color.fromCssColorString("#ab3b35ff"),
-      outlineColor: Cesium.Color.TRANSPARENT,
-      outlineWidth: 1,
-      disableDepthTestDistance: 50000,
-    };
+    function wt_mode(enable) {
+        if (enable) {
+            colourConfig = {
+                font: "12pt Trebuchet MS",
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                eyeOffset: new Cesium.Cartesian3(0, 0, 0),
+                fillColor: Cesium.Color.fromCssColorString("#ab3b35ff"),
+                outlineColor: Cesium.Color.TRANSPARENT,
+                outlineWidth: 1,
+                disableDepthTestDistance: 50000,
+            };
+        } else {
+            colourConfig = {
+                font: "bold 12pt sans-serif",
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                eyeOffset: new Cesium.Cartesian3(0, 6, 0),
+                fillColor: Cesium.Color.fromCssColorString("#00597B"),
+                outlineColor: Cesium.Color.WHITE,
+                outlineWidth: 4,
+            };
+        }
 
-    let was_enabled = labUi.getItem("Enabled");
-    setInterval(function () {
-      if (labUi.getItem("WT") === "true") {
-        colourConfig = {
-          font: "12pt Trebuchet MS",
-          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          eyeOffset: new Cesium.Cartesian3(0, 0, 0),
-          fillColor: Cesium.Color.fromCssColorString("#ab3b35ff"),
-          outlineColor: Cesium.Color.TRANSPARENT,
-          outlineWidth: 1,
-          disableDepthTestDistance: 50000,
-        };
-      } else {
-        colourConfig = {
-          font: "bold 12pt sans-serif",
-          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          eyeOffset: new Cesium.Cartesian3(0, 6, 0),
-          fillColor: Cesium.Color.fromCssColorString("#00597B"),
-          outlineColor: Cesium.Color.WHITE,
-          outlineWidth: 4,
-        };
-      }
-      if (multiplayer.labelOptions.default.font != colourConfig.font) {
         multiplayer.labelOptions.default = { ...colourConfig };
         multiplayer.labelOptions.premium = { ...colourConfig };
         multiplayer.stop();
         multiplayer.start();
-      }
+    }
 
-      if (was_enabled !== labUi.getItem("Enabled")) {
-        multiplayer.stop();
-        multiplayer.start();
-      }
-
-      was_enabled = labUi.getItem("Enabled");
-    }, 500);
+    labUi.on("WT:toggle", (isEnabled) => {
+        wt_mode(isEnabled)
+    })
+    wt_mode(labUi.getBool("WT"))
 
   }
   console.log("Labels are setup!");

@@ -1,515 +1,644 @@
-const DESIGN = {
-    CSS: `
-        .buim-dropdown {
-            margin: 5px;
-            border-radius: 4px;
-            background: linear-gradient(to bottom, black 0%, rgb(0 0 0 / 0%));
-            backdrop-filter: blur(10px);
-        }
-        .buim-header {
-            padding: 10px;
-            margin: 5px;
-            cursor: pointer;
-            user-select: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: left;
-        }
-        .buim-header:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .buim-content {
-            display: none;
-            padding: 10px;
-            border-top: 1px solid #444444ff;
-        }
+/**
+ * BUIM — Bespoke User Interface Manager
+ * An Eschaton Project. Made by Zeta.
+ */
 
-        .buim-content input {
-            background: rgba(255, 255, 255, 0.04);
-            color: #eaeaea;
+window.BUIM = (() => {
+  // ─── Constants ────────────────────────────────────────────────────────────
 
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 6px;
+  const MENU_STYLES = `
+    .buim-menu {
+      position: absolute;
+      left: 0.625rem;
+      top: 3.125rem;
+      width: 350px;
+      min-width: 150px;
+      max-height: 70vh;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 9999;
+      font-size: 13px;
+      padding: 6px 12px 12px;
+      backdrop-filter: blur(5px);
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+      scrollbar-color: slategrey transparent;
+      scrollbar-width: thin;
+      text-align: center;
+      display: none;
+    }
+    .buim-menu-title { margin: 8px 0 4px; }
+    .buim-menu-subtitle { margin: 0 0 8px; font-style: italic; opacity: 0.6; }
 
-            padding: 6px 8px;
-            font-size: 0.9rem;
-            line-height: 1.2;
+    .buim-section {
+      margin: 5px 0;
+      border-radius: 4px;
+      background: linear-gradient(to bottom, black 0%, rgba(0,0,0,0));
+      backdrop-filter: blur(10px);
+    }
+    .buim-section-header {
+      padding: 10px;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .buim-section-header:hover { background: rgba(255,255,255,0.1); border-radius: 4px; }
+    .buim-section-title { margin: 0; flex: 1; text-align: left; color: white; font-size: 0.9rem; }
 
-            outline: none;
-            transition: border-color 120ms ease, background 120ms ease;
+    .buim-section-body {
+      display: none;
+      padding: 10px;
+      border-top: 1px solid #444;
+      text-align: left;
+    }
+    .buim-section-body.open { display: block; }
 
-            box-sizing: border-box;
-        }
+    .buim-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 4px 0;
+    }
+    .buim-label { flex: 1; opacity: 0.85; }
 
-        .buim-content input:hover {
-            border-color: rgba(255, 255, 255, 0.25);
-        }
+    .buim-input {
+      background: rgba(255,255,255,0.04);
+      color: #eaeaea;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 120ms ease;
+      box-sizing: border-box;
+      width: 120px;
+    }
+    .buim-input:hover, .buim-input:focus { border-color: rgba(255,255,255,0.35); }
 
-        .buim-content-visible {
-            display: block !important;
-        }
-        #buim_gamenu {
-            padding: 0;
-            cursor: pointer; /* optional */
-        }
-        
-        .buim-menu {
-            position: absolute;
-            left: 0.625rem;
-            top: 3.125rem;
-            width: 350px;
-            min-width: 150px;
-            max-height: 70vh;
-            overflow-y: auto;
-            background: rgba(0,0,0,0.75);
-            z-index: 9999;
-            font-size: 13px;
-            padding: 6px 12px;
-            backdrop-filter: blur(5px);
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-            cursor: pointer;
-            opacity: 1;
-            transition: opacity 0.3s;
-            text-align: center;
-            scrollbar-color: slategrey transparent;
-            scrollbar-width: thin;
-        }
+    .buim-checkbox { width: 16px; height: 16px; cursor: pointer; }
+    .buim-enable-checkbox { width: 20px; height: 20px; cursor: pointer; flex-shrink: 0; }
 
-    `,
-    HTML: {
-        optionsMenuTitle: `
-          <h3>Bespoke Client. </h3>
-          <h6>An <strong>Eschaton Project.</strong></p>
-          <p>Made by Zeta. <i>@zetainbeta_43414 on Discord</i></p>
-        `,
-        individualDropdown: function (prefix, name, html) {
-            return `
-            <div class="buim-dropdown" style="color: white;">
-              <div class="buim-header" onclick="document.getElementById('${prefix}Content').classList.toggle('buim-content-visible')">
-                <input id="${prefix}Enabled" type="checkbox" 
-                        checked="${localStorage.getItem(prefix + "Enabled") == "true"
-                }" 
-                        onchange="localStorage.setItem('${prefix}Enabled', this.checked); 
-                                window.dispatchEvent(new Event('${prefix}Toggled'));" 
-                        onclick="event.stopPropagation()"
-                        style="width: 30px; height: 30px;">  
-                <h5 style="display: inline-block; margin: 15px; color: white;">${name}</h5>
-              </div>
-              <div id="${prefix}Content" class="buim-content">
-                ${html}
-                <br>
-                <button id="${prefix}Reset">RESET</button>
-              </div>
-            </div>
-          `;
-        },
-        item: function (level, description, idName, type) {
-            return `
-            <span style=" text-indent: ${level}rem">${description}</span>
-            <input id="${idName}" type="${type}" onchange="localStorage.setItem('${idName}', ${type === "checkbox" ? "this.checked" : "this.value"
-                })  ">
-            <br>
-          `;
-        },
-        button: function (prefix, title, options, fn) {
-            return `<button id="${prefix}${title}" ${options || ""
-                } onclick="${fn}()">${title}</button><br>`;
-        },
-        dropdown: function (lsName, title, values) {
-            let options = "";
-            Object.keys(values).forEach((name) => {
-                options =
-                    options + "\n" + `<option value="${values[name]}">${name}</option>`;
-            });
-            return `
-            <label for="${lsName}">${title}</label>
-            <select id="${lsName}" onchange="localStorage.setItem('${lsName}', this.value);">
-                ${options}
-            </select>
-            <script>
-                (function() {
-                    var saved = localStorage.getItem("${lsName}");
-                    if (saved !== null) {
-                        document.getElementById("${lsName}").value = saved;
-                    }
-                })();
-            </script>
-            <br>
-        `;
-        },
-        header: function (level, text) {
-            return `<h${level}>${text}</h${level}>`;
-        },
-        openBuimBtn: `
-      <div id="bottomDiv">
-        <div id="buim_gamenu" class="mdl-button mdl-js-button geofs-f-standard-ui">
-            BESPOKE
-        </div>
-      </div>
-    `,
+    .buim-select {
+      background: rgba(255,255,255,0.06);
+      color: #eaeaea;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-size: 0.85rem;
+    }
+
+    .buim-btn {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 5px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background 120ms;
+    }
+    .buim-btn:hover { background: rgba(255,255,255,0.2); }
+    .buim-btn-reset { margin-top: 8px; width: 100%; }
+
+    .buim-shortcut-btn {
+      background: rgba(80,120,255,0.15);
+      color: #aac4ff;
+      border: 1px solid rgba(80,120,255,0.35);
+      border-radius: 5px;
+      padding: 3px 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: monospace;
+      transition: background 120ms;
+      min-width: 80px;
+    }
+    .buim-shortcut-btn:hover { background: rgba(80,120,255,0.3); }
+    .buim-shortcut-btn.listening { background: rgba(255,80,80,0.2); color: #ffaaaa; border-color: rgba(255,80,80,0.4); }
+
+    #buim-open-btn {
+      cursor: pointer;
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+    }
+  `;
+
+  // ─── Store — thin localStorage wrapper ────────────────────────────────────
+
+  /**
+   * Centralised key-value store backed by localStorage.
+   * All keys are namespaced by the section prefix to prevent collisions.
+   */
+  const Store = {
+    get(key) {
+      const raw = localStorage.getItem(key);
+      return raw === null ? null : raw;
     },
-};
+    set(key, value) {
+      localStorage.setItem(key, String(value));
+    },
+    getOrDefault(key, defaultValue) {
+      const v = this.get(key);
+      if (v === null) {
+        this.set(key, defaultValue);
+        return String(defaultValue);
+      }
+      return v;
+    },
+    getBool(key, defaultValue = false) {
+      return this.getOrDefault(key, defaultValue) === "true";
+    },
+  };
 
-if (!window._buim) {
-    window._buim = {};
-    console.log("Created BUIM");
-}
-window._buim.isGMenuInit = false; // This will be set to true when the first GMenu is added
-window._buim.isOpen = false;
-window._buim.allHTML = []; // All HTML blocks
-window._buim.allLS = []; //All localStorage values (it's a 2d array: [lsValue_str, isCheckbox_bool])
+  // ─── MicroEmitter — replaces raw window.dispatchEvent string abuse ────────
 
-/**
- * Waits for an element to be created, then resolves.
- * @param {string} selector - The query selector
- * @returns {Element} The element from the query selector.
- */
-window._buim.waitForElm = function (selector) {
+  class MicroEmitter {
+    #listeners = new Map();
+
+    on(event, fn) {
+      if (!this.#listeners.has(event)) this.#listeners.set(event, []);
+      this.#listeners.get(event).push(fn);
+      return () => this.off(event, fn); // returns an unsubscribe fn
+    }
+
+    off(event, fn) {
+      const list = this.#listeners.get(event) ?? [];
+      this.#listeners.set(event, list.filter((f) => f !== fn));
+    }
+
+    emit(event, data) {
+      (this.#listeners.get(event) ?? []).forEach((fn) => fn(data));
+    }
+  }
+
+  // ─── Module-level private state ───────────────────────────────────────────
+
+  let _menuEl = null;       // The floating menu <div>
+  let _isOpen = false;
+  let _isBootstrapped = false;
+
+  const _emitter = new MicroEmitter();
+
+  // ─── DOM helpers ──────────────────────────────────────────────────────────
+
+  function el(tag, attrs = {}, ...children) {
+    const node = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "className") {
+        node.className = v;
+      } else if (k.startsWith("data-")) {
+        node.dataset[k.slice(5)] = v;
+      } else {
+        node[k] = v;
+      }
+    }
+    for (const child of children) {
+      if (child == null) continue;
+      node.append(typeof child === "string" ? document.createTextNode(child) : child);
+    }
+    return node;
+  }
+
+  function injectStyles() {
+    if (document.getElementById("buim-styles")) return;
+    const style = el("style", { id: "buim-styles", textContent: MENU_STYLES });
+    document.head.appendChild(style);
+  }
+
+  /**
+   * Waits for a CSS selector to appear in the DOM.
+   * Uses MutationObserver correctly — always disconnects.
+   */
+  function waitForEl(selector) {
     return new Promise((resolve) => {
-        if (document.querySelector(selector)) {
-            return resolve(document.querySelector(selector));
-        }
-
-        const observer = new MutationObserver((mutations) => {
-            if (document.querySelector(selector)) {
-                observer.disconnect();
-                resolve(document.querySelector(selector));
-            }
-        });
-
-        // If you get "parameter 1 is not of type 'Node'" error, see https://stackoverflow.com/a/77855838/492336
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true,
-        });
+      const existing = document.querySelector(selector);
+      if (existing) return resolve(existing);
+      const obs = new MutationObserver(() => {
+        const found = document.querySelector(selector);
+        if (found) { obs.disconnect(); resolve(found); }
+      });
+      obs.observe(document.body, { childList: true, subtree: true });
     });
-};
+  }
 
-window._buim.toggleMenu = function () {
-    console.log("Toggling Menu");
-    if (window._buim.isOpen) {
-        window._buim.isOpen = false;
-        window._buim.menuDiv.style.display = "none";
-    } else {
-        window._buim.isOpen = true;
-        window._buim.menuDiv.style.display = "block";
-        for (let i = 0; i < window._buim.allLS.length; i++) {
-            let currLS = window._buim.allLS[i];
-            currLS[1]
-                ? (document.getElementById(currLS[0]).checked =
-                    localStorage.getItem(currLS[0]) == "true")
-                : (document.getElementById(currLS[0]).value = localStorage.getItem(
-                    currLS[0]
-                ));
-        }
-    }
-};
+  // ─── Menu bootstrap ───────────────────────────────────────────────────────
 
+  function bootstrapMenu() {
+    if (_isBootstrapped) return;
+    _isBootstrapped = true;
 
-window._buim.compileAllHTML = function () {
-    window._buim.menuDiv.innerHTML = DESIGN.HTML.optionsMenuTitle;
+    injectStyles();
 
-    for (let i = 0; i < window._buim.allHTML.length; i++) {
-        window._buim.menuDiv.innerHTML += window._buim.allHTML[i];
-    }
-};
+    _menuEl = el("div", { id: "buim-menu", className: "buim-menu" });
 
-/**
- * In a nutshell, this function handles shortcut changes when the user presses a shortcut button.
- * @param {string} id - The id of the element to be changed, which should also be the localStorage id.
- */
-window.gmenu.changeShortcut = function (id) {
-    console.log(id);
-    let btn = document.getElementById(id);
-    if (btn.innerHTML !== "Press any key...") {
-        btn.innerHTML = "Press any key...";
-        btn.classList.add("gmenu-edit");
-        function listen(e) {
-            let ovrrd = [
-                e.code.toLowerCase().includes("control"),
-                e.code.toLowerCase().includes("shift"),
-                e.code.toLowerCase().includes("alt"),
-                e.code.toLowerCase().includes("meta"),
-            ];
-            localStorage.setItem(
-                id,
-                `${e.code}&,${ovrrd[0] ? "true" : e.ctrlKey.toString()}&,${ovrrd[1] ? "true" : e.shiftKey.toString()
-                }&,${ovrrd[2] ? "true" : e.altKey.toString()}&,${ovrrd[3] ? "true" : e.metaKey.toString()
-                }`
-            );
-            btn.classList.remove("gmenu-edit");
-            btn.innerHTML = `${e.ctrlKey && !ovrrd[0] ? "Ctrl+" : ""}${e.shiftKey && !ovrrd[1] ? "Shift+" : ""
-                }${e.altKey && !ovrrd[2] ? "Alt+" : ""}${e.metaKey && !ovrrd[3] ? "Meta+" : ""
-                }${e.code}`;
-            btn.removeEventListener("keyup", listen);
-        }
-        btn.addEventListener("keyup", listen);
-    }
-};
+    // Header
+    const header = el("div", { className: "buim-menu-header" },
+      el("h3", { className: "buim-menu-title" }, "Bespoke Client"),
+      el("p", { className: "buim-menu-subtitle" },
+        "An Eschaton Project · Made by Zeta · ",
+        el("i", {}, "@zetainbeta_43414 on Discord")
+      )
+    );
+    _menuEl.appendChild(header);
+    document.body.appendChild(_menuEl);
 
-window.BUIM = class {
-    // Bespoke User Interface Manager
+    // Trigger button — waits for the geofs bottom bar
+    waitForEl(".geofs-ui-bottom").then((bottomBar) => {
+      const btn = el("div", {
+        id: "buim-open-btn",
+        className: "mdl-button mdl-js-button geofs-f-standard-ui",
+        textContent: "BESPOKE",
+      });
+      btn.addEventListener("click", toggleMenu);
+      bottomBar.appendChild(btn);
+    });
+  }
+
+  function toggleMenu() {
+    _isOpen = !_isOpen;
+    _menuEl.style.display = _isOpen ? "block" : "none";
+    _emitter.emit(_isOpen ? "menu:open" : "menu:close");
+  }
+
+  // ─── Keyboard shortcut helpers ────────────────────────────────────────────
+
+  /**
+   * Formats a stored shortcut string like "KeyA&,false&,true&,false&,false"
+   * into a human-readable label like "Shift+KeyA".
+   */
+  function formatShortcut(stored) {
+    const parts = stored.split("&,");
+    if (parts.length === 1) return parts[0]; // legacy plain-key format
+    const [code, ctrl, shift, alt, meta] = parts;
+    return [
+      ctrl === "true" ? "Ctrl+" : "",
+      shift === "true" ? "Shift+" : "",
+      alt === "true" ? "Alt+" : "",
+      meta === "true" ? "Meta+" : "",
+      code,
+    ].join("");
+  }
+
+  function encodeShortcut(e) {
+    const mods = ["control", "shift", "alt", "meta"];
+    const isModKey = mods.some((m) => e.code.toLowerCase().includes(m));
+    return [
+      e.code,
+      isModKey ? e.code.toLowerCase().includes("control") : e.ctrlKey,
+      isModKey ? e.code.toLowerCase().includes("shift") : e.shiftKey,
+      isModKey ? e.code.toLowerCase().includes("alt") : e.altKey,
+      isModKey ? e.code.toLowerCase().includes("meta") : e.metaKey,
+    ].join("&,");
+  }
+
+  function shortcutMatches(e, stored) {
+    const parts = stored.split("&,");
+    if (parts.length === 1) return e.key === parts[0] || e.code === parts[0];
+    const [code, ctrl, shift, alt, meta] = parts;
+    return (
+      e.code === code &&
+      e.ctrlKey.toString() === ctrl &&
+      e.shiftKey.toString() === shift &&
+      e.altKey.toString() === alt &&
+      e.metaKey.toString() === meta
+    );
+  }
+
+  // ─── Section class — one instance per BUIM(name, prefix) call ─────────────
+
+  class Section {
+    #prefix;
+    #name;
+    #defaults = []; // [{ key, defaultValue }]
+    #bodyEl = null;
+    #enableCheckbox = null;
+
+    /**
+     * @param {string} name    - Display name shown in the menu header.
+     * @param {string} prefix  - Unique prefix for all localStorage keys in this section.
+     */
     constructor(name, prefix) {
-        this.defaults = [];
-        this.name = name;
-        this.prefix = prefix;
-        if (!window._buim.isGMenuInit) {
-            this.initialize();
+      if (!prefix || !name) throw new Error("BUIM: name and prefix are required.");
+      this.#name = name;
+      this.#prefix = prefix;
+
+      bootstrapMenu(); // idempotent
+      this.#buildSection();
+
+      // Ensure the enabled flag has a default
+      Store.getOrDefault(this.#key("Enabled"), "true");
+    }
+
+    // ── Private helpers ──────────────────────────────────────────────────
+
+    #key(lsName) {
+      return this.#prefix + lsName;
+    }
+
+    #buildSection() {
+      // Enable checkbox — stop click from bubbling so toggle still fires
+      this.#enableCheckbox = el("input", {
+        type: "checkbox",
+        className: "buim-enable-checkbox",
+      });
+      this.#enableCheckbox.checked = Store.getBool(this.#key("Enabled"), true);
+      this.#enableCheckbox.addEventListener("change", (e) => {
+        e.stopPropagation(); // don't collapse the section
+        Store.set(this.#key("Enabled"), e.target.checked);
+        _emitter.emit(`${this.#prefix}:toggle`, e.target.checked);
+      });
+
+      const title = el("h5", { className: "buim-section-title" }, this.#name);
+
+      const arrow = el("span", { className: "buim-section-arrow", textContent: "▸" });
+
+      const header = el("div", { className: "buim-section-header" },
+        this.#enableCheckbox, title, arrow
+      );
+
+      this.#bodyEl = el("div", { className: "buim-section-body" });
+
+      // Add reset button at the bottom of every section
+      const resetBtn = el("button", {
+        className: "buim-btn buim-btn-reset",
+        textContent: "RESET DEFAULTS",
+      });
+      resetBtn.addEventListener("click", () => this.#resetDefaults());
+
+      this.#bodyEl.appendChild(resetBtn);
+
+      const section = el("div", { className: "buim-section" }, header, this.#bodyEl);
+
+      header.addEventListener("click", () => {
+        const open = this.#bodyEl.classList.toggle("open");
+        arrow.textContent = open ? "▾" : "▸";
+      });
+
+      _menuEl.appendChild(section);
+    }
+
+    /** Inserts a child before the reset button (always last). */
+    #appendToBody(node) {
+      const resetBtn = this.#bodyEl.querySelector(".buim-btn-reset");
+      this.#bodyEl.insertBefore(node, resetBtn);
+    }
+
+    #resetDefaults() {
+      for (const { key, defaultValue } of this.#defaults) {
+        Store.set(key, defaultValue);
+        const elem = document.getElementById(key);
+        if (!elem) continue;
+        if (elem.type === "checkbox") {
+          elem.checked = defaultValue === "true" || defaultValue === true;
+        } else {
+          elem.value = defaultValue;
         }
-        this.html = ``; //This HTML will be enclosed in a Div; Instead of adding to the main HTML directly, methods add to this HTML.
-        this.htmlIndex = window._buim.allHTML.length; //This instance's index in the allHTML array
+      }
+      _emitter.emit(`${this.#prefix}:reset`);
+    }
+
+    // ── Public API ───────────────────────────────────────────────────────
+
+    /**
+     * Listen to section-level events.
+     * Built-in events: "toggle" (enabled checkbox changed), "reset".
+     * You can also emit your own via section.emit().
+     * @returns {function} Unsubscribe function.
+     */
+    on(event, fn) {
+      return _emitter.on(`${this.#prefix}:${event}`, fn);
+    }
+
+    emit(event, data) {
+      _emitter.emit(`${this.#prefix}:${event}`, data);
     }
 
     /**
-     * Called automatically, initializes the button, menu div, and a couple of other things
+     * Adds a text/number/checkbox input row.
+     * @param {string} description  - Short label shown next to the input.
+     * @param {string} lsName       - camelCase key (auto-prefixed). Also used as element id.
+     * @param {"text"|"number"|"checkbox"} type
+     * @param {string|number|boolean} defaultValue
+     * @returns {Section} this (chainable)
      */
-    initialize() {
-        window._buim.isGMenuInit = true; //Prevent other instances from initializing this window
-        var bottomDiv = document.getElementsByClassName("geofs-ui-bottom")[0];
-        window._buim.btn = document.createElement("div");
-        window._buim.btn.id = "buim_gamenu";
-        window._buim.btn.classList = "mdl-button mdl-js-button geofs-f-standard-ui";
-        window._buim.btn.style.padding = "0px";
-        bottomDiv.appendChild(window._buim.btn);
-        window._buim.btn.innerHTML = DESIGN.HTML.openBuimBtn;
-        document.getElementById("buim_gamenu").onclick = () => {
-            window._buim.toggleMenu();
+    addItem(description, lsName, type = "text", defaultValue = "") {
+      const key = this.#key(lsName);
+      const stored = Store.getOrDefault(key, defaultValue);
+
+      this.#defaults.push({ key, defaultValue: String(defaultValue) });
+
+      const input = el("input", {
+        id: key,
+        type,
+        className: type === "checkbox" ? "buim-checkbox" : "buim-input",
+      });
+
+      if (type === "checkbox") {
+        input.checked = stored === "true";
+      } else {
+        input.value = stored;
+      }
+
+      input.addEventListener("change", () => {
+        const value = type === "checkbox" ? input.checked : input.value;
+        Store.set(key, value);
+        _emitter.emit(`${key}:change`, value);
+      });
+
+      const label = el("label", { className: "buim-label", htmlFor: key }, description);
+      const row = el("div", { className: "buim-row" }, label, input);
+      this.#appendToBody(row);
+      return this;
+    }
+
+    /**
+     * Adds a <select> dropdown row.
+     * @param {string} description  - Short label.
+     * @param {string} lsName       - camelCase key (auto-prefixed).
+     * @param {Record<string,string>} options  - { "Visible Label": "storedValue", … }
+     * @param {string} [defaultValue]
+     * @returns {Section} this (chainable)
+     */
+    addDropdown(description, lsName, options, defaultValue) {
+      const key = this.#key(lsName);
+      const firstVal = Object.values(options)[0] ?? "";
+      const stored = Store.getOrDefault(key, defaultValue ?? firstVal);
+
+      this.#defaults.push({ key, defaultValue: String(defaultValue ?? firstVal) });
+
+      const select = el("select", { id: key, className: "buim-select" });
+      for (const [label, value] of Object.entries(options)) {
+        select.appendChild(el("option", { value }, label));
+      }
+      select.value = stored;
+
+      select.addEventListener("change", () => {
+        Store.set(key, select.value);
+        _emitter.emit(`${key}:change`, select.value);
+      });
+
+      const label = el("label", { className: "buim-label", htmlFor: key }, description);
+      const row = el("div", { className: "buim-row" }, label, select);
+      this.#appendToBody(row);
+      return this;
+    }
+
+    /**
+     * Adds a plain button.
+     * @param {string}   label  - Button text.
+     * @param {function} onClick
+     * @returns {Section} this (chainable)
+     */
+    addButton(label, onClick) {
+      const btn = el("button", { className: "buim-btn", textContent: label });
+      btn.addEventListener("click", onClick);
+      this.#appendToBody(btn);
+      return this;
+    }
+
+    /**
+     * Adds a visual sub-heading inside the section body.
+     * @param {2|3|4|5|6} level
+     * @param {string}    text
+     * @returns {Section} this (chainable)
+     */
+    addHeader(level = 3, text) {
+      this.#appendToBody(el(`h${level}`, { textContent: text }));
+      return this;
+    }
+
+    /**
+     * Adds a keyboard-shortcut binding row.
+     *
+     * @param {string}   description
+     * @param {string}   lsName        - camelCase key (auto-prefixed).
+     * @param {string}   defaultValue  - e.g. "KeyG&,false&,false&,false&,false" or plain "KeyG"
+     * @param {function} onKeyDown     - called when the shortcut is pressed.
+     * @param {function} [onKeyUp]     - optional; called when the key is released.
+     * @returns {Section} this (chainable)
+     */
+    addShortcut(description, lsName, defaultValue, onKeyDown, onKeyUp) {
+      const key = this.#key(lsName);
+      const stored = Store.getOrDefault(key, defaultValue);
+      this.#defaults.push({ key, defaultValue });
+
+      const btn = el("button", {
+        id: key,
+        className: "buim-shortcut-btn",
+        textContent: formatShortcut(stored),
+      });
+
+      // Click starts listening for a new key
+      btn.addEventListener("click", () => {
+        if (btn.classList.contains("listening")) return;
+        btn.classList.add("listening");
+        btn.textContent = "Press any key…";
+
+        const capture = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const encoded = encodeShortcut(e);
+          Store.set(key, encoded);
+          btn.textContent = formatShortcut(encoded);
+          btn.classList.remove("listening");
+          document.removeEventListener("keyup", capture, true);
         };
-        if (!window._buim.menuDiv) {
-            window._buim.menuDiv = document.createElement("div");
-            window._buim.menuDiv.id = "ggamergguyDiv"; // tribute to the chad who made the skeleton that BUIM is made on
-            //window._buim.menuDiv.classList = "geofs-list geofs-toggle-panel geofs-preference-list geofs-preferences";
-            window._buim.menuDiv.classList = "buim-menu";
-            window._buim.menuDiv.style.zIndex = "100";
-            window._buim.menuDiv.style.display = "none";
-            document.body.appendChild(window._buim.menuDiv);
+        document.addEventListener("keyup", capture, { capture: true, once: true });
+      });
 
-            // Add styles for BUIM dropdowns
-            const style = document.createElement("style");
-            style.textContent = DESIGN.CSS;
-            document.head.appendChild(style);
-        }
+      // Global key listener for this shortcut
+      document.addEventListener("keydown", (e) => {
+        if (shortcutMatches(e, Store.get(key) ?? defaultValue)) onKeyDown(e);
+      });
+      if (onKeyUp) {
+        document.addEventListener("keyup", (e) => {
+          if (shortcutMatches(e, Store.get(key) ?? defaultValue)) onKeyUp(e);
+        });
+      }
+
+      const label = el("label", { className: "buim-label" }, description);
+      const row = el("div", { className: "buim-row" }, label, btn);
+      this.#appendToBody(row);
+      return this;
     }
 
-    /**
-     * Updates the menu's HTML if and only if the GMenu is closed.
-     * @returns {boolean} true if the GMenu was closed and it was able to update the HTML, false otherwise
-     */
-    updateHTML() {
-        if (!window._buim.isOpen) {
-            // <span>Enabled: </span>
-            window._buim.allHTML[this.htmlIndex] = DESIGN.HTML.individualDropdown(
-                this.prefix,
-                this.name,
-                this.html
-            );
+    // ── Convenience getters ──────────────────────────────────────────────
 
-            window._buim.compileAllHTML();
+    /** Returns the raw stored string for lsName. */
+    get(lsName) { return Store.get(this.#key(lsName)); }
 
-            if (this.getItem("Enabled") == null) {
-                localStorage.setItem(this.prefix + "Enabled", "true");
-            }
+    /** Returns a boolean for a checkbox-backed setting. */
+    getBool(lsName) { return Store.getBool(this.#key(lsName)); }
 
-            window._buim.waitForElm(`#${this.prefix}Reset`).then((elm) => {
-                setTimeout(() => {
-                    document.getElementById(this.prefix + "Enabled").checked =
-                        this.getItem("Enabled") == "true";
-
-                    document
-                        .getElementById(this.prefix + "Reset")
-                        .addEventListener("click", () => {
-                            for (let i = 0; i < this.defaults.length; i++) {
-                                let currD = this.defaults[i]; //currD[0] = idName, currD[1] = defaultValue, currD[2] = isCheckbox
-                                localStorage.setItem(currD[0], currD[1]);
-
-                                if (currD[2]) {
-                                    //if it's a checkbox
-                                    document.getElementById(currD[0]).checked = currD[1];
-                                } else {
-                                    document.getElementById(currD[0]).value = currD[1];
-                                }
-                            }
-                            window._buim.toggleMenu();
-                            window._buim.toggleMenu(); //Reload the menu
-                        });
-                }, 500);
-            });
-            return true;
-        }
-        return false;
+    /** Programmatically update a stored value and sync the input element. */
+    set(lsName, value) {
+      const key = this.#key(lsName);
+      Store.set(key, value);
+      const elem = document.getElementById(key);
+      if (!elem) return;
+      if (elem.type === "checkbox") elem.checked = value === "true" || value === true;
+      else elem.value = value;
     }
 
-    //Note: The defaultValue should always be a string, and ALL LOCALSTORAGE VALUES ARE STRINGS. This means that checkbox values, for instance, will be either "true" or "false", and number values will be converted into strings.
-    /**
-     * Adds an input item to the menu.
-     * @param {string} description - A very short (<5 words) description
-     * @param {string} lsName - The name used for local storage retrieval/storage (also the id name), will be automatically prefixed by the prefix. It should be in camel case with the first letter capitalized.
-     * @param {string} type - Any of the standared HTML input types, defaults to text
-     * @param {number} level - The indentation level of the item, where 0 is no indentation, defaults to 0
-     * @param {*} defaultValue - The value of the setting that will be used upon the user's first time using the addon
-     * @param {string} options - Optional HTML attributes for the input
-     */
-    addItem(description, lsName, type, level, defaultValue) {
-        console.log(`Adding ${type}... ${defaultValue} (${lsName})`);
-        let idName = this.prefix + lsName;
-        this.defaults.push([idName, defaultValue, type == "checkbox"]); //Checkboxes are... "special." (elem.value doesn't work on them, they require elem.checked)
+    /** Whether this section is enabled (the top-level checkbox). */
+    get isEnabled() { return Store.getBool(this.#key("Enabled"), true); }
+  }
 
-        if (this.getItem(lsName) == null) {
-            localStorage.setItem(idName, defaultValue);
-        }
-        window._buim.allLS.push([idName, type == "checkbox"]);
-        this.html += DESIGN.HTML.item(level, description, idName, type);
+  // ─── Module-level events exposed for orchestration ────────────────────────
 
-        this.updateHTML();
-    }
+  const publicApi = Section; // The class IS the public API
 
-    /**
-     * Adds a button to the menu.
-     * @param {string} title - The button's title
-     * @param {function} fn - A function to be run when the button is clicked
-     * @param {string} options - Optional HTML attributes
-     */
-    addButton(title, fn, options) {
-        console.log(`Adding Button... ${title}`);
-        this.html += DESIGN.HTML.button(this.prefix, title, options, fn);
-        this.updateHTML();
-        //document.getElementById(this.prefix + title).onclick = fn;
-    }
+  /**
+   * Subscribe to global menu open/close events.
+   * Usage: BUIM.on("menu:open", () => { ... })
+   */
+  publicApi.on = (event, fn) => _emitter.on(event, fn);
+  publicApi.emit = (event, data) => _emitter.emit(event, data);
 
-    addDropdown(label, lsName, options) {
-        // Options is an object with keys as visible names and the values as Labels.
-        // Like {"Youtube": "https://youtube.com/", "Google": "https://google.com"}
-        // Only "Youtube" and "Google" are shown but the URL is shows in the saved value.
-        // Both in local storage and in the element itself "value"
-        console.log(`Adding Dropdown... ${label}`);
-        this.html += DESIGN.HTML.dropdown(this.prefix + lsName, label, options);
-        this.updateHTML();
-    }
+  /** Programmatically open or close the menu. */
+  publicApi.toggle = () => {
+    if (_isBootstrapped) toggleMenu();
+  };
 
-    /**
-     * Adds a header of the specified level
-     * @param {number} level - The header's level (1 for h1, 2 for h2, 3 for h3, etc.). It is reccomended to start at 2 as h1 is used for the addon titles.
-     * @param {string} text - The header's text contents
-     */
-    addHeader(level, text) {
-        console.log(`Adding Header... ${text}`);
-        this.html += DESIGN.HTML.header(level, text);
-        this.updateHTML();
-    }
+  // Signal that BUIM is ready (mirrors the original window.fireBasicEvent pattern
+  // without depending on an external function that may not exist).
+  const readyEvent = new CustomEvent("BUIMLoaded", { bubbles: true });
+  document.addEventListener("DOMContentLoaded", () => {
+    document.dispatchEvent(readyEvent);
+  }, { once: true });
 
-    /**
-     * Adds a keyboard shortcut to the menu (this method is similar to the addItem method, but is specifically meant for handling keyboard shortcuts).
-     * @param {string} description - A very short (<5 words) description
-     * @param {string} lsName - The name used for local storage retrieval/storage (also the id name), will be automatically prefixed by the prefix. It should be in camel case with the first letter capitalized.
-     * @param {number} level - The indentation level of the item, where 0 is no indentation, defaults to 0
-     * @param {string} defaultValue - The default value, prefferably in the format `keyCode`&,`ctrlKey`&,`shiftKey`&,`altKey`&,`metaKey` but also acceptable in the format `keyCode` or `key`.
-     * @param {function} fn - The function to be executed when the shortcut is pressed
-     */
-    addKBShortcut(description, lsName, level = 0, defaultValue, fn, keyUpFn) {
-        let idName = this.prefix + lsName;
-        this.defaults.push([idName, defaultValue, false]);
-        if (this.getItem(lsName) == null) {
-            console.log(idName + " is null, setting to " + defaultValue);
-            localStorage.setItem(idName, defaultValue);
-        }
-        window.gmenu.allLS.push([idName, false]);
-        let tester = this.getItem(lsName).split("&,");
-        let oldSave = tester.length == 1;
-        let e = oldSave
-            ? {
-                code: tester[0],
-                ctrlKey: false,
-                shiftKey: false,
-                altKey: false,
-                metaKey: false,
-            }
-            : {
-                code: tester[0],
-                ctrlKey: tester[1] == "true",
-                shiftKey: tester[2] == "true",
-                altKey: tester[3] == "true",
-                metaKey: tester[4] == "true",
-            };
-        this.html += `<span style="padding-left: ${level}rem">${description}</span>
-    <button id="${this.prefix + lsName
-            }" class="gmenu-sc" onclick="window.gmenu.changeShortcut('${this.prefix + lsName
-            }')">${e.ctrlKey ? "Ctrl+" : ""}${e.shiftKey ? "Shift+" : ""}${e.altKey ? "Alt+" : ""
-            }${e.metaKey ? "Meta+" : ""}${e.code}</button><br>`;
-        this.updateHTML();
-        const t = (event) => {
-            let tester = localStorage.getItem(idName).split("&,");
-            let oldSave = tester.length == 1;
-            if (
-                (event.key == tester[0] || event.code == tester[0]) &&
-                (oldSave ||
-                    (event.ctrlKey.toString() == tester[1] &&
-                        event.shiftKey.toString() == tester[2] &&
-                        event.altKey.toString() == tester[3] &&
-                        event.metaKey.toString() == tester[4]))
-            ) {
-                console.log(event.key + " pressed");
-                fn();
+  return publicApi;
+})();
 
-                if (event.type === "keyup") {
-                    if (!keyUpFn) return;
-                    
-                    console.log(event.key + " released");
-                    keyUpFn();
-                } 
-            }
-        };
-        document.addEventListener("keydown", t);
-        if (keyUpFn) {document.addEventListener("keyup", t)}
-    }
 
-    changeShortcut(id) {
-        let btn = document.getElementById(this.prefix + id);
-        if (btn.innerHTML !== "Press any key...") {
-            btn.innerHTML = "Press any key...";
-            btn.classList.add("gmenu-edit");
-            function listen(e) {
-                let ovrrd = [
-                    e.code.toLowerCase().includes("control"),
-                    e.code.toLowerCase().includes("shift"),
-                    e.code.toLowerCase().includes("alt"),
-                    e.code.toLowerCase().includes("meta"),
-                ];
-                localStorage.setItem(
-                    this.prefix + id,
-                    `${e.code}&,${ovrrd[0] ? "true" : e.ctrlKey.toString()}&,${ovrrd[1] ? "true" : e.shiftKey.toString()
-                    }&,${ovrrd[2] ? "true" : e.altKey.toString()}&,${ovrrd[3] ? "true" : e.metaKey.toString()
-                    }`
-                );
-                btn.classList.remove("gmenu-edit");
-                btn.innerHTML = `${e.ctrlKey && !ovrrd[0] ? "Ctrl+" : ""}${e.shiftKey && !ovrrd[1] ? "Shift+" : ""
-                    }${e.altKey && !ovrrd[2] ? "Alt+" : ""}${e.metaKey && !ovrrd[3] ? "Meta+" : ""
-                    }${e.code}`;
-                btn.removeEventListener("keyup", listen);
-            }
-            btn.addEventListener("keyup", listen);
-        }
-    };
+// ─── Usage example (delete before shipping) ───────────────────────────────────
 
-    setItem(lsName, value) {
-        let idName = this.prefix + lsName;
-        localStorage.setItem(idName, value);
-        let elem = document.getElementById(idName);
-        if (elem) {
-            if (elem.type === "checkbox") {
-                elem.checked = value == "true";
-            } else {
-                elem.value = value;
-            }
-        }
-    }
+const mySection = new BUIM("Autopilot", "autopilot_");
 
-    getItem(lsName) {
-        let idName = this.prefix + lsName;
-        return localStorage.getItem(idName);
-    }
-};
+mySection
+  .addHeader(3, "Speed Settings")
+  .addItem("Target speed (kts)", "TargetSpeed", "number", 120)
+  .addItem("Enable autothrottle", "Autothrottle", "checkbox", false)
+  .addDropdown("Vertical mode", "VertMode", {
+    "Altitude Hold": "ALT",
+    "Vertical Speed": "VS",
+    "Flight Level Change": "FLCH",
+  }, "ALT")
+  .addShortcut("Toggle autopilot", "ToggleKey", "KeyA&,false&,false&,false&,false",
+    () => console.log("Autopilot toggled")
+  )
+  .addButton("Disengage All", () => console.log("Disengaged!"));
 
-window.fireBasicEvent('GMenuLoaded');
+// Reactive: fires when the enabled checkbox is toggled
+mySection.on("toggle", (isEnabled) => {
+  console.log("Autopilot enabled:", isEnabled);
+});
+
+// Read a value anywhere
+const speed = mySection.get("TargetSpeed"); // "120"
+const isOn  = mySection.getBool("Autothrottle"); // false

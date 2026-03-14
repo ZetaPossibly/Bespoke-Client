@@ -57,6 +57,9 @@
         algorithm: window.bespokeClient.data.jeelizModels.default,
     };
 
+    const lookoutUi = new window.BUIM("Lookout", "lookout");
+    lookoutUi.addItem("Sensitivity", "Sensitivity", "input", 0, 1)
+
     const clampToWithinBounds = function (value, min, max) {
         if (value < min) return min;
         if (value > max) return max;
@@ -76,7 +79,7 @@
     const transformFaceData = function (faceData, config) {
         if (config.enabled) {
             let transformed_value = clampToWithinBounds(
-                faceData * config.sensitivity * parseFloat(localStorage.getItem("lookoutSensitivity")),
+                faceData * config.sensitivity * parseFloat(lookoutUi.get("Sensitivity")),
                 config.min,
                 config.max
             ) + config.default - config.calib;
@@ -124,7 +127,7 @@
     const init = function () {
         let hasInit = false;
         setInterval(function () {
-            if (geofs.camera.currentModeName == "cockpit" && localStorage.getItem("lookoutEnabled") === "true") {
+            if (geofs.camera.currentModeName == "cockpit" && lookoutUi.isEnabled()) {
                 if (!hasInit) {
                     console.log("Initialising Jeeliz...")
                     JEELIZFACEFILTER.init({
@@ -172,23 +175,4 @@
         }, 1000);
     };
     init();
-
-    const lookoutUi = new window.BUIM("Lookout", "lookout");
-
-    window.calibrateLookout = function () {
-        console.log("Calibrating!");
-
-        config.pitch.calib = -transformedFaceData.rotation.pitch
-        config.yaw.calib = -transformedFaceData.rotation.yaw
-        config.roll.calib = -transformedFaceData.rotation.roll
-        config.leftRight.calib = -transformedFaceData.position.leftRight
-        config.forwardBackward.calib = -transformedFaceData.position.forwardBackward
-        config.upDown.calib = -transformedFaceData.position.upDown
-
-        console.log("Config after calibration:", JSON.stringify(config, null, 2));
-        console.log("TransformedFaceData reset:", JSON.stringify(transformedFaceData, null, 2));
-    };
-
-    lookoutUi.addButton("Calibrate", "calibrateLookout");
-    lookoutUi.addItem("Sensitivity", "Sensitivity", "input", 0, 1)
 })()

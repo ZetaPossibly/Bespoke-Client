@@ -35,9 +35,10 @@ const scripts = {
     chatFix: getUrl("scripts/chatFix/main.js"),
     advLabels: getUrl("scripts/advLabels/main.js"),
     benevolance: getUrl("scripts/benevolance/benevolance.js"),
-    freelook: getUrl("scripts/freelook/freelook.js"),
+    //freelook: getUrl("scripts/freelook/freelook.js"),
 
-    slew: getUrl("scripts/external/slew/slew.js")
+    //slew: getUrl("scripts/external/slew/slew.js")
+    // will add support for these in the new ui later
 }
 
 const data = {

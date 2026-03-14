@@ -1,5 +1,4 @@
 (function() {
-    let prefix = "benevolance"
     mapTilesets = {
         "CartoDB Dark": "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
         "Google": "https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
@@ -10,15 +9,15 @@
         const style = document.createElement("style");
         style.id = "BespokeTheme"
         style.textContent = `
-            .geofs-transparentUI .geofs-map-viewport {
-                -webkit-mask-image: linear-gradient(90deg, #ffffffe0 100%, #ffffff00 100%);
-                backdrop-filter: blur(10px);
+        .geofs-transparentUI .geofs-map-viewport {
+            -webkit-mask-image: linear-gradient(90deg, #ffffffe0 100%, #ffffff00 100%);
+            backdrop-filter: blur(10px);
             }
-
+            
             .geofs-transparentUI .geofs-ui-bottom {
                 background-color: #0000005e;
                 backdrop-filter: blur(5px);
-            }
+                }
 
             .geofs-expand-left.geofs-transparentUI .geofs-chat-messages {
                 left: 38%;
@@ -56,6 +55,30 @@
             .slider label {
                 color: #d2d2d2ff;
             }
+
+            .geofs-user-dialog {
+                background-color: #0000005e;
+                backdrop-filter: blur(5px);
+                padding: 5px;
+                font_size: 15px;
+            }
+            
+            .geofs-haring {
+                background-color: #0000007e;
+                backdrop-filter: blur(10px);
+                border-radius: 30px;
+                margin: 2px;
+                width: 40%;
+                box-shadow: none !important;
+
+            }
+            .geofs-closeHaring {
+                top: 15%;
+                height: 75%;
+                background-color: #000000ca;
+                backdrop-filter: blur(10px);
+                border-radius: 30px
+            }
         `;
 
         document.head.appendChild(style);
@@ -65,9 +88,36 @@
         );
     }
 
-    if (localStorage.getItem(prefix+"Enabled") === "true") {    
+    let prefix = "benevolance"
+    let benevolanceUi = new window.BUIM("Benevolance", prefix)
+    benevolanceUi
+        .addDropdown("Map Style", "MapStyle", mapTilesets, "GeoFS")
+        .addItem("Remove Foos from NAV", "RemoveFoos", "checkbox", false)
+    
+    benevolanceUi.on("toggle", () => {
+        if (localStorage.getItem(prefix+"Enabled") === "false") {
+            document.getElementById("BespokeTheme")?.remove()
+            geofs.api.map._map._layers["25"].setUrl(mapTilesets["GeoFS"])
+        } else {
+            apply_styles()
+        }
+    })
+
+    if (benevolanceUi.isEnabled()) {    
         apply_styles()
     }
+
+    geofs.api.map._map.options.maxZoom = 19
+    geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
+
+    benevolanceUi.on("MapStyle:change", (tileset) => {
+        geofs.api.map._map._layers["25"].setUrl(tileset)
+    })
+
+    benevolanceUi.on("RemoveFoos:toggle", () => {
+        multiplayer.stop()
+        multiplayer.start()  
+    })
 
 
     var toGo = document.getElementsByClassName('geofs-datasourceSelector');
@@ -80,32 +130,6 @@
         toGo[0].parentNode.removeChild(toGo[0]);
     }
 
-
-    let benevolanceUi = new window.BUIM("Benevolance", prefix)
-    benevolanceUi.addDropdown("Map Tileset (move the map to update)", "Tileset", mapTilesets)
-    benevolanceUi.addItem("Remove Foos", "RemoveFoos", "checkbox", "true")
-
-    geofs.api.map._map.options.maxZoom = 19
-    geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
-
-    document.addEventListener("change", (e) => {
-        if (e.target.id === prefix+"Toggled") {
-            if (localStorage.getItem(prefix+"Enabled") === "false") {
-                document.getElementById("BespokeTheme")?.remove()
-                geofs.api.map._map._layers["25"].setUrl(mapTilesets["GeoFS"])
-            } else {
-                apply_styles()
-            }
-        }
-        if (e.target.id === prefix+"Tileset") {
-            geofs.api.map._map._layers["25"].setUrl(localStorage.getItem(prefix+"Tileset"))
-        }
-        if (e.target.id === prefix+"RemoveFoos") {
-            multiplayer.stop()
-            multiplayer.start()  
-        }
-    });
-
     geofs.map.addPlayerMarker = function(e, t, a) {
         if (!ui.playerMarkers[e]) {
             var o = {
@@ -113,7 +137,7 @@
                 icon: geofs.api.map.getIcon(t, geofs.map.icons[t || "blue"]),
                 label: a || "-"
             };
-            if (localStorage.getItem(prefix+"RemoveFoos") === "true") {
+            if (benevolanceUi.getBool("RemoveFoos")) {
                 if (o.label !== "-" && multiplayer.users[e].callsign !== "Foo" && multiplayer.users[e].callsign !== "") {
                     ui.playerMarkers[e] = new geofs.api.map.marker(o)
                 }
@@ -122,7 +146,7 @@
             }
         }
 
-        if (localStorage.getItem(prefix+"RemoveFoos") === "true") {
+        if (benevolanceUi.getBool("RemoveFoos")) {
             if (o.label !== "-" && multiplayer.users[e].callsign !== "Foo" && multiplayer.users[e].callsign !== "") {
                 return geofs.api.map._map && this.mapActive && ui.playerMarkers[e].addToMap(),
                 ui.playerMarkers[e]
