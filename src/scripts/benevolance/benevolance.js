@@ -103,7 +103,7 @@
         }
     })
 
-    if (benevolanceUi.isEnabled()) {    
+    if (benevolanceUi.isEnabled) {    
         apply_styles()
     }
 

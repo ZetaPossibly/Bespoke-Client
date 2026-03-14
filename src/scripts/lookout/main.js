@@ -127,7 +127,7 @@
     const init = function () {
         let hasInit = false;
         setInterval(function () {
-            if (geofs.camera.currentModeName == "cockpit" && lookoutUi.isEnabled()) {
+            if (geofs.camera.currentModeName == "cockpit" && lookoutUi.isEnabled) {
                 if (!hasInit) {
                     console.log("Initialising Jeeliz...")
                     JEELIZFACEFILTER.init({

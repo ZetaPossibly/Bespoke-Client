@@ -33,7 +33,7 @@
           var a,
             o = multiplayer.visibleUsers[t];
           o.currentServerTime = multiplayer.getServerTime();
-          if (labUi.isEnabled()) {
+          if (labUi.isEnabled) {
             if (!(o.callsign === "Foo" || o.callsign === "")) {
               o.model
                 ? ((o.elapsedTime = o.elapsedTime + e),
@@ -100,7 +100,7 @@
           return;
         }
         e.position = new Cesium.Cartesian3.fromDegrees(t[1], t[0], t[2]);
-        if (labUi.isEnabled()) {
+        if (labUi.isEnabled) {
             e.pixelOffset.y = 22;
         } else {
             e.pixelOffset.y = 0;
@@ -110,7 +110,7 @@
     };
 
     multiplayer.User.prototype.addCallsign = function (e, t) {
-      if (labUi.isEnabled()) {
+      if (labUi.isEnabled) {
         if (e == "Foo" || e == "") {
           return;
         }
