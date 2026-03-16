@@ -103,12 +103,14 @@
         .addItem("Remove Foos from NAV", "RemoveFoos", "checkbox", false)
     
     benevolanceUi.on("toggle", () => {
-        if (localStorage.getItem(prefix+"Enabled") === "false") {
+        if (!benevolanceUi.isEnabled) {
             document.getElementById("BespokeTheme")?.remove()
             geofs.api.map._map._layers["25"].setUrl(mapTilesets["GeoFS"])
         } else {
             apply_styles()
         }
+        multiplayer.stop()
+        multiplayer.start()
     })
 
     if (benevolanceUi.isEnabled) {    
@@ -123,11 +125,6 @@
     })
 
     benevolanceUi.on("RemoveFoos:change", () => {
-        multiplayer.stop()
-        multiplayer.start()
-    })
-
-    benevolanceUi.on("toggle", () => {
         multiplayer.stop()
         multiplayer.start()
     })

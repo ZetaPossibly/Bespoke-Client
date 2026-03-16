@@ -29,7 +29,7 @@ const myMods = new BUIM("My Cool Mod", "myMod_");
 
 // 2. Chain methods to build your UI
 myMods
-  .addHeader(4, "General Settings")
+  .addHeader("General Settings")
   .addItem("Enable feature X", "featureX", "checkbox", true)
   .addItem("Max Speed", "maxSpeed", "number", 100)
   .addDropdown("Theme", "theme", { "Dark Mode": "dark", "Light Mode": "light" }, "dark")
@@ -69,8 +69,8 @@ All UI-building methods are **chainable** (they return `this`).
     *   `options`: An object formatted as `{ "Visible Label": "storedValue" }`.
 *   **`addButton(label, onClick)`**
     Adds a clickable button.
-*   **`addHeader(level, text)`**
-    Adds a visual heading inside the section (level corresponds to `h2`, `h3`, etc.).
+*   **`addHeader(text)`**
+    Adds a visual heading inside the section.
 *   **`addShortcut(description, lsName, defaultValue, onKeyDown, [onKeyUp])`**
     Adds a customizable keyboard shortcut binder. Users can click it to record a new key combination.
     *   `defaultValue`: Key code (e.g., `"KeyG"` or encoded string `"KeyG&,true&,false&,false&,false"`).

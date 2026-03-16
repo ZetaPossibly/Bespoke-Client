@@ -11,7 +11,7 @@ window.BUIM = (() => {
       position: absolute;
       left: 0.625rem;
       top: 3.125rem;
-      width: 350px;
+      width: 250px;
       min-width: 150px;
       max-height: 70vh;
       overflow-y: auto;
@@ -64,6 +64,13 @@ window.BUIM = (() => {
       margin: 4px 0;
     }
     .buim-label { flex: 1; opacity: 0.85; }
+
+    buim-header {
+        flex:1; 
+        opacity: 0.9;
+        font-weight: bold;
+        font-style: italic;
+    }
 
     .buim-input {
       background: rgba(255,255,255,0.04);
@@ -511,8 +518,8 @@ window.BUIM = (() => {
      * @param {string}    text
      * @returns {Section} this (chainable)
      */
-    addHeader(level = 3, text) {
-      this.#appendToBody(el(`h${level}`, { textContent: text }));
+    addHeader(text) {
+      this.#appendToBody(el(`label`, { textContent: text, className: "buim-header" }));
       return this;
     }
 
@@ -625,7 +632,7 @@ window.BUIM = (() => {
 const mySection = new BUIM("Autopilot", "autopilot_");
 
 mySection
-  .addHeader(3, "Speed Settings")
+  .addHeader("Speed Settings")
   .addItem("Target speed (kts)", "TargetSpeed", "number", 120)
   .addItem("Enable autothrottle", "Autothrottle", "checkbox", false)
   .addDropdown("Vertical mode", "VertMode", {

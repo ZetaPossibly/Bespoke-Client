@@ -17,7 +17,7 @@
   function label_init() {
     const labUi = new window.BUIM("Advanced Labels", "advLabels");
     labUi
-        .addHeader(5, "**IMPORTANT!** Turn off advanced atmosphere or face unexpected rendering issues! Do not use WT mode if you want to use advanced atmosphere.")
+        .addHeader("Do not use WT mode if you want to use advanced atmosphere. It won't work well.")
         .addItem("WT Mode", "WT", "checkbox", false);
 
 
