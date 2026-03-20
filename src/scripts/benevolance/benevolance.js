@@ -102,15 +102,29 @@
         .addDropdown("Map Style", "MapStyle", mapTilesets, "GeoFS")
         .addItem("Remove Foos from NAV", "RemoveFoos", "checkbox", false)
     
+    let restart_mp = function () {
+        multiplayer.stop()
+        setTimeout(() => {
+            multiplayer.stop()
+        }, 500)
+    }
+    
+    let change_map_tileset = function(url) {
+        if (benevolanceUi.isEnabled) {
+            geofs.api.map._map._layers["25"].setUrl(url)
+        } else {
+            geofs.api.map._map._layers["25"].setUrl(mapTilesets["GeoFS"])
+        }
+    }
+
     benevolanceUi.on("toggle", () => {
         if (!benevolanceUi.isEnabled) {
             document.getElementById("BespokeTheme")?.remove()
-            geofs.api.map._map._layers["25"].setUrl(mapTilesets["GeoFS"])
+            change_map_tileset(mapTilesets["GeoFS"])
         } else {
             apply_styles()
         }
-        multiplayer.stop()
-        multiplayer.start()
+        restart_mp()
     })
 
     if (benevolanceUi.isEnabled) {    
@@ -119,14 +133,13 @@
 
     geofs.api.map._map.options.maxZoom = 19
     geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
-    geofs.api.map._map._layers["25"].setUrl(benevolanceUi.get("MapStyle") || mapTilesets["GeoFS"])
+    change_map_tileset(benevolanceUi.get("MapStyle") || mapTilesets["GeoFS"])
     benevolanceUi.on("MapStyle:change", (tileset) => {
         geofs.api.map._map._layers["25"].setUrl(tileset)
     })
 
     benevolanceUi.on("RemoveFoos:change", () => {
-        multiplayer.stop()
-        multiplayer.start()
+       restart_mp()
     })
 
     var toGo = document.getElementsByClassName('geofs-datasourceSelector');

@@ -56,9 +56,16 @@
         },
         algorithm: window.bespokeClient.data.jeelizModels.default,
     };
-
+        
     const lookoutUi = new window.BUIM("Lookout", "lookout");
     lookoutUi.addItem("Sensitivity", "Sensitivity", "number", 1)
+
+    lookoutUi.on("toggle", () => {
+        if (geofs.camera.currentModeName == "cockpit") {
+            geofs.camera.setPosition(0, 0, 0)
+            geofs.camera.setRotation(0, 0, 0)
+        }
+    })
 
     const clampToWithinBounds = function (value, min, max) {
         if (value < min) return min;

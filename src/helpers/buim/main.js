@@ -243,7 +243,7 @@ window.BUIM = (() => {
 
     injectStyles();
 
-    _menuEl = el("div", { id: "buim-menu", className: "buim-menu" });
+    _menuEl = el("div", { id: "buim-menu", className: "buim-menu mdl-button mdl-js-button geofs-f-standard-ui geofs-mediumScreenOnly" });
 
     // Header
     const header = el("div", { className: "buim-menu-header" },
@@ -564,7 +564,7 @@ window.BUIM = (() => {
 
       // Global key listener for this shortcut
       document.addEventListener("keydown", (e) => {
-        if (shortcutMatches(e, Store.get(key) ?? defaultValue)) onKeyDown(e);
+        if (shortcutMatches(e, Store.get(key) ?? defaultValue) && this.isEnabled) onKeyDown(e);
       });
       if (onKeyUp) {
         document.addEventListener("keyup", (e) => {
@@ -629,27 +629,27 @@ window.BUIM = (() => {
 
 // ─── Usage example (delete before shipping) ───────────────────────────────────
 
-const mySection = new BUIM("Autopilot", "autopilot_");
+// const mySection = new BUIM("Autopilot", "autopilot_");
 
-mySection
-  .addHeader("Speed Settings")
-  .addItem("Target speed (kts)", "TargetSpeed", "number", 120)
-  .addItem("Enable autothrottle", "Autothrottle", "checkbox", false)
-  .addDropdown("Vertical mode", "VertMode", {
-    "Altitude Hold": "ALT",
-    "Vertical Speed": "VS",
-    "Flight Level Change": "FLCH",
-  }, "ALT")
-  .addShortcut("Toggle autopilot", "ToggleKey", "KeyA&,false&,false&,false&,false",
-    () => console.log("Autopilot toggled")
-  )
-  .addButton("Disengage All", () => console.log("Disengaged!"));
+// mySection
+//   .addHeader("Speed Settings")
+//   .addItem("Target speed (kts)", "TargetSpeed", "number", 120)
+//   .addItem("Enable autothrottle", "Autothrottle", "checkbox", false)
+//   .addDropdown("Vertical mode", "VertMode", {
+//     "Altitude Hold": "ALT",
+//     "Vertical Speed": "VS",
+//     "Flight Level Change": "FLCH",
+//   }, "ALT")
+//   .addShortcut("Toggle autopilot", "ToggleKey", "KeyA&,false&,false&,false&,false",
+//     () => console.log("Autopilot toggled")
+//   )
+//   .addButton("Disengage All", () => console.log("Disengaged!"));
 
-// Reactive: fires when the enabled checkbox is toggled
-mySection.on("toggle", (isEnabled) => {
-  console.log("Autopilot enabled:", isEnabled);
-});
+// // Reactive: fires when the enabled checkbox is toggled
+// mySection.on("toggle", (isEnabled) => {
+//   console.log("Autopilot enabled:", isEnabled);
+// });
 
-// Read a value anywhere
-const speed = mySection.get("TargetSpeed"); // "120"
-const isOn  = mySection.getBool("Autothrottle"); // false
+// // Read a value anywhere
+// const speed = mySection.get("TargetSpeed"); // "120"
+// const isOn  = mySection.getBool("Autothrottle"); // false
