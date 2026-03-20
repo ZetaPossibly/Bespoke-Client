@@ -271,6 +271,14 @@ window.BUIM = (() => {
   function toggleMenu() {
     _isOpen = !_isOpen;
     _menuEl.style.display = _isOpen ? "block" : "none";
+    if (_menuEl) {
+        _menuEl.classList.toggle("geofs-visible", _isOpen);
+        if (_isOpen) {
+            ui.expandLeft()
+        } else {
+            ui.collapseLeft()
+        }
+    }
     _emitter.emit(_isOpen ? "menu:open" : "menu:close");
   }
 
