@@ -164,7 +164,7 @@ window.BUIM = (() => {
     },
   };
 
-  // ─── MicroEmitter — replaces raw window.dispatchEvent string abuse ────────
+  // ─── MicroEmitter — replaces raw window.dispatchEvent string abuse ──────── mdl-button mdl-js-button geofs-f-standard-ui geofs-mediumScreenOnly
 
   class MicroEmitter {
     #listeners = new Map();
@@ -243,7 +243,7 @@ window.BUIM = (() => {
 
     injectStyles();
 
-    _menuEl = el("div", { id: "buim-menu", className: "buim-menu mdl-button mdl-js-button geofs-f-standard-ui geofs-mediumScreenOnly" });
+    _menuEl = el("div", { id: "buim-menu", className: "buim-menu geofs-list geofs-toggle-panel geofs-visible" });
 
     // Header
     const header = el("div", { className: "buim-menu-header" },
