@@ -54,7 +54,7 @@ window.BUIM = (() => {
       border-top: 1px solid #444;
       text-align: left;
     }
-    .buim-section-body.open { display: block; }
+    /*  .buim-section-body.open { display: block; } */
 
     .buim-row {
       display: flex;
@@ -143,7 +143,6 @@ window.BUIM = (() => {
    */
   const Store = {
     get(key) {
-      console.log("Getting key: " + key)
       const raw = localStorage.getItem(key);
       return raw === null ? null : raw;
     },
@@ -270,7 +269,7 @@ window.BUIM = (() => {
 
   function toggleMenu() {
     _isOpen = !_isOpen;
-    _menuEl.style.display = _isOpen ? "block" : "none";
+    //_menuEl.style.display = _isOpen ? "block" : "none";
     if (_menuEl) {
         _menuEl.classList.toggle("geofs-visible", _isOpen);
         if (_isOpen) {
@@ -428,12 +427,11 @@ window.BUIM = (() => {
      * @returns {function} Unsubscribe function.
      */
     on(event, fn) {
-        console.log("Listening on: " + `${this.#prefix}:${event}`)
       return _emitter.on(`${this.#prefix}:${event}`, fn);
     }
 
     emit(event, data) {
-        console.log("Emitting on: " + `${this.#prefix}:${event}`)
+      console.log("Emitting on: " + `${this.#prefix}:${event}`)
       _emitter.emit(`${this.#prefix}:${event}`, data);
     }
 
