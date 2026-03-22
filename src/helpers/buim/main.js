@@ -194,13 +194,17 @@ window.BUIM = (() => {
 
   // ─── DOM helpers ──────────────────────────────────────────────────────────
 
+  function toCamel(str) {
+        return str.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+    }
+
   function el(tag, attrs = {}, ...children) {
     const node = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs)) {
       if (k === "className") {
         node.className = v;
       } else if (k.startsWith("data-")) {
-        node.dataset[k.slice(5)] = v;
+        node.dataset[toCamel(k.slice(5))] = v;
       } else {
         node[k] = v;
       }
