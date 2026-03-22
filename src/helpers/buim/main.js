@@ -242,7 +242,13 @@ window.BUIM = (() => {
 
     injectStyles();
 
-    _menuEl = el("div", { id: "buim-menu", className: "buim-menu geofs-list geofs-toggle-panel geofs-visible" });
+    _menuEl = el("div", {
+        id: "buim-menu", 
+        className: "buim-menu geofs-list geofs-toggle-panel", 
+        'data-noblur': 'true',
+        'data-onshow': '{geofs.initializePreferencesPanel()}',
+        'data-onhide': '{geofs.savePreferencesPanel()}'
+    });
 
     // Header
     const header = el("div", { className: "buim-menu-header" },
@@ -261,6 +267,9 @@ window.BUIM = (() => {
         id: "buim-open-btn",
         className: "mdl-button mdl-js-button geofs-f-standard-ui",
         textContent: "BESPOKE",
+        'data-toggle-panel': '.buim-menu',
+        'data-tooltip-classname': 'mdl-tooltip--top',
+        'data-upgraded': ',MaterialButton'
       });
       btn.addEventListener("click", toggleMenu);
       bottomBar.appendChild(btn);
@@ -269,15 +278,7 @@ window.BUIM = (() => {
 
   function toggleMenu() {
     _isOpen = !_isOpen;
-    //_menuEl.style.display = _isOpen ? "block" : "none";
-    if (_menuEl) {
-        _menuEl.classList.toggle("geofs-visible", _isOpen);
-        if (_isOpen) {
-            ui.expandLeft()
-        } else {
-            ui.collapseLeft()
-        }
-    }
+    _menuEl.style.display = _isOpen ? "block" : "none";
     _emitter.emit(_isOpen ? "menu:open" : "menu:close");
   }
 
