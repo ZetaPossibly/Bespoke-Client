@@ -1,13 +1,13 @@
 (function () {
   // ─── UI ───────────────────────────────────────────────────────────────────
   const prefix = "freelook";
-  const freeLookUi = new window.BUIM("Freelook", prefix);
-  freeLookUi.addItem("X Sensitivity: ",        "xSens",       "number",   0, "0.2");
-  freeLookUi.addItem("Y Sensitivity: ",        "ySens",       "number",   0, "0.2");
-  freeLookUi.addItem("Reset Speed: ",          "ResetSpeed",  "number",   0, "0.25");
-  freeLookUi.addItem("Smooth Speed: ",         "SmoothSpeed", "number",   0, "0.18");
-  freeLookUi.addItem("Accel Strength: ",       "AccelStr",    "number",   0, "0.04");
-  freeLookUi.addItem("Mouse Acceleration: ",   "MouseAccel",  "checkbox", 0, false);
+  const freeLookUi = new window.BUIM("Freelook", prefix)
+    .addItem("X Sensitivity: ",        "xSens",       "number",   0.2)
+    .addItem("Y Sensitivity: ",        "ySens",       "number",   0.2)
+    .addItem("Reset Speed: ",          "ResetSpeed",  "number",   0.25)
+    .addItem("Smooth Speed: ",         "SmoothSpeed", "number",   0.18)
+    .addItem("Accel Strength: ",       "AccelStr",    "number",   0.04)
+    .addItem("Mouse Acceleration: ",   "MouseAccel",  "checkbox", false)
 
   // ─── State ────────────────────────────────────────────────────────────────
   let isActive         = false;
@@ -74,25 +74,24 @@
   }
 
   // ─── Keybind ──────────────────────────────────────────────────────────────
-  freeLookUi.addKBShortcut(
+  freeLookUi.addShortcut(
     "Use Freelook: ",
     "hotkey",
-    1,
-    "z",
-    function () {
+    "KeyZ&,false&,false&,false&,false",
+    (e) => {
       const tag = document.activeElement?.tagName?.toLowerCase();
       if (tag === "input" || tag === "textarea") return;
       activate();
     },
-    function () {
+    (e) => {
       deactivate();
     }
   );
 
   // ─── Per-frame render loop ────────────────────────────────────────────────
   geofs.api.viewer.scene.preRender.addEventListener(() => {
-    const resetSpeed  = parseFloat(freeLookUi.getItem("ResetSpeed"))  || 0.25;
-    const smoothSpeed = parseFloat(freeLookUi.getItem("SmoothSpeed")) || 0.18;
+    const resetSpeed  = parseFloat(freeLookUi.get("ResetSpeed"))  || 0.25;
+    const smoothSpeed = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.18;
 
     if (isActive) {
       currentHeadingOffset += (targetHeadingOffset - currentHeadingOffset) * smoothSpeed;
@@ -134,10 +133,10 @@
   window.addEventListener("mousemove", (e) => {
     if (!isActive) return;
 
-    const xSens    = parseFloat(freeLookUi.getItem("xSens"))    || 0.2;
-    const ySens    = parseFloat(freeLookUi.getItem("ySens"))     || 0.2;
-    const accelOn  = freeLookUi.getItem("MouseAccel") === "true";
-    const accelStr = parseFloat(freeLookUi.getItem("AccelStr"))  || 0.04;
+    const xSens    = parseFloat(freeLookUi.get("xSens"))    || 0.2;
+    const ySens    = parseFloat(freeLookUi.get("ySens"))     || 0.2;
+    const accelOn  = freeLookUi.get("MouseAccel") === "true";
+    const accelStr = parseFloat(freeLookUi.get("AccelStr"))  || 0.04;
 
     let dx = e.movementX;
     let dy = e.movementY;

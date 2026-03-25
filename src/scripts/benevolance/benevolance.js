@@ -92,8 +92,19 @@
         document.head.appendChild(style);
 
         geofs.api.map._map._layers["25"].setUrl(
-            localStorage.getItem(prefix + ":MapStyle") || mapTilesets["CartoDB Dark"]
+            benevolanceUi.get("MapStyle") || mapTilesets["CartoDB Dark"]
         );
+
+        geofs.api.map._map.options.maxZoom = 19
+        geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
+        change_map_tileset(benevolanceUi.get("MapStyle") || mapTilesets["GeoFS"])
+    }
+
+    function remove_styles() {
+        geofs.api.map._map.options.maxZoom = 13
+        geofs.api.map._map._panes.mapPane.parentElement.style.background = ''
+        document.getElementById("BespokeTheme")?.remove()
+        change_map_tileset(mapTilesets["GeoFS"])
     }
 
     let prefix = "benevolance"
@@ -119,8 +130,7 @@
 
     benevolanceUi.on("toggle", () => {
         if (!benevolanceUi.isEnabled) {
-            document.getElementById("BespokeTheme")?.remove()
-            change_map_tileset(mapTilesets["GeoFS"])
+            remove_styles()
         } else {
             apply_styles()
         }
@@ -129,17 +139,16 @@
 
     if (benevolanceUi.isEnabled) {    
         apply_styles()
+    } else {
+        remove_styles()
     }
 
-    geofs.api.map._map.options.maxZoom = 19
-    geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
-    change_map_tileset(benevolanceUi.get("MapStyle") || mapTilesets["GeoFS"])
     benevolanceUi.on("MapStyle:change", (tileset) => {
-        geofs.api.map._map._layers["25"].setUrl(tileset)
+        if (benevolanceUi.isEnabled) geofs.api.map._map._layers["25"].setUrl(tileset)
     })
 
     benevolanceUi.on("RemoveFoos:change", () => {
-       restart_mp()
+       if (benevolanceUi.isEnabled) restart_mp()
     })
 
     var toGo = document.getElementsByClassName('geofs-datasourceSelector');
@@ -159,7 +168,7 @@
                 icon: geofs.api.map.getIcon(t, geofs.map.icons[t || "blue"]),
                 label: a || "-"
             };
-            if (benevolanceUi.getBool("RemoveFoos")) {
+            if (benevolanceUi.getBool("RemoveFoos") && benevolanceUi.isEnabled) {
                 if (o.label !== "-" && multiplayer.users[e].callsign !== "Foo" && multiplayer.users[e].callsign !== "") {
                     ui.playerMarkers[e] = new geofs.api.map.marker(o)
                 }
@@ -168,7 +177,7 @@
             }
         }
 
-        if (benevolanceUi.getBool("RemoveFoos")) {
+        if (benevolanceUi.getBool("RemoveFoos") && benevolanceUi.isEnabled) {
             if (o.label !== "-" && multiplayer.users[e].callsign !== "Foo" && multiplayer.users[e].callsign !== "") {
                 return geofs.api.map._map && this.mapActive && ui.playerMarkers[e].addToMap(),
                 ui.playerMarkers[e]
