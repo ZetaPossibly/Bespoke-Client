@@ -4,9 +4,9 @@
   const freeLookUi = new window.BUIM("Freelook", prefix)
     .addItem("X Sensitivity: ",        "xSens",       "number",   0.2)
     .addItem("Y Sensitivity: ",        "ySens",       "number",   0.2)
-    .addItem("Reset Speed: ",          "ResetSpeed",  "number",   0.25)
-    .addItem("Smooth Speed: ",         "SmoothSpeed", "number",   0.18)
-    .addItem("Accel Strength: ",       "AccelStr",    "number",   0.04)
+    .addItem("Reset Speed: ",          "ResetSpeed",  "number",   0.4)
+    .addItem("Smooth Speed: ",         "SmoothSpeed", "number",   0.4)
+    .addItem("Accel Strength: ",       "AccelStr",    "number",   0.001)
     .addItem("Mouse Acceleration: ",   "MouseAccel",  "checkbox", false)
 
   // ─── State ────────────────────────────────────────────────────────────────
