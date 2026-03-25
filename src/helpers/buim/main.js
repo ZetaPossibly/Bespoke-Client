@@ -302,15 +302,11 @@ window.BUIM = (() => {
   }
 
   function toggleMenu(o) {
-    const prev_open = _isOpen;
-
     _isOpen = typeof o === "boolean" ? o : !_isOpen;
 
     _menuEl.style.display = _isOpen ? "block" : "none";
 
-    if (prev_open !== _isOpen) {
-      _emitter.emit(_isOpen ? "menu:open" : "menu:close");
-    }
+    _emitter.emit(_isOpen ? "menu:open" : "menu:close");
   }
 
   // ─── Keyboard shortcut helpers ────────────────────────────────────────────
@@ -707,30 +703,3 @@ window.BUIM = (() => {
 
   return publicApi;
 })();
-
-// ─── Usage example (delete before shipping) ───────────────────────────────────
-
-// const mySection = new BUIM("Autopilot", "autopilot_");
-
-// mySection
-//   .addHeader("Speed Settings")
-//   .addItem("Target speed (kts)", "TargetSpeed", "number", 120)
-//   .addItem("Enable autothrottle", "Autothrottle", "checkbox", false)
-//   .addDropdown("Vertical mode", "VertMode", {
-//     "Altitude Hold": "ALT",
-//     "Vertical Speed": "VS",
-//     "Flight Level Change": "FLCH",
-//   }, "ALT")
-//   .addShortcut("Toggle autopilot", "ToggleKey", "KeyA&,false&,false&,false&,false",
-//     () => console.log("Autopilot toggled")
-//   )
-//   .addButton("Disengage All", () => console.log("Disengaged!"));
-
-// // Reactive: fires when the enabled checkbox is toggled
-// mySection.on("toggle", (isEnabled) => {
-//   console.log("Autopilot enabled:", isEnabled);
-// });
-
-// // Read a value anywhere
-// const speed = mySection.get("TargetSpeed"); // "120"
-// const isOn  = mySection.getBool("Autothrottle"); // false
