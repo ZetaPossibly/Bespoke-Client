@@ -280,9 +280,6 @@ window.BUIM = (() => {
         id: "buim-open-btn",
         className: "mdl-button mdl-js-button geofs-f-standard-ui",
         textContent: "BESPOKE",
-        "data-toggle-panel": ".buim-menu",
-        "data-tooltip-classname": "mdl-tooltip--top",
-        "data-upgraded": ",MaterialButton",
       });
       btn.addEventListener("click", toggleMenu);
       bottomBar.appendChild(btn);
@@ -293,8 +290,8 @@ window.BUIM = (() => {
         container.addEventListener("click", (e) => {
           const closest_btn = e.target.closest("button");
 
-          if (!closest_btn || closest_btn === btn) return;
-
+          if (!closest_btn) return;
+          
           // Check it's a DIRECT child of the container
           if (closest_btn.parentElement === container) {
             toggleMenu(false); // close menu
