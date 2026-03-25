@@ -27,7 +27,8 @@ const getUrl = (path) => `${baseUrl.replace("*", path)}`;
 
 const helpers = {
     jeeliz: getUrl("helpers/jeeliz/main.js"),
-    buim: getUrl("helpers/buim/main.js")
+    buim: getUrl("helpers/buim/main.js"),
+    silk: getUrl("helpers/silk/main.js")
 }
 
 const scripts = {
