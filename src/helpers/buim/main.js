@@ -54,7 +54,7 @@ window.BUIM = (() => {
       border-top: 1px solid #444;
       text-align: left;
     }
-    /*  .buim-section-body.open { display: block; } */
+    .buim-section-body.open { display: block; }
 
     .buim-row {
       display: flex;
@@ -290,7 +290,12 @@ window.BUIM = (() => {
         container.addEventListener("click", (e) => {
           const closest_btn = e.target.closest("button");
 
-          if (!closest_btn) return;
+          if (!closest_btn) {
+            const closest_div = e.target.closest("div");
+            if (closest_div.id == "buim-open-btn") {
+                ui.collapseLeft()
+            }
+          };
           
           // Check it's a DIRECT child of the container
           if (closest_btn.parentElement === container) {
