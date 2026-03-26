@@ -51,7 +51,6 @@
     .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
     .addItem("Snappiness", "snappiness", "number", 5)
     .addItem("Deadzone", "deadzone", "number", 1)
-
     .addItem("Speed Boost", "speedBoost", "number", 2)
     .addItem("Exponent", "exponent", "number", 1.5)
 
