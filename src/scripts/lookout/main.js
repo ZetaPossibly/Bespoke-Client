@@ -20,24 +20,24 @@
       min: -100,
       max: 100,
       calib: 0,
-      sensitivity: 250,
+      sensitivity: 125,
     },
     leftRight: {
-      enabled: false,
+      enabled: true,
       min: -0.5,
       max: 0.5,
       calib: 0,
       sensitivity: 5,
     },
     forwardBackward: {
-      enabled: false,
+      enabled: true,
       min: -0.5,
       max: 0.5,
       calib: 0,
       sensitivity: 5,
     },
     upDown: {
-      enabled: false,
+      enabled: true,
       min: -0.1,
       max: 0.2,
       calib: 0,
@@ -49,8 +49,11 @@
   const lookoutUi = new window.BUIM("Lookout", "lookout")
     .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 1)
     .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
-    .addItem("Smoothening", "smoothening", "number", 15)
-    .addItem("Deadzone", "deadzone", "number", 0)
+    .addItem("Snappiness", "snappiness", "number", 5)
+    .addItem("Deadzone", "deadzone", "number", 1)
+
+    .addItem("Speed Boost", "speedBoost", "number", 2)
+    .addItem("Exponent", "exponent", "number", 1.5)
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk          = new Silk(0, { min: config.pitch.min,           max: config.pitch.max });
@@ -64,16 +67,22 @@
   const positionalAxes = [leftRightSilk, forwardBackwardSilk, upDownSilk];
 
   let update_settings = function () {
-    const smoothSpeed = parseFloat(lookoutUi.get("smoothening")) || 15;
+    const smoothSpeed = parseFloat(lookoutUi.get("snappiness")) || 15;
     const deadzone    = parseFloat(lookoutUi.get("deadzone"))    || 0;
+    const speedBoost = parseFloat(lookoutUi.get("speedBoost"))
+    const exponent = parseFloat(lookoutUi.get("exponent"))
 
     rotationalAxes.forEach((axis) => {
       axis.speed    = smoothSpeed;
       axis.radius = deadzone;
+      axis.speedBoost = speedBoost
+      axis.exponent = exponent
     });
     positionalAxes.forEach((axis) => {
       axis.speed    = smoothSpeed;
       axis.radius = deadzone;
+      axis.speedBoost = speedBoost
+      axis.exponent = exponent
     });
   };
 
@@ -85,12 +94,6 @@
       geofs.camera.setRotation(0, 0, 0);
     }
   });
-
-  const clampToWithinBounds = function (value, min, max) {
-    if (value < min) return min;
-    if (value > max) return max;
-    return value;
-  };
 
   const addCanvas = function (id) {
     const canvas = document.createElement("canvas");
