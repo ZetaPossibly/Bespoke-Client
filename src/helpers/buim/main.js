@@ -147,7 +147,7 @@ window.BUIM = (() => {
       return raw === null ? null : raw;
     },
     set(key, value) {
-        console.log("Setting key: " + key + "... to ... " + value.toString())
+      console.log("Setting key: " + key + "... to ... " + value.toString());
       localStorage.setItem(key, String(value));
     },
     getOrDefault(key, defaultValue) {
@@ -176,7 +176,10 @@ window.BUIM = (() => {
 
     off(event, fn) {
       const list = this.#listeners.get(event) ?? [];
-      this.#listeners.set(event, list.filter((f) => f !== fn));
+      this.#listeners.set(
+        event,
+        list.filter((f) => f !== fn),
+      );
     }
 
     emit(event, data) {
@@ -186,7 +189,7 @@ window.BUIM = (() => {
 
   // ─── Module-level private state ───────────────────────────────────────────
 
-  let _menuEl = null;       // The floating menu <div>
+  let _menuEl = null; // The floating menu <div>
   let _isOpen = false;
   let _isBootstrapped = false;
 
@@ -195,8 +198,8 @@ window.BUIM = (() => {
   // ─── DOM helpers ──────────────────────────────────────────────────────────
 
   function toCamel(str) {
-        return str.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-    }
+    return str.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+  }
 
   function el(tag, attrs = {}, ...children) {
     const node = document.createElement(tag);
@@ -211,7 +214,9 @@ window.BUIM = (() => {
     }
     for (const child of children) {
       if (child == null) continue;
-      node.append(typeof child === "string" ? document.createTextNode(child) : child);
+      node.append(
+        typeof child === "string" ? document.createTextNode(child) : child,
+      );
     }
     return node;
   }
@@ -232,7 +237,10 @@ window.BUIM = (() => {
       if (existing) return resolve(existing);
       const obs = new MutationObserver(() => {
         const found = document.querySelector(selector);
-        if (found) { obs.disconnect(); resolve(found); }
+        if (found) {
+          obs.disconnect();
+          resolve(found);
+        }
       });
       obs.observe(document.body, { childList: true, subtree: true });
     });
@@ -247,20 +255,21 @@ window.BUIM = (() => {
     injectStyles();
 
     _menuEl = el("div", {
-        id: "buim-menu", 
-        className: "buim-menu geofs-list geofs-toggle-panel", 
-        'data-noblur': 'true',
-        'data-onshow': '{geofs.initializePreferencesPanel()}',
-        'data-onhide': '{geofs.savePreferencesPanel()}'
+      id: "buim-menu",
+      className: "buim-menu",
     });
 
     // Header
-    const header = el("div", { className: "buim-menu-header" },
+    const header = el(
+      "div",
+      { className: "buim-menu-header" },
       el("h3", { className: "buim-menu-title" }, "Bespoke Client"),
-      el("p", { className: "buim-menu-subtitle" },
+      el(
+        "p",
+        { className: "buim-menu-subtitle" },
         "An Eschaton Project · Made by Zeta · ",
-        el("i", {}, "@zetainbeta_43414 on Discord")
-      )
+        el("i", {}, "@zetainbeta_43414 on Discord"),
+      ),
     );
     _menuEl.appendChild(header);
     document.body.appendChild(_menuEl);
@@ -271,19 +280,35 @@ window.BUIM = (() => {
         id: "buim-open-btn",
         className: "mdl-button mdl-js-button geofs-f-standard-ui",
         textContent: "BESPOKE",
-        'data-toggle-panel': '.buim-menu',
-        'data-tooltip-classname': 'mdl-tooltip--top',
-        'data-upgraded': ',MaterialButton'
+        "data-toggle-panel": ".buim-menu",
+        "data-tooltip-classname": "mdl-tooltip--top",
+        "data-upgraded": ",MaterialButton",
       });
       btn.addEventListener("click", toggleMenu);
+      const container = document.querySelector(".geofs-ui-bottom");
+
+      if (container) {
+        container.addEventListener("click", (e) => {
+          const btn = e.target.closest("button");
+
+          if (!btn) return;
+
+          // Check it's a DIRECT child of the container
+          if (btn.parentElement === container) {
+            toggleMenu(false) // close menu
+          }
+        });
+      }
       bottomBar.appendChild(btn);
     });
   }
 
-  function toggleMenu() {
-    _isOpen = !_isOpen;
+  function toggleMenu(o) {
+    const prev_open = _isOpen
+    _isOpen = o || !_isOpen;
+
     _menuEl.style.display = _isOpen ? "block" : "none";
-    _emitter.emit(_isOpen ? "menu:open" : "menu:close");
+    if (prev_open !== _isOpen) _emitter.emit(_isOpen ? "menu:open" : "menu:close"); // if open is changed
   }
 
   // ─── Keyboard shortcut helpers ────────────────────────────────────────────
@@ -344,7 +369,8 @@ window.BUIM = (() => {
      * @param {string} prefix  - Unique prefix for all localStorage keys in this section.
      */
     constructor(name, prefix) {
-      if (!prefix || !name) throw new Error("BUIM: name and prefix are required.");
+      if (!prefix || !name)
+        throw new Error("BUIM: name and prefix are required.");
       this.#name = name;
       this.#prefix = prefix;
 
@@ -376,10 +402,17 @@ window.BUIM = (() => {
 
       const title = el("h5", { className: "buim-section-title" }, this.#name);
 
-      const arrow = el("span", { className: "buim-section-arrow", textContent: "▸" });
+      const arrow = el("span", {
+        className: "buim-section-arrow",
+        textContent: "▸",
+      });
 
-      const header = el("div", { className: "buim-section-header" },
-        this.#enableCheckbox, title, arrow
+      const header = el(
+        "div",
+        { className: "buim-section-header" },
+        this.#enableCheckbox,
+        title,
+        arrow,
       );
 
       this.#bodyEl = el("div", { className: "buim-section-body" });
@@ -393,7 +426,12 @@ window.BUIM = (() => {
 
       this.#bodyEl.appendChild(resetBtn);
 
-      const section = el("div", { className: "buim-section" }, header, this.#bodyEl);
+      const section = el(
+        "div",
+        { className: "buim-section" },
+        header,
+        this.#bodyEl,
+      );
 
       header.addEventListener("click", () => {
         const open = this.#bodyEl.classList.toggle("open");
@@ -436,7 +474,7 @@ window.BUIM = (() => {
     }
 
     emit(event, data) {
-      console.log("Emitting on: " + `${this.#prefix}:${event}`)
+      console.log("Emitting on: " + `${this.#prefix}:${event}`);
       _emitter.emit(`${this.#prefix}:${event}`, data);
     }
 
@@ -472,7 +510,11 @@ window.BUIM = (() => {
         _emitter.emit(`${key}:change`, value);
       });
 
-      const label = el("label", { className: "buim-label", htmlFor: key }, description);
+      const label = el(
+        "label",
+        { className: "buim-label", htmlFor: key },
+        description,
+      );
       const row = el("div", { className: "buim-row" }, label, input);
       this.#appendToBody(row);
       return this;
@@ -491,7 +533,10 @@ window.BUIM = (() => {
       const firstVal = Object.values(options)[0] ?? "";
       const stored = Store.getOrDefault(key, defaultValue ?? firstVal);
 
-      this.#defaults.push({ key, defaultValue: String(defaultValue ?? firstVal) });
+      this.#defaults.push({
+        key,
+        defaultValue: String(defaultValue ?? firstVal),
+      });
 
       const select = el("select", { id: key, className: "buim-select" });
       for (const [label, value] of Object.entries(options)) {
@@ -504,7 +549,11 @@ window.BUIM = (() => {
         _emitter.emit(`${key}:change`, select.value);
       });
 
-      const label = el("label", { className: "buim-label", htmlFor: key }, description);
+      const label = el(
+        "label",
+        { className: "buim-label", htmlFor: key },
+        description,
+      );
       const row = el("div", { className: "buim-row" }, label, select);
       this.#appendToBody(row);
       return this;
@@ -530,7 +579,9 @@ window.BUIM = (() => {
      * @returns {Section} this (chainable)
      */
     addHeader(text) {
-      this.#appendToBody(el(`label`, { textContent: text, className: "buim-header" }));
+      this.#appendToBody(
+        el(`label`, { textContent: text, className: "buim-header" }),
+      );
       return this;
     }
 
@@ -570,12 +621,19 @@ window.BUIM = (() => {
           btn.classList.remove("listening");
           document.removeEventListener("keyup", capture, true);
         };
-        document.addEventListener("keyup", capture, { capture: true, once: true });
+        document.addEventListener("keyup", capture, {
+          capture: true,
+          once: true,
+        });
       });
 
       // Global key listener for this shortcut
       document.addEventListener("keydown", (e) => {
-        if (shortcutMatches(e, Store.get(key) ?? defaultValue) && this.isEnabled) onKeyDown(e);
+        if (
+          shortcutMatches(e, Store.get(key) ?? defaultValue) &&
+          this.isEnabled
+        )
+          onKeyDown(e);
       });
       if (onKeyUp) {
         document.addEventListener("keyup", (e) => {
@@ -592,10 +650,14 @@ window.BUIM = (() => {
     // ── Convenience getters ──────────────────────────────────────────────
 
     /** Returns the raw stored string for lsName. */
-    get(lsName) { return Store.get(this.#key(lsName)); }
+    get(lsName) {
+      return Store.get(this.#key(lsName));
+    }
 
     /** Returns a boolean for a checkbox-backed setting. */
-    getBool(lsName) { return Store.getBool(this.#key(lsName)); }
+    getBool(lsName) {
+      return Store.getBool(this.#key(lsName));
+    }
 
     /** Programmatically update a stored value and sync the input element. */
     set(lsName, value) {
@@ -603,12 +665,15 @@ window.BUIM = (() => {
       Store.set(key, value);
       const elem = document.getElementById(key);
       if (!elem) return;
-      if (elem.type === "checkbox") elem.checked = value === "true" || value === true;
+      if (elem.type === "checkbox")
+        elem.checked = value === "true" || value === true;
       else elem.value = value;
     }
 
     /** Whether this section is enabled (the top-level checkbox). */
-    get isEnabled() { return Store.getBool(this.#key("Enabled"), true); }
+    get isEnabled() {
+      return Store.getBool(this.#key("Enabled"), true);
+    }
   }
 
   // ─── Module-level events exposed for orchestration ────────────────────────
@@ -630,13 +695,16 @@ window.BUIM = (() => {
   // Signal that BUIM is ready (mirrors the original window.fireBasicEvent pattern
   // without depending on an external function that may not exist).
   const readyEvent = new CustomEvent("BUIMLoaded", { bubbles: true });
-  document.addEventListener("DOMContentLoaded", () => {
-    document.dispatchEvent(readyEvent);
-  }, { once: true });
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+      document.dispatchEvent(readyEvent);
+    },
+    { once: true },
+  );
 
   return publicApi;
 })();
-
 
 // ─── Usage example (delete before shipping) ───────────────────────────────────
 
