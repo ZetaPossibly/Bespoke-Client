@@ -297,20 +297,23 @@ window.BUIM = (() => {
 
           // Check it's a DIRECT child of the container
           if (closest_btn.parentElement === container) {
-            toggleMenu(false) // close menu
+            toggleMenu(false); // close menu
           }
         });
       }
-
     });
   }
 
   function toggleMenu(o) {
-    const prev_open = _isOpen
-    _isOpen = o || !_isOpen;
+    const prev_open = _isOpen;
+
+    _isOpen = typeof o === "boolean" ? o : !_isOpen;
 
     _menuEl.style.display = _isOpen ? "block" : "none";
-    if (prev_open !== _isOpen) _emitter.emit(_isOpen ? "menu:open" : "menu:close"); // if open is changed
+
+    if (prev_open !== _isOpen) {
+      _emitter.emit(_isOpen ? "menu:open" : "menu:close");
+    }
   }
 
   // ─── Keyboard shortcut helpers ────────────────────────────────────────────
