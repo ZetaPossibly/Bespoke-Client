@@ -285,21 +285,23 @@ window.BUIM = (() => {
         "data-upgraded": ",MaterialButton",
       });
       btn.addEventListener("click", toggleMenu);
+      bottomBar.appendChild(btn);
+
       const container = document.querySelector(".geofs-ui-bottom");
 
       if (container) {
         container.addEventListener("click", (e) => {
-          const btn = e.target.closest("button");
+          const closest_btn = e.target.closest("button");
 
-          if (!btn) return;
+          if (!closest_btn || closest_btn === btn) return;
 
           // Check it's a DIRECT child of the container
-          if (btn.parentElement === container) {
+          if (closest_btn.parentElement === container) {
             toggleMenu(false) // close menu
           }
         });
       }
-      bottomBar.appendChild(btn);
+
     });
   }
 
