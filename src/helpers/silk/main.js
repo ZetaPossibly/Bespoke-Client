@@ -44,7 +44,7 @@
 
     _softClamp(value, k_val) {
       // higher = harder
-      k = (k ?? this.clampHardness);
+      const k = (k_val ?? this.clampHardness);
       const scaled = value * this.sensitivity;
 
       // If unbounded, skip soft clamp entirely
