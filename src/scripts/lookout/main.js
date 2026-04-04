@@ -1,5 +1,7 @@
 (function () {
   let config = {
+    rotationSensitvity: 1,
+    positionSensitivity: 1,
     pitch: {
       enabled: true,
       min: -80,
@@ -57,8 +59,38 @@
     algorithm: window.bespokeClient.data.jeelizModels.default,
   };
 
-  const lookoutUi = new window.BUIM("Lookout", "lookout");
-  lookoutUi.addItem("Sensitivity", "Sensitivity", "number", 1);
+  const lookoutUi = new window.BUIM("Lookout", "lookout")
+    .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 1)
+    .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
+    .addItem("Smoothening", "smoothening", "number", 15)
+    .addItem("Deadzone", "deadzone", "number", 3)
+
+  // ─── Silk instances ────────────────────────────────────────────────────────
+  let pitchSilk          = new Silk(0, { min: config.pitch.min,           max: config.pitch.max });
+  let yawSilk            = new Silk(0, { min: config.yaw.min,             max: config.yaw.max });
+  let rollSilk           = new Silk(0, { min: config.roll.min,            max: config.roll.max });
+  let leftRightSilk      = new Silk(0, { min: config.leftRight.min,       max: config.leftRight.max });
+  let forwardBackwardSilk= new Silk(0, { min: config.forwardBackward.min, max: config.forwardBackward.max });
+  let upDownSilk         = new Silk(0, { min: config.upDown.min,          max: config.upDown.max });
+
+  const rotationalAxes = [pitchSilk, yawSilk, rollSilk];
+  const positionalAxes = [leftRightSilk, forwardBackwardSilk, upDownSilk];
+
+  let update_settings = function () {
+    const smoothSpeed = parseFloat(lookoutUi.get("smoothening")) || 15;
+    const deadzone    = parseFloat(lookoutUi.get("deadzone"))    || 3;
+
+    rotationalAxes.forEach((axis) => {
+      axis.speed    = smoothSpeed;
+      axis.deadzone = deadzone;
+    });
+    positionalAxes.forEach((axis) => {
+      axis.speed    = smoothSpeed;
+      axis.deadzone = deadzone;
+    });
+  };
+
+  update_settings();
 
   lookoutUi.on("toggle", () => {
     if (geofs.camera.currentModeName == "cockpit") {
@@ -87,7 +119,7 @@
     if (config.enabled) {
       let transformed_value =
         clampToWithinBounds(
-          faceData * config.sensitivity * parseFloat(lookoutUi.get("Sensitivity")),
+          faceData * config.sensitivity,
           config.min,
           config.max,
         ) +
@@ -101,16 +133,17 @@
     return config.default;
   };
 
-  const applyTransformsToCamera = function (data) {
+  // Reads smoothed Silk values and applies them to the camera.
+  const applyTransformsToCamera = function () {
     geofs.camera.setRotation(
-      transformFaceData(data.rotation.yaw, config.yaw),
-      transformFaceData(data.rotation.pitch, config.pitch),
-      transformFaceData(data.rotation.roll, config.roll),
+      yawSilk.get(),
+      pitchSilk.get(),
+      rollSilk.get(),
     );
     geofs.camera.setPosition(
-      transformFaceData(data.position.leftRight, config.leftRight),
-      transformFaceData(data.position.forwardBackward, config.forwardBackward),
-      transformFaceData(data.position.upDown, config.upDown),
+      leftRightSilk.get(),
+      forwardBackwardSilk.get(),
+      upDownSilk.get(),
     );
   };
 
@@ -121,18 +154,17 @@
     alert("An error occurred: " + error);
   };
 
-  let transformedFaceData = {
-    rotation: {
-      pitch: 0,
-      yaw: 0,
-      roll: 0,
-    },
-    position: {
-      leftRight: 0,
-      forwardBackward: 0,
-      upDown: 0,
-    },
-  };
+  // ─── Per-frame update loop ─────────────────────────────────────────────────
+  geofs.api.viewer.scene.preRender.addEventListener(() => {
+    update_settings();
+
+    const dt = window.gameDeltaTime || 0;
+
+    rotationalAxes.forEach(axis => axis.update(dt));
+    positionalAxes.forEach(axis => axis.update(dt));
+
+    applyTransformsToCamera();
+  });
 
   const init = function () {
     let hasInit = false;
@@ -149,29 +181,34 @@
               if (geofs.camera.freeLookEnabled) {
                 return;
               }
-              transformedFaceData = {
-                rotation: {
-                  pitch: -detectState.rx,
-                  yaw: -detectState.ry,
-                  roll: -detectState.rz,
-                },
-                position: {
-                  leftRight: -detectState.x,
-                  forwardBackward: detectState.s,
-                  upDown: detectState.y,
-                },
-              };
-              geofs.camera.freeLookBase = [transformedFaceData.rotation.yaw, transformedFaceData.rotation.pitch];
 
-              applyTransformsToCamera(transformedFaceData);
+              const rotSens = parseFloat(lookoutUi.get("RotationalSensitivity"));
+              const posSens = parseFloat(lookoutUi.get("PositionalSensitivity"));
+
+              // Transform raw face data and push into Silk targets.
+              // The silks are updated and applied to the camera in the preRender loop.
+              pitchSilk.setTarget(
+                transformFaceData(-detectState.rx * rotSens, config.pitch)
+              );
+              yawSilk.setTarget(
+                transformFaceData(-detectState.ry * rotSens, config.yaw)
+              );
+              rollSilk.setTarget(
+                transformFaceData(-detectState.rz * rotSens, config.roll)
+              );
+              leftRightSilk.setTarget(
+                transformFaceData(-detectState.x * posSens, config.leftRight)
+              );
+              forwardBackwardSilk.setTarget(
+                transformFaceData(detectState.s * posSens, config.forwardBackward)
+              );
+              upDownSilk.setTarget(
+                transformFaceData(detectState.y * posSens, config.upDown)
+              );
+
+              geofs.camera.freeLookBase = [yawSilk.get(), pitchSilk.get()];
             },
           });
-          // JEELIZFACEFILTER.set_stabilizationSettings({
-          //   translationFactorRange: [0.002, 0.005],
-          //   rotationFactorRange: [0.015, 0.1],
-          //   qualityFactorRange: [0.9, 0.98],
-          //   alphaRange: [0.05, 1.0]
-          // });
           hasInit = true;
           console.log("Done!");
         }

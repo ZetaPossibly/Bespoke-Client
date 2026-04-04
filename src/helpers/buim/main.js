@@ -577,11 +577,10 @@ window.BUIM = (() => {
 
     /**
      * Adds a visual sub-heading inside the section body.
-     * @param {2|3|4|5|6} level
      * @param {string}    text
      * @returns {Section} this (chainable)
      */
-    addHeader(text) {
+    addSubHeading(text) {
       this.#appendToBody(
         el(`label`, { textContent: text, className: "buim-header" }),
       );
