@@ -69,11 +69,11 @@
 
     rotationalAxes.forEach((axis) => {
       axis.speed    = smoothSpeed;
-      axis.deadzone = deadzone;
+      axis.radius = deadzone;
     });
     positionalAxes.forEach((axis) => {
       axis.speed    = smoothSpeed;
-      axis.deadzone = deadzone;
+      axis.radius = deadzone;
     });
   };
 
