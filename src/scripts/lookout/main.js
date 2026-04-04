@@ -1,21 +1,16 @@
 (function () {
   let config = {
-    rotationSensitvity: 1,
-    positionSensitivity: 1,
     pitch: {
       enabled: true,
       min: -80,
       max: 170,
-      default: 0,
       calib: 0,
       sensitivity: 175,
-      deadzone: 0,
     },
     yaw: {
       enabled: true,
       min: -160,
       max: 160,
-      default: 0,
       calib: 0,
       sensitivity: 200,
       deadzone: 5,
@@ -24,37 +19,29 @@
       enabled: true,
       min: -100,
       max: 100,
-      default: 0,
       calib: 0,
       sensitivity: 250,
-      deadzone: 5,
     },
     leftRight: {
       enabled: false,
       min: -0.5,
       max: 0.5,
-      default: 0,
       calib: 0,
-      sensitivity: 50,
-      deadzone: 5,
+      sensitivity: 5,
     },
     forwardBackward: {
       enabled: false,
       min: -0.5,
       max: 0.5,
-      default: 0,
       calib: 0,
-      sensitivity: 50,
-      deadzone: 0,
+      sensitivity: 5,
     },
     upDown: {
       enabled: false,
       min: -0.1,
       max: 0.2,
-      default: 0,
       calib: 0,
-      sensitivity: 50,
-      deadzone: 1,
+      sensitivity: 5,
     },
     algorithm: window.bespokeClient.data.jeelizModels.default,
   };
@@ -66,7 +53,7 @@
     .addItem("Deadzone", "deadzone", "number", 0)
 
   // ─── Silk instances ────────────────────────────────────────────────────────
-  let pitchSilk          = new Silk(0, { min: config.pitch.min,           max: config.pitch.max });
+  let pitchSilk          = new Silk(0, { min: pitch.min,           max: config.pitch.max });
   let yawSilk            = new Silk(0, { min: config.yaw.min,             max: config.yaw.max });
   let rollSilk           = new Silk(0, { min: config.roll.min,            max: config.roll.max });
   let leftRightSilk      = new Silk(0, { min: config.leftRight.min,       max: config.leftRight.max });
@@ -78,7 +65,7 @@
 
   let update_settings = function () {
     const smoothSpeed = parseFloat(lookoutUi.get("smoothening")) || 15;
-    const deadzone    = parseFloat(lookoutUi.get("deadzone"))    || 3;
+    const deadzone    = parseFloat(lookoutUi.get("deadzone"))    || 0;
 
     rotationalAxes.forEach((axis) => {
       axis.speed    = smoothSpeed;
@@ -118,16 +105,7 @@
   const transformFaceData = function (faceData, config) {
     if (config.enabled) {
       let transformed_value =
-        clampToWithinBounds(
-          faceData * config.sensitivity,
-          config.min,
-          config.max,
-        ) +
-        config.default - config.calib;
-
-      if (Math.abs(transformed_value - config.default) < config.deadzone) {
-        transformed_value = config.default;
-      }
+        faceData * config.sensitivity - config.calib;
       return transformed_value;
     }
     return config.default;
@@ -156,8 +134,6 @@
 
   // ─── Per-frame update loop ─────────────────────────────────────────────────
   geofs.api.viewer.scene.preRender.addEventListener(() => {
-    update_settings();
-
     const dt = window.gameDeltaTime || 0;
 
     rotationalAxes.forEach(axis => axis.update(dt));
@@ -165,6 +141,8 @@
 
     if (geofs.camera.currentModeName == "cockpit" && lookoutUi.isEnabled) applyTransformsToCamera();
   });
+
+  setInterval(update_settings, 1000)
 
   const init = function () {
     let hasInit = false;
