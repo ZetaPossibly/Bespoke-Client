@@ -1,8 +1,12 @@
 (function() {
-    mapTilesets = {
+    let mapTilesets = {
         "CartoDB Dark": "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
         "Google": "https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
         "GeoFS": "https://data.geo-fs.com/osm/{z}/{x}/{y}.png",
+        "GeoFS 4.0": "https://data.geo-fs.com/osm25/{z}/{x}/{y}.png",
+        "Allidade Dark": "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
+        "ESRI Satellite": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        "Earth at Night": "https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.jpg",
         "OSM": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     }
     function apply_styles() {
@@ -110,7 +114,7 @@
     let prefix = "benevolance"
     let benevolanceUi = new window.BUIM("Benevolance", prefix)
     benevolanceUi
-        .addDropdown("Map Style", "MapStyle", mapTilesets, "GeoFS")
+        .addDropdown("Map Style", "MapStyle", mapTilesets, mapTilesets["GeoFS"])
         .addItem("Remove Foos from NAV", "RemoveFoos", "checkbox", false)
     
     let restart_mp = function () {
