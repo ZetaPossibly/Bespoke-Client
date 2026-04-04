@@ -26,7 +26,7 @@
       max: 100,
       default: 0,
       calib: 0,
-      sensitivity: 200,
+      sensitivity: 250,
       deadzone: 5,
     },
     leftRight: {
@@ -35,7 +35,7 @@
       max: 0.5,
       default: 0,
       calib: 0,
-      sensitivity: 1,
+      sensitivity: 50,
       deadzone: 5,
     },
     forwardBackward: {
@@ -44,7 +44,7 @@
       max: 0.5,
       default: 0,
       calib: 0,
-      sensitivity: 0,
+      sensitivity: 50,
       deadzone: 0,
     },
     upDown: {
@@ -53,7 +53,7 @@
       max: 0.2,
       default: 0,
       calib: 0,
-      sensitivity: 1.25,
+      sensitivity: 50,
       deadzone: 1,
     },
     algorithm: window.bespokeClient.data.jeelizModels.default,
@@ -63,7 +63,7 @@
     .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 1)
     .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
     .addItem("Smoothening", "smoothening", "number", 15)
-    .addItem("Deadzone", "deadzone", "number", 3)
+    .addItem("Deadzone", "deadzone", "number", 0)
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk          = new Silk(0, { min: config.pitch.min,           max: config.pitch.max });
@@ -163,7 +163,7 @@
     rotationalAxes.forEach(axis => axis.update(dt));
     positionalAxes.forEach(axis => axis.update(dt));
 
-    applyTransformsToCamera();
+    if (geofs.camera.currentModeName == "cockpit" && lookoutUi.isEnabled) applyTransformsToCamera();
   });
 
   const init = function () {
