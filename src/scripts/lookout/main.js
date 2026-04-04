@@ -53,7 +53,7 @@
     .addItem("Deadzone", "deadzone", "number", 0)
 
   // ─── Silk instances ────────────────────────────────────────────────────────
-  let pitchSilk          = new Silk(0, { min: pitch.min,           max: config.pitch.max });
+  let pitchSilk          = new Silk(0, { min: config.pitch.min,           max: config.pitch.max });
   let yawSilk            = new Silk(0, { min: config.yaw.min,             max: config.yaw.max });
   let rollSilk           = new Silk(0, { min: config.roll.min,            max: config.roll.max });
   let leftRightSilk      = new Silk(0, { min: config.leftRight.min,       max: config.leftRight.max });
