@@ -1,7 +1,7 @@
 (() => {
   let lastTime;
   window.gameDeltaTime = 0;
-  viewer.clock.onTick.addEventListener((clock) => {
+  geofs.api.viewer.clock.onTick.addEventListener((clock) => {
     const currentTime = Cesium.JulianDate.toDate(clock.currentTime).getTime();
 
     if (lastTime === undefined) {
