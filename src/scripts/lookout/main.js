@@ -51,8 +51,6 @@
     .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
     .addItem("Snappiness", "snappiness", "number", 5)
     .addItem("Deadzone", "deadzone", "number", 1)
-    .addItem("Speed Boost", "speedBoost", "number", 2)
-    .addItem("Exponent", "exponent", "number", 1.5)
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk          = new Silk(0, { min: config.pitch.min,           max: config.pitch.max });
@@ -68,20 +66,14 @@
   let update_settings = function () {
     const smoothSpeed = parseFloat(lookoutUi.get("snappiness")) || 15;
     const deadzone    = parseFloat(lookoutUi.get("deadzone"))    || 0;
-    const speedBoost = parseFloat(lookoutUi.get("speedBoost"))
-    const exponent = parseFloat(lookoutUi.get("exponent"))
 
     rotationalAxes.forEach((axis) => {
       axis.speed    = smoothSpeed;
       axis.radius = deadzone;
-      axis.speedBoost = speedBoost
-      axis.exponent = exponent
     });
     positionalAxes.forEach((axis) => {
       axis.speed    = smoothSpeed;
-      axis.radius = deadzone;
-      axis.speedBoost = speedBoost
-      axis.exponent = exponent
+      axis.radius = deadzone * 10;
     });
   };
 
@@ -105,12 +97,8 @@
   };
 
   const transformFaceData = function (faceData, config) {
-    if (config.enabled) {
-      let transformed_value =
-        faceData * config.sensitivity - config.calib;
-      return transformed_value;
-    }
-    return config.default;
+    let transformed_value = faceData * config.sensitivity - config.calib;
+    return transformed_value;
   };
 
   // Reads smoothed Silk values and applies them to the camera.
