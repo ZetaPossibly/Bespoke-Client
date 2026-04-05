@@ -33,11 +33,7 @@
     }
 
     setTarget(value) {
-      this.target = Math.min(this.max, Math.max(this.min, value * this.sensitivity - this.calibrationValue));
-    }
-
-    setCurrent(value) {
-      this.current = Math.min(this.max, Math.max(this.min, value * this.sensitivity - this.calibrationValue));
+      this.target = Math.min(this.max, Math.max(this.min, value * this.sensitivity));
     }
 
     setEnabled(value) {
@@ -45,7 +41,7 @@
     }
 
     calibrate() {
-        this.calibrationValue = this.get()
+        this.calibrationValue = this.get() + this.calibrationValue
     }
 
     update(dt) {
@@ -66,7 +62,7 @@
 
     get() {
       if (!this.enabled) return this.defaultValue;
-      return this.current
+      return this.current - this.calibrationValue
     }
   };
 })();
