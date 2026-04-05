@@ -5,7 +5,7 @@
     const currentTime = Cesium.JulianDate.toDate(clock.currentTime).getTime();
 
     if (lastTime === undefined) {
-        
+
       lastTime = currentTime;
       return;
     }
@@ -17,7 +17,7 @@
   window.Silk = class {
     constructor(
       initial = 0,
-      { speed = 10, deadzone = 0.0001, min = -Infinity, max = Infinity, enabled = true, defaultValue = initial } = {},
+      { speed = 10, deadzone = 0.0001, min = -Infinity, max = Infinity, enabled = true, sensitivity = 100, calibrationValue = 0, defaultValue = initial } = {},
     ) {
       this.current = initial;
       this.target = initial;
@@ -27,25 +27,30 @@
       this.min = min;
       this.max = max;
       this.enabled = enabled;
+      this.sensitivity = sensitivity;
+      this.calibrationValue = calibrationValue;
       this.defaultValue = defaultValue;
     }
 
     setTarget(value) {
-      this.target = Math.min(this.max, Math.max(this.min, value));
+      this.target = Math.min(this.max, Math.max(this.min, value * this.sensitivity - this.calibrationValue));
     }
 
     setCurrent(value) {
-      this.current = Math.min(this.max, Math.max(this.min, value));
+      this.current = Math.min(this.max, Math.max(this.min, value * this.sensitivity - this.calibrationValue));
     }
 
     setEnabled(value) {
       this.enabled = value;
     }
 
+    calibrate() {
+        this.calibrationValue = this.get()
+    }
+
     update(dt) {
       if (!this.enabled) {
         this.current = this.defaultValue;
-        return this.current;
       }
 
       const diff = this.target - this.current;
@@ -57,13 +62,11 @@
 
       const t = 1 - Math.exp(-this.speed * dt);
       this.current += diff * t;
-
-      return this.current;
     }
 
     get() {
       if (!this.enabled) return this.defaultValue;
-      return this.current;
+      return this.current
     }
   };
 })();

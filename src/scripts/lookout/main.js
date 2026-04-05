@@ -53,26 +53,36 @@
     .addItem("Deadzone", "deadzone", "number", 1)
 
   // ─── Silk instances ────────────────────────────────────────────────────────
-  let pitchSilk          = new Silk(0, { min: config.pitch.min,           max: config.pitch.max });
-  let yawSilk            = new Silk(0, { min: config.yaw.min,             max: config.yaw.max });
-  let rollSilk           = new Silk(0, { min: config.roll.min,            max: config.roll.max });
-  let leftRightSilk      = new Silk(0, { min: config.leftRight.min,       max: config.leftRight.max });
-  let forwardBackwardSilk= new Silk(0, { min: config.forwardBackward.min, max: config.forwardBackward.max });
-  let upDownSilk         = new Silk(0, { min: config.upDown.min,          max: config.upDown.max });
+  let pitchSilk = new Silk(0, { min: config.pitch.min, max: config.pitch.max });
+  let yawSilk = new Silk(0, { min: config.yaw.min, max: config.yaw.max });
+  let rollSilk = new Silk(0, { min: config.roll.min, max: config.roll.max });
+  let leftRightSilk = new Silk(0, { min: config.leftRight.min, max: config.leftRight.max });
+  let forwardBackwardSilk = new Silk(0, { min: config.forwardBackward.min, max: config.forwardBackward.max });
+  let upDownSilk = new Silk(0, { min: config.upDown.min, max: config.upDown.max });
 
   const rotationalAxes = [pitchSilk, yawSilk, rollSilk];
   const positionalAxes = [leftRightSilk, forwardBackwardSilk, upDownSilk];
 
+  let calibrate = function () {
+    rotationalAxes.forEach((axis) => {
+      axis.calibrate();
+    });
+    positionalAxes.forEach((axis) => {
+      axis.calibrate();
+    });
+  };
+  lookoutUi.addButton("Calibrate", calibrate);
+
   let update_settings = function () {
     const smoothSpeed = parseFloat(lookoutUi.get("snappiness")) || 15;
-    const deadzone    = parseFloat(lookoutUi.get("deadzone"))    || 0;
+    const deadzone = parseFloat(lookoutUi.get("deadzone")) || 0;
 
     rotationalAxes.forEach((axis) => {
-      axis.speed    = smoothSpeed;
+      axis.speed = smoothSpeed;
       axis.radius = deadzone;
     });
     positionalAxes.forEach((axis) => {
-      axis.speed    = smoothSpeed;
+      axis.speed = smoothSpeed;
       axis.radius = deadzone * 10;
     });
   };
@@ -96,23 +106,10 @@
     return canvas;
   };
 
-  const transformFaceData = function (faceData, config) {
-    let transformed_value = faceData * config.sensitivity - config.calib;
-    return transformed_value;
-  };
-
   // Reads smoothed Silk values and applies them to the camera.
   const applyTransformsToCamera = function () {
-    geofs.camera.setRotation(
-      yawSilk.get(),
-      pitchSilk.get(),
-      rollSilk.get(),
-    );
-    geofs.camera.setPosition(
-      leftRightSilk.get(),
-      forwardBackwardSilk.get(),
-      upDownSilk.get(),
-    );
+    geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get());
+    geofs.camera.setPosition(leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get());
   };
 
   const catchError = function (error) {
@@ -122,17 +119,16 @@
     alert("An error occurred: " + error);
   };
 
-  // ─── Per-frame update loop ─────────────────────────────────────────────────
   geofs.api.viewer.scene.preRender.addEventListener(() => {
     const dt = window.gameDeltaTime || 0;
 
-    rotationalAxes.forEach(axis => axis.update(dt));
-    positionalAxes.forEach(axis => axis.update(dt));
+    rotationalAxes.forEach((axis) => axis.update(dt));
+    positionalAxes.forEach((axis) => axis.update(dt));
 
     if (geofs.camera.currentModeName == "cockpit" && lookoutUi.isEnabled) applyTransformsToCamera();
   });
 
-  setInterval(update_settings, 1000)
+  setInterval(update_settings, 1000);
 
   const init = function () {
     let hasInit = false;
@@ -153,32 +149,17 @@
               const rotSens = parseFloat(lookoutUi.get("RotationalSensitivity"));
               const posSens = parseFloat(lookoutUi.get("PositionalSensitivity"));
 
-              // Transform raw face data and push into Silk targets.
-              // The silks are updated and applied to the camera in the preRender loop.
-              pitchSilk.setTarget(
-                transformFaceData(-detectState.rx * rotSens, config.pitch)
-              );
-              yawSilk.setTarget(
-                transformFaceData(-detectState.ry * rotSens, config.yaw)
-              );
-              rollSilk.setTarget(
-                transformFaceData(-detectState.rz * rotSens, config.roll)
-              );
-              leftRightSilk.setTarget(
-                transformFaceData(-detectState.x * posSens, config.leftRight)
-              );
-              forwardBackwardSilk.setTarget(
-                transformFaceData(detectState.s * posSens, config.forwardBackward)
-              );
-              upDownSilk.setTarget(
-                transformFaceData(detectState.y * posSens, config.upDown)
-              );
+              pitchSilk.setTarget(-detectState.rx * rotSens);
+              yawSilk.setTarget(-detectState.ry * rotSens);
+              rollSilk.setTarget(-detectState.rz * rotSens);
+              leftRightSilk.setTarget(-detectState.x * posSens);
+              forwardBackwardSilk.setTarget(detectState.s * posSens);
+              upDownSilk.setTarget(detectState.y * posSens);
 
               geofs.camera.freeLookBase = [yawSilk.get(), pitchSilk.get()];
             },
           });
           hasInit = true;
-          console.log("Done!");
         }
       } else {
         JEELIZFACEFILTER.destroy();
