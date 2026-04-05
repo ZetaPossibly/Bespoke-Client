@@ -34,7 +34,7 @@
       min: -0.5,
       max: 0.5,
       calib: 0,
-      sensitivity: 5,
+      sensitivity: 15,
     },
     upDown: {
       enabled: true,
@@ -156,6 +156,7 @@
               leftRightSilk.setTarget(-detectState.x * posSens);
               forwardBackwardSilk.setTarget(detectState.s * posSens);
               upDownSilk.setTarget(detectState.y * posSens);
+              console.log(detectState)
 
               geofs.camera.freeLookBase = [yawSilk.get(), pitchSilk.get()];
             },
