@@ -18,12 +18,13 @@
       initial = 0,
       {
         speed = 10,
-        radius = 0.05,       // The "circle" — input must pull this far from current before output moves
+        radius = 0.05, // The "circle" — input must pull this far from current before output moves
         min = -Infinity,
         max = Infinity,
         enabled = true,
         sensitivity = 100,
         calibrationValue = 0,
+        clampHardness = 1.5,
         defaultValue = initial,
       } = {},
     ) {
@@ -37,15 +38,39 @@
       this.enabled = enabled;
       this.sensitivity = sensitivity;
       this.calibrationValue = calibrationValue;
+      this.clampHardness = clampHardness;
       this.defaultValue = defaultValue;
     }
 
+    _softClamp(value, k_val) {
+      // higher = harder
+      k = (k ?? this.clampHardness);
+      const scaled = value * this.sensitivity;
+
+      // If unbounded, skip soft clamp entirely
+      if (!Number.isFinite(this.min) || !Number.isFinite(this.max)) {
+        return scaled;
+      }
+
+      // normalize into [-1, 1]
+      const mid = (this.max + this.min) / 2;
+      const halfRange = (this.max - this.min) / 2;
+
+      const normalized = (scaled - mid) / halfRange;
+
+      const soft = Math.tanh(normalized * k);
+
+      // map back to original range
+      const clamped = soft * halfRange + mid;
+      return clamped;
+    }
+
     setTarget(value) {
-      this.target = Math.min(this.max, Math.max(this.min, value * this.sensitivity)) - this.calibrationValue;
+      this.target = this._softClamp(value) - this.calibrationValue;
     }
 
     setCurrent(value) {
-      this.current = Math.min(this.max, Math.max(this.min, value * this.sensitivity)) - this.calibrationValue;
+      this.current = this._softClamp(value) - this.calibrationValue;
       this.target = this.current; // drag anchor follows too
     }
 
@@ -54,7 +79,7 @@
     }
 
     calibrate() {
-        this.calibrationValue = this.get() + this.calibrationValue
+      this.calibrationValue = this.get() + this.calibrationValue;
     }
 
     update(dt) {

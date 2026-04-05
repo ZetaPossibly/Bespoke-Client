@@ -50,6 +50,7 @@
     .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 1)
     .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
     .addItem("Snappiness", "snappiness", "number", 5)
+    .addItem("Clamp Hardness", "hardness", "number", 1)
     .addItem("Deadzone", "deadzone", "number", 1)
 
   // ─── Silk instances ────────────────────────────────────────────────────────
@@ -77,14 +78,17 @@
   let update_settings = function () {
     const smoothSpeed = parseFloat(lookoutUi.get("snappiness")) || 15;
     const deadzone = parseFloat(lookoutUi.get("deadzone")) || 0;
+    const hardness = parseFloat(lookoutUi.get("hardness"))
 
     rotationalAxes.forEach((axis) => {
       axis.speed = smoothSpeed;
       axis.radius = deadzone;
+      axis.clampHardness = hardness
     });
     positionalAxes.forEach((axis) => {
       axis.speed = smoothSpeed;
       // no deadzone for positonal
+      axis.clampHardness = hardness
     });
   };
 
