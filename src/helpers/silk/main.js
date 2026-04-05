@@ -1,10 +1,11 @@
 (() => {
   let lastTime;
   window.gameDeltaTime = 0;
-  viewer.clock.onTick.addEventListener((clock) => {
+  geofs.api.viewer.clock.onTick.addEventListener((clock) => {
     const currentTime = Cesium.JulianDate.toDate(clock.currentTime).getTime();
 
     if (lastTime === undefined) {
+        
       lastTime = currentTime;
       return;
     }
@@ -16,14 +17,7 @@
   window.Silk = class {
     constructor(
       initial = 0,
-      {
-        speed = 10,
-        deadzone = 0.0001,
-        min = -Infinity,
-        max = Infinity,
-        enabled = true,
-        defaultValue = initial,
-      } = {},
+      { speed = 10, deadzone = 0.0001, min = -Infinity, max = Infinity, enabled = true, defaultValue = initial } = {},
     ) {
       this.current = initial;
       this.target = initial;
