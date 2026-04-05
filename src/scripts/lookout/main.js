@@ -64,6 +64,7 @@
   const positionalAxes = [leftRightSilk, forwardBackwardSilk, upDownSilk];
 
   let calibrate = function () {
+    console.log("Calibrating")
     rotationalAxes.forEach((axis) => {
       axis.calibrate();
     });
@@ -83,7 +84,7 @@
     });
     positionalAxes.forEach((axis) => {
       axis.speed = smoothSpeed;
-      axis.radius = deadzone * 10;
+      // no deadzone for positonal
     });
   };
 

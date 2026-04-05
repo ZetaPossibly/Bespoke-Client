@@ -5,7 +5,6 @@
     const currentTime = Cesium.JulianDate.toDate(clock.currentTime).getTime();
 
     if (lastTime === undefined) {
-
       lastTime = currentTime;
       return;
     }
@@ -17,13 +16,22 @@
   window.Silk = class {
     constructor(
       initial = 0,
-      { speed = 10, deadzone = 0.0001, min = -Infinity, max = Infinity, enabled = true, sensitivity = 100, calibrationValue = 0, defaultValue = initial } = {},
+      {
+        speed = 10,
+        radius = 0.05,       // The "circle" — input must pull this far from current before output moves
+        min = -Infinity,
+        max = Infinity,
+        enabled = true,
+        sensitivity = 100,
+        calibrationValue = 0,
+        defaultValue = initial,
+      } = {},
     ) {
       this.current = initial;
       this.target = initial;
 
       this.speed = speed;
-      this.deadzone = deadzone;
+      this.radius = radius;
       this.min = min;
       this.max = max;
       this.enabled = enabled;
@@ -33,7 +41,12 @@
     }
 
     setTarget(value) {
-      this.target = Math.min(this.max, Math.max(this.min, value * this.sensitivity)) - this.calibrationValue
+      this.target = Math.min(this.max, Math.max(this.min, value * this.sensitivity)) - this.calibrationValue;
+    }
+
+    setCurrent(value) {
+      this.current = Math.min(this.max, Math.max(this.min, value * this.sensitivity)) - this.calibrationValue;
+      this.target = this.current; // drag anchor follows too
     }
 
     setEnabled(value) {
@@ -47,22 +60,30 @@
     update(dt) {
       if (!this.enabled) {
         this.current = this.defaultValue;
-      }
-
-      const diff = this.target - this.current;
-
-      if (Math.abs(diff) < this.deadzone) {
-        this.current = this.target;
         return this.current;
       }
 
+      const diff = this.target - this.current;
+      const dist = Math.abs(diff);
+
+      // Only move if input has been dragged outside the radius
+      if (dist <= this.radius) {
+        return this.current; // anchor holds, output stays put
+      }
+
+      // Chase the point on the edge of the radius toward the target,
+      // so the output smoothly follows but never "jumps" to catch up fully
+      const pull = diff - Math.sign(diff) * this.radius;
       const t = 1 - Math.exp(-this.speed * dt);
-      this.current += diff * t;
+      this.current += pull * t;
+      this.current = Math.min(this.max, Math.max(this.min, this.current));
+
+      return this.current;
     }
 
     get() {
       if (!this.enabled) return this.defaultValue;
-      return this.current
+      return this.current;
     }
   };
 })();
