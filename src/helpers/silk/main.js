@@ -33,7 +33,7 @@
     }
 
     setTarget(value) {
-      this.target = Math.min(this.max, Math.max(this.min, value * this.sensitivity));
+      this.target = Math.min(this.max, Math.max(this.min, value * this.sensitivity)) - this.calibrationValue
     }
 
     setEnabled(value) {
@@ -62,7 +62,7 @@
 
     get() {
       if (!this.enabled) return this.defaultValue;
-      return this.current - this.calibrationValue
+      return this.current
     }
   };
 })();
