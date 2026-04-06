@@ -60,7 +60,7 @@
       this.enabled = value;
     }
 
-    calibrate() {
+    calibrate = () => {
       this.calibrationValue = this.get() + this.calibrationValue;
     }
 
