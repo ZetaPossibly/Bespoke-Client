@@ -23,21 +23,21 @@
       sensitivity: 125,
     },
     leftRight: {
-      enabled: true,
+      enabled: false,
       min: -0.5,
       max: 0.5,
       calib: 0,
       sensitivity: 5,
     },
     forwardBackward: {
-      enabled: true,
+      enabled: false,
       min: -0.5,
       max: 0.5,
       calib: 0,
       sensitivity: 15,
     },
     upDown: {
-      enabled: true,
+      enabled: false,
       min: -0.1,
       max: 0.2,
       calib: 0,
@@ -47,30 +47,31 @@
   };
 
   const lookoutUi = new window.BUIM("Lookout", "lookout")
-    .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 1)
-    .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
-    .addItem("Snappiness", "snappiness", "number", 5)
-    .addItem("Deadzone", "deadzone", "number", 1)
+    .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 2)
+    //.addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
+    .addItem("Snappiness", "snappiness", "number", 10)
+    .addItem("Deadzone", "deadzone", "number", 3)
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk = new Silk(0, { min: config.pitch.min, max: config.pitch.max });
   let yawSilk = new Silk(0, { min: config.yaw.min, max: config.yaw.max });
   let rollSilk = new Silk(0, { min: config.roll.min, max: config.roll.max });
-  let leftRightSilk = new Silk(0, { min: config.leftRight.min, max: config.leftRight.max });
-  let forwardBackwardSilk = new Silk(0, { min: config.forwardBackward.min, max: config.forwardBackward.max });
-  let upDownSilk = new Silk(0, { min: config.upDown.min, max: config.upDown.max });
+//   let leftRightSilk = new Silk(0, { min: config.leftRight.min, max: config.leftRight.max });
+//   let forwardBackwardSilk = new Silk(0, { min: config.forwardBackward.min, max: config.forwardBackward.max });
+//   let upDownSilk = new Silk(0, { min: config.upDown.min, max: config.upDown.max });
 
   const rotationalAxes = [pitchSilk, yawSilk, rollSilk];
-  const positionalAxes = [leftRightSilk, forwardBackwardSilk, upDownSilk];
+  //const positionalAxes = [leftRightSilk, forwardBackwardSilk, upDownSilk];
 
   let calibrate = function () {
     console.log("Calibrating")
+    ui.notification.show("Calibrating in 3 seconds, look at the center of your screen.")
     rotationalAxes.forEach((axis) => {
-      axis.calibrate();
+      setTimeout(axis.calibrate, 3000)
     });
-    positionalAxes.forEach((axis) => {
-      axis.calibrate();
-    });
+    // positionalAxes.forEach((axis) => {
+    //   axis.calibrate();
+    // });
   };
   lookoutUi.addButton("Calibrate", calibrate);
 
@@ -82,10 +83,10 @@
       axis.speed = smoothSpeed;
       axis.radius = deadzone;
     });
-    positionalAxes.forEach((axis) => {
-      axis.speed = smoothSpeed;
-      // no deadzone for positonal
-    });
+    // positionalAxes.forEach((axis) => {
+    //   axis.speed = smoothSpeed;
+    //   // no deadzone for positonal
+    // });
   };
 
   update_settings();
@@ -113,7 +114,7 @@
 
     let rawPositionVector = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()]
     const toRotate = 0.0174532925 * geofs.animation.values.aroll
-    const rotatedVector = V3.rotate(rawPositionVector, [0, 0, 1], toRotate)
+    const rotatedVector = V3.rotate(rawPositionVector, [0, 0, 1], -toRotate)
     geofs.camera.setPosition(rotatedVector[0], rotatedVector[1], rotatedVector[2]);
   };
 
@@ -152,14 +153,14 @@
               }
 
               const rotSens = parseFloat(lookoutUi.get("RotationalSensitivity"));
-              const posSens = parseFloat(lookoutUi.get("PositionalSensitivity"));
+              //const posSens = parseFloat(lookoutUi.get("PositionalSensitivity"));
 
               pitchSilk.setTarget(-detectState.rx * rotSens);
               yawSilk.setTarget(-detectState.ry * rotSens);
               rollSilk.setTarget(-detectState.rz * rotSens);
-              leftRightSilk.setTarget(-detectState.x * posSens);
-              forwardBackwardSilk.setTarget(detectState.s * posSens);
-              upDownSilk.setTarget(detectState.y * posSens);
+              //leftRightSilk.setTarget(-detectState.x * posSens);
+              //forwardBackwardSilk.setTarget(detectState.s * posSens);
+              //upDownSilk.setTarget(detectState.y * posSens);
 
               geofs.camera.freeLookBase = [yawSilk.get(), pitchSilk.get()];
             },
