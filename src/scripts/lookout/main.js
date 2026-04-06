@@ -114,7 +114,7 @@
     let rawPositionVector = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()]
     const toRotate = 0.0174532925 * geofs.animation.values.aroll
     const rotatedVector = V3.rotate(rawPositionVector, [0, 1, 0], toRotate)
-    geofs.camera.setPosition(rotatedVector[0], rotatedVector[1], rotatedVector[1]);
+    geofs.camera.setPosition(rotatedVector[0], rotatedVector[1], rotatedVector[2]);
   };
 
   const catchError = function (error) {
@@ -160,7 +160,6 @@
               leftRightSilk.setTarget(-detectState.x * posSens);
               forwardBackwardSilk.setTarget(detectState.s * posSens);
               upDownSilk.setTarget(detectState.y * posSens);
-              console.log(detectState)
 
               geofs.camera.freeLookBase = [yawSilk.get(), pitchSilk.get()];
             },
