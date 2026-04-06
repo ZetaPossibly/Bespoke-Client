@@ -88,7 +88,7 @@
       return this.current;
     }
 
-    get() {
+    get = () => {
       if (!this.enabled) return this.defaultValue;
       return this.current;
     }
