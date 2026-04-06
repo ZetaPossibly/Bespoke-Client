@@ -43,8 +43,7 @@
     }
 
     _softClamp(value, k_val) {
-      // higher = harder
-      const k = (k_val ?? this.clampHardness);
+      const k = k_val ?? this.clampHardness;
       const scaled = value * this.sensitivity;
 
       // If unbounded, skip soft clamp entirely
@@ -52,17 +51,18 @@
         return scaled;
       }
 
-      // normalize into [-1, 1]
-      const mid = (this.max + this.min) / 2;
-      const halfRange = (this.max - this.min) / 2;
+      const range = this.max - this.min;
+      const mid = (this.min + this.max) / 2;
+      const halfRange = range / 2;
 
-      const normalized = (scaled - mid) / halfRange;
+      // Normalize input to [-1, 1] relative to the range's center
+      const norm = (scaled - mid) / halfRange;
 
-      const soft = Math.tanh(normalized * k);
+      // tanh maps ℝ → (-1, 1), scaled by 1/tanh(k) to hit exactly ±1 at the limits
+      // Higher k = harder (approaches hard clamp as k → ∞)
+      const clamped = Math.tanh(norm * k) / Math.tanh(k);
 
-      // map back to original range
-      const clamped = soft * halfRange + mid;
-      return clamped;
+      return mid + clamped * halfRange;
     }
 
     setTarget(value) {
