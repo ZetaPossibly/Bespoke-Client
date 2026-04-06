@@ -48,10 +48,6 @@
     freeLookBase     = [orientations[0], orientations[1]];
     isResetAnimating = false;
 
-    headingSilk.speed = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
-    headingSilk.sensitivity = parseFloat(freeLookUi.get("xSens"))
-    tiltSilk.speed    = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
-    headingSilk.sensitivity = parseFloat(freeLookUi.get("ySens"))
     headingSilk.setCurrent(0); headingSilk.setTarget(0);
     tiltSilk.setCurrent(0);    tiltSilk.setTarget(0);
 
@@ -60,6 +56,15 @@
 
     requestLock();
   }
+
+  setInterval(() => {
+    if (isActive) {
+         headingSilk.speed = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
+        headingSilk.sensitivity = parseFloat(freeLookUi.get("xSens"))
+        tiltSilk.speed    = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
+        headingSilk.sensitivity = parseFloat(freeLookUi.get("ySens"))
+    }
+  }, 1000)
 
   function deactivate() {
     if (!isActive) return;
@@ -129,17 +134,14 @@
   window.addEventListener("mousemove", (e) => {
     if (!isActive) return;
 
-    const xSens    = parseFloat(freeLookUi.get("xSens"))    || 0.2;
-    const ySens    = parseFloat(freeLookUi.get("ySens"))    || 0.2;
-
     let dx = e.movementX;
     let dy = e.movementY;
 
     const isCockpit = geofs.camera.currentModeName === "cockpit";
 
     // Accumulate into the Silk targets
-    headingSilk.setTarget(headingSilk.target + dx * xSens);
-    tiltSilk.setTarget(tiltSilk.target    + dy * ySens * (isCockpit ? -1 : 1));
+    headingSilk.setTarget(headingSilk.target + dx);
+    tiltSilk.setTarget(tiltSilk.target    + dy * (isCockpit ? -1 : 1));
   });
 
   // ─── Cancel reset on canvas click ────────────────────────────────────────
