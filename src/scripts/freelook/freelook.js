@@ -7,8 +7,8 @@
     .addItem("Smooth Speed: ",         "SmoothSpeed", "number",   0.4)
 
   // ─── Silk smoothers ───────────────────────────────────────────────────────
-  let headingSilk = new Silk(0, { speed: freeLookUi.get("SmoothSpeed") });
-  let tiltSilk    = new Silk(0, { speed: freeLookUi.get("SmoothSpeed") });
+  let tiltSilk    = new Silk(0, { speed: freeLookUi.get("SmoothSpeed"), sensitivity: freeLookUi.get("xSens") });
+  let headingSilk = new Silk(0, { speed: freeLookUi.get("SmoothSpeed"), sensitivity: freeLookUi.get("ySens") });
 
   // ─── State ────────────────────────────────────────────────────────────────
   let isActive         = false;
@@ -49,7 +49,9 @@
     isResetAnimating = false;
 
     headingSilk.speed = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
+    headingSilk.sensitivity = parseFloat(freeLookUi.get("xSens"))
     tiltSilk.speed    = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
+    headingSilk.sensitivity = parseFloat(freeLookUi.get("ySens"))
     headingSilk.setCurrent(0); headingSilk.setTarget(0);
     tiltSilk.setCurrent(0);    tiltSilk.setTarget(0);
 
