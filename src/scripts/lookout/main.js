@@ -129,7 +129,7 @@
     const dt = window.gameDeltaTime || 0;
 
     rotationalAxes.forEach((axis) => axis.update(dt));
-    positionalAxes.forEach((axis) => axis.update(dt));
+    //positionalAxes.forEach((axis) => axis.update(dt));
 
     if (geofs.camera.currentModeName == "cockpit" && lookoutUi.isEnabled) applyTransformsToCamera();
   });
