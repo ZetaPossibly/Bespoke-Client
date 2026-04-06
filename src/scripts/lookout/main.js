@@ -112,10 +112,10 @@
   const applyTransformsToCamera = function () {
     geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get());
 
-    let rawPositionVector = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()]
-    const toRotate = 0.0174532925 * geofs.animation.values.aroll
-    const rotatedVector = V3.rotate(rawPositionVector, [0, 0, 1], -toRotate)
-    geofs.camera.setPosition(rotatedVector[0], rotatedVector[1], rotatedVector[2]);
+    // let rawPositionVector = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()]
+    // const toRotate = 0.0174532925 * geofs.animation.values.aroll
+    // const rotatedVector = V3.rotate(rawPositionVector, [0, 0, 1], -toRotate)
+    // geofs.camera.setPosition(rotatedVector[0], rotatedVector[1], rotatedVector[2]);
   };
 
   const catchError = function (error) {
