@@ -108,9 +108,13 @@
   };
 
   // Reads smoothed Silk values and applies them to the camera.
-  const applyTransformsToCamera = function () {
+  window.applyTransformsToCamera = function () {
     geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get());
-    geofs.camera.setPosition(leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get());
+
+    let rawPositionVector = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()]
+    const toRotate = 0.0174532925 * geofs.animation.values.aroll
+    const rotatedVector = V3.rotate(rawPositionVector, [0, 1, 0], toRotate)
+    geofs.camera.setPosition(rotatedVector[0], rotatedVector[1], rotatedVector[1]);
   };
 
   const catchError = function (error) {
