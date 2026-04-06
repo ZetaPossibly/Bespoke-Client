@@ -42,11 +42,10 @@
       this.defaultValue = defaultValue;
     }
 
-    _softClamp(value, k_val) {
-      const k = k_val ?? this.clampHardness;
-      const scaled = value * this.sensitivity;
+    _softClamp(rawValue) {
+      // Apply calibration offset before clamping
+      const scaled = (rawValue - this.calibrationValue) * this.sensitivity;
 
-      // If unbounded, skip soft clamp entirely
       if (!Number.isFinite(this.min) || !Number.isFinite(this.max)) {
         return scaled;
       }
@@ -54,19 +53,12 @@
       const range = this.max - this.min;
       const mid = (this.min + this.max) / 2;
       const halfRange = range / 2;
-
-      // Normalize input to [-1, 1] relative to the range's center
       const norm = (scaled - mid) / halfRange;
-
-      // tanh maps ℝ → (-1, 1), scaled by 1/tanh(k) to hit exactly ±1 at the limits
-      // Higher k = harder (approaches hard clamp as k → ∞)
-      const clamped = Math.tanh(norm * k) / Math.tanh(k);
-
-      return mid + clamped * halfRange;
+      return mid + (Math.tanh(norm * this.clampHardness) / Math.tanh(this.clampHardness)) * halfRange;
     }
 
     setTarget(value) {
-      this.target = this._softClamp(value) - this.calibrationValue;
+      this.target = this._softClamp(value); // calibration now inside
     }
 
     setCurrent(value) {
@@ -79,7 +71,7 @@
     }
 
     calibrate() {
-      this.calibrationValue = this.get() + this.calibrationValue;
+      this.calibrationValue = this.current + this.calibrationValue;
     }
 
     update(dt) {
