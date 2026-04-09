@@ -20,6 +20,8 @@
         .addSubHeading("Do not use WT mode if you want to use advanced atmosphere. It won't work well.")
         .addItem("WT Mode", "WT", "checkbox", false);
 
+    labUi.on("toggle", () => {multiplayer.stop(); multiplayer.start()})
+
 
     multiplayer.update = function (e) {
       try {
@@ -139,9 +141,8 @@
                 verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
                 eyeOffset: new Cesium.Cartesian3(0, 0, 0),
                 fillColor: Cesium.Color.fromCssColorString("#ab3b35ff"),
-                outlineColor: Cesium.Color.TRANSPARENT,
-                outlineWidth: 1,
-                disableDepthTestDistance: 50000,
+                outlineColor: Cesium.Color.RED,
+                outlineWidth: 4,
             };
         } else {
             colourConfig = {
@@ -163,10 +164,9 @@
     }
 
     labUi.on("WT:change", (isEnabled) => {
-        wt_mode(labUi.getBool("WT"))
+        wt_mode(labUi.getBool("WT") && labUi.isEnabled)
     })
-    wt_mode(labUi.getBool("WT"))
+    wt_mode(labUi.getBool("WT") && labUi.isEnabled)
 
   }
-  console.log("Labels are setup!");
 })();

@@ -50,24 +50,24 @@
     .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 2)
     //.addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
     .addItem("Snappiness", "snappiness", "number", 10)
-    .addItem("Deadzone", "deadzone", "number", 3)
+    .addItem("Deadzone", "deadzone", "number", 3);
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk = new Silk(0, { min: config.pitch.min, max: config.pitch.max });
   let yawSilk = new Silk(0, { min: config.yaw.min, max: config.yaw.max });
   let rollSilk = new Silk(0, { min: config.roll.min, max: config.roll.max });
-//   let leftRightSilk = new Silk(0, { min: config.leftRight.min, max: config.leftRight.max });
-//   let forwardBackwardSilk = new Silk(0, { min: config.forwardBackward.min, max: config.forwardBackward.max });
-//   let upDownSilk = new Silk(0, { min: config.upDown.min, max: config.upDown.max });
+  //   let leftRightSilk = new Silk(0, { min: config.leftRight.min, max: config.leftRight.max });
+  //   let forwardBackwardSilk = new Silk(0, { min: config.forwardBackward.min, max: config.forwardBackward.max });
+  //   let upDownSilk = new Silk(0, { min: config.upDown.min, max: config.upDown.max });
 
   const rotationalAxes = [pitchSilk, yawSilk, rollSilk];
   //const positionalAxes = [leftRightSilk, forwardBackwardSilk, upDownSilk];
 
   let calibrate = function () {
-    console.log("Calibrating")
-    ui.notification.show("Calibrating in 3 seconds, look at the center of your screen.")
+    console.log("Calibrating");
+    ui.notification.show("Calibrating in 3 seconds, look at the center of your screen.");
     rotationalAxes.forEach((axis) => {
-      setTimeout(axis.calibrate, 3000)
+      setTimeout(axis.calibrate, 3000);
     });
     // positionalAxes.forEach((axis) => {
     //   axis.calibrate();

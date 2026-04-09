@@ -1,30 +1,27 @@
 (function () {
-  // ─── UI ───────────────────────────────────────────────────────────────────
   const prefix = "freelook";
   const freeLookUi = new window.BUIM("Freelook", prefix)
-    .addItem("X Sensitivity: ",        "xSens",       "number",   0.2)
-    .addItem("Y Sensitivity: ",        "ySens",       "number",   0.2)
-    .addItem("Smooth Speed: ",         "SmoothSpeed", "number",   0.4)
+    .addItem("X Sensitivity: ", "xSens", "number", 0.2)
+    .addItem("Y Sensitivity: ", "ySens", "number", 0.2)
+    .addItem("Smooth Speed: ", "SmoothSpeed", "number", 10);
 
-  // ─── Silk smoothers ───────────────────────────────────────────────────────
-  let tiltSilk    = new Silk(0, { speed: freeLookUi.get("SmoothSpeed"), sensitivity: freeLookUi.get("xSens") });
-  let headingSilk = new Silk(0, { speed: freeLookUi.get("SmoothSpeed"), sensitivity: freeLookUi.get("ySens") });
+  let tiltSilk = new Silk(0, { speed: freeLookUi.get("SmoothSpeed"), sensitivity: freeLookUi.get("ySens") });
+  let headingSilk = new Silk(0, { speed: freeLookUi.get("SmoothSpeed"), sensitivity: freeLookUi.get("xSens") });
 
-  // ─── State ────────────────────────────────────────────────────────────────
-  let isActive         = false;
+  let isActive = false;
   let isResetAnimating = false;
 
   let freeLookBase = [0, 0];
 
-  // ─── Angle helper ─────────────────────────────────────────────────────────
+  // find shortest straight route to resting
   function shortestDelta(from, to) {
     let d = (to - from) % 360;
-    if (d >  180) d -= 360;
+    if (d > 180) d -= 360;
     if (d < -180) d += 360;
     return d;
   }
 
-  // ─── Pointer Lock helpers ─────────────────────────────────────────────────
+  // capture mouse
   function requestLock() {
     const canvas = document.querySelector("canvas");
     if (canvas && document.pointerLockElement !== canvas) {
@@ -38,20 +35,21 @@
     }
   }
 
-  // ─── Activate / Deactivate ────────────────────────────────────────────────
   function activate() {
     if (isActive) return;
 
     const orientations = geofs.camera.currentDefinition?.orientations?.current;
     if (!orientations) return;
 
-    freeLookBase     = [orientations[0], orientations[1]];
+    freeLookBase = [orientations[0], orientations[1]];
     isResetAnimating = false;
 
-    headingSilk.setCurrent(0); headingSilk.setTarget(0);
-    tiltSilk.setCurrent(0);    tiltSilk.setTarget(0);
+    headingSilk.setCurrent(0);
+    headingSilk.setTarget(0);
+    tiltSilk.setCurrent(0);
+    tiltSilk.setTarget(0);
 
-    isActive             = true;
+    isActive = true;
     controls.mouseOnHold = true;
 
     requestLock();
@@ -59,18 +57,18 @@
 
   setInterval(() => {
     if (isActive) {
-         headingSilk.speed = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
-        headingSilk.sensitivity = parseFloat(freeLookUi.get("xSens"))
-        tiltSilk.speed    = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
-        headingSilk.sensitivity = parseFloat(freeLookUi.get("ySens"))
+      headingSilk.speed = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
+      headingSilk.sensitivity = parseFloat(freeLookUi.get("xSens"));
+      tiltSilk.speed = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
+      tiltSilk.sensitivity = parseFloat(freeLookUi.get("ySens"));
     }
-  }, 1000)
+  }, 1000);
 
   function deactivate() {
     if (!isActive) return;
 
-    isActive             = false;
-    isResetAnimating     = true;
+    isActive = false;
+    isResetAnimating = true;
     controls.mouseOnHold = false;
 
     releaseLock();
@@ -88,27 +86,26 @@
     },
     (e) => {
       deactivate();
-    }
+    },
   );
 
   // ─── Per-frame render loop ────────────────────────────────────────────────
   geofs.api.viewer.scene.preRender.addEventListener(() => {
     const resetSpeed = parseFloat(freeLookUi.get("ResetSpeed")) || 0.25;
-    const dt         = window.gameDeltaTime || 0;
+    const dt = window.gameDeltaTime || 0;
 
     if (isActive) {
       // Sync speed from UI each frame so live tweaks take effect
       headingSilk.speed = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
-      tiltSilk.speed    = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
+      tiltSilk.speed = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
 
-      geofs.camera.lookAround(
-        freeLookBase[0] + headingSilk.update(dt),
-        freeLookBase[1] + tiltSilk.update(dt)
-      );
-
+      geofs.camera.lookAround(freeLookBase[0] + headingSilk.update(dt), freeLookBase[1] + tiltSilk.update(dt));
     } else if (isResetAnimating) {
       const orientations = geofs.camera.currentDefinition?.orientations?.current;
-      if (!orientations) { isResetAnimating = false; return; }
+      if (!orientations) {
+        isResetAnimating = false;
+        return;
+      }
 
       const curH = orientations[0];
       const curT = orientations[1];
@@ -130,7 +127,6 @@
     }
   });
 
-  // ─── Mouse move ───────────────────────────────────────────────────────────
   window.addEventListener("mousemove", (e) => {
     if (!isActive) return;
 
@@ -139,17 +135,14 @@
 
     const isCockpit = geofs.camera.currentModeName === "cockpit";
 
-    // Accumulate into the Silk targets
-    headingSilk.setTarget(headingSilk.target + dx);
-    tiltSilk.setTarget(tiltSilk.target    + dy * (isCockpit ? -1 : 1));
+    headingSilk.setTarget(headingSilk.raw_target + dx);
+    tiltSilk.setTarget(tiltSilk.raw_target + dy * (isCockpit ? -1 : 1));
   });
 
-  // ─── Cancel reset on canvas click ────────────────────────────────────────
   const canvas = document.querySelector("canvas");
   if (canvas) {
     canvas.addEventListener("mousedown", () => {
       isResetAnimating = false;
     });
   }
-
 })();

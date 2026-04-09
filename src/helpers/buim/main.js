@@ -214,9 +214,7 @@ window.BUIM = (() => {
     }
     for (const child of children) {
       if (child == null) continue;
-      node.append(
-        typeof child === "string" ? document.createTextNode(child) : child,
-      );
+      node.append(typeof child === "string" ? document.createTextNode(child) : child);
     }
     return node;
   }
@@ -288,18 +286,9 @@ window.BUIM = (() => {
 
       if (container) {
         container.addEventListener("click", (e) => {
-          const closest_btn = e.target.closest("button");
-
-          if (!closest_btn) {
-            const closest_div = e.target.closest("div");
-            if (closest_div.id == "buim-open-btn") {
-                ui.collapseLeft()
-            }
-          };
-          
-          // Check it's a DIRECT child of the container
-          if (closest_btn.parentElement === container) {
-            toggleMenu(false); // close menu
+          const closest_div = e.target.closest("div");
+          if (closest_div.id == "buim-open-btn") {
+            ui.collapseLeft();
           }
         });
       }
@@ -313,6 +302,11 @@ window.BUIM = (() => {
 
     _emitter.emit(_isOpen ? "menu:open" : "menu:close");
   }
+
+  ui.expandLeft = function () {
+    ($("body").addClass("geofs-expand-left"), geofs.handleResize());
+    toggleMenu(false)
+  };
 
   // ─── Keyboard shortcut helpers ────────────────────────────────────────────
 
@@ -372,8 +366,7 @@ window.BUIM = (() => {
      * @param {string} prefix  - Unique prefix for all localStorage keys in this section.
      */
     constructor(name, prefix) {
-      if (!prefix || !name)
-        throw new Error("BUIM: name and prefix are required.");
+      if (!prefix || !name) throw new Error("BUIM: name and prefix are required.");
       this.#name = name;
       this.#prefix = prefix;
 
@@ -410,31 +403,20 @@ window.BUIM = (() => {
         textContent: "▸",
       });
 
-      const header = el(
-        "div",
-        { className: "buim-section-header" },
-        this.#enableCheckbox,
-        title,
-        arrow,
-      );
+      const header = el("div", { className: "buim-section-header" }, this.#enableCheckbox, title, arrow);
 
       this.#bodyEl = el("div", { className: "buim-section-body" });
 
       // Add reset button at the bottom of every section
       const resetBtn = el("button", {
         className: "buim-btn buim-btn-reset",
-        textContent: "RESET DEFAULTS",
+        textContent: "RESET & REFRESH",
       });
       resetBtn.addEventListener("click", () => this.#resetDefaults());
 
       this.#bodyEl.appendChild(resetBtn);
 
-      const section = el(
-        "div",
-        { className: "buim-section" },
-        header,
-        this.#bodyEl,
-      );
+      const section = el("div", { className: "buim-section" }, header, this.#bodyEl);
 
       header.addEventListener("click", () => {
         const open = this.#bodyEl.classList.toggle("open");
@@ -460,8 +442,16 @@ window.BUIM = (() => {
         } else {
           elem.value = defaultValue;
         }
+        _emitter.emit(`${elem.id}:change`);
       }
       _emitter.emit(`${this.#prefix}:reset`);
+
+      for (key in localStorage) {
+        if (key.substring(0, this.prefix.length + 1) == this.prefix + ":") {
+          localStorage.removeItem(key);
+        }
+      }
+      Location.reload();
     }
 
     // ── Public API ───────────────────────────────────────────────────────
@@ -513,11 +503,7 @@ window.BUIM = (() => {
         _emitter.emit(`${key}:change`, value);
       });
 
-      const label = el(
-        "label",
-        { className: "buim-label", htmlFor: key },
-        description,
-      );
+      const label = el("label", { className: "buim-label", htmlFor: key }, description);
       const row = el("div", { className: "buim-row" }, label, input);
       this.#appendToBody(row);
       return this;
@@ -552,11 +538,7 @@ window.BUIM = (() => {
         _emitter.emit(`${key}:change`, select.value);
       });
 
-      const label = el(
-        "label",
-        { className: "buim-label", htmlFor: key },
-        description,
-      );
+      const label = el("label", { className: "buim-label", htmlFor: key }, description);
       const row = el("div", { className: "buim-row" }, label, select);
       this.#appendToBody(row);
       return this;
@@ -581,9 +563,7 @@ window.BUIM = (() => {
      * @returns {Section} this (chainable)
      */
     addSubHeading(text) {
-      this.#appendToBody(
-        el(`label`, { textContent: text, className: "buim-header" }),
-      );
+      this.#appendToBody(el(`label`, { textContent: text, className: "buim-header" }));
       return this;
     }
 
@@ -631,11 +611,7 @@ window.BUIM = (() => {
 
       // Global key listener for this shortcut
       document.addEventListener("keydown", (e) => {
-        if (
-          shortcutMatches(e, Store.get(key) ?? defaultValue) &&
-          this.isEnabled
-        )
-          onKeyDown(e);
+        if (shortcutMatches(e, Store.get(key) ?? defaultValue) && this.isEnabled) onKeyDown(e);
       });
       if (onKeyUp) {
         document.addEventListener("keyup", (e) => {
@@ -667,8 +643,7 @@ window.BUIM = (() => {
       Store.set(key, value);
       const elem = document.getElementById(key);
       if (!elem) return;
-      if (elem.type === "checkbox")
-        elem.checked = value === "true" || value === true;
+      if (elem.type === "checkbox") elem.checked = value === "true" || value === true;
       else elem.value = value;
     }
 

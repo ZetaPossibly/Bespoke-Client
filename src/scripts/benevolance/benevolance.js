@@ -83,13 +83,16 @@
                 backdrop-filter: blur(10px);
                 border-radius: 30px
             }
-            .leaflet-popup-content-wrapper {
-                background-color: #000000ca;
-                backdrop-filter: blur(10px);
+            .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+                background-color: #000000ca !important;
+                box-shadow: none
             }
             .mdl-chip {
                 background-color: #000000ca;
-                backdrop-filter: blur(10px);
+                color: white;
+            }
+            .mdl-menu {
+                color: white
             }
         `;
 
@@ -120,7 +123,7 @@
     let restart_mp = function () {
         multiplayer.stop()
         setTimeout(() => {
-            multiplayer.stop()
+            multiplayer.start()
         }, 500)
     }
     

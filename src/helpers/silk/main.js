@@ -28,8 +28,12 @@
         defaultValue = initial,
       } = {},
     ) {
-      this.current = initial;
-      this.target = initial;
+      this.raw_current = initial
+      this.raw_target = initial
+      this.current = 0
+      this.target = 0 
+      this.setCurrent(this.raw_current)
+      this.setTarget(this.raw_target)
 
       this.speed = speed;
       this.radius = radius;
@@ -48,10 +52,13 @@
     }
 
     setTarget(value) {
+      this.raw_target = value
       this.target = this._softClamp(value) - this.calibrationValue;
     }
 
     setCurrent(value) {
+      this.raw_current = value
+      this.raw_target = value
       this.current = this._softClamp(value) - this.calibrationValue;
       this.target = this.current; // drag anchor follows too
     }
