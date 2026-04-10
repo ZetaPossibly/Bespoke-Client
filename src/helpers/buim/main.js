@@ -446,7 +446,7 @@ window.BUIM = (() => {
       }
       _emitter.emit(`${this.#prefix}:reset`);
 
-      for (key in localStorage) {
+      for (const key in localStorage) {
         if (key.substring(0, this.prefix.length + 1) == this.prefix + ":") {
           localStorage.removeItem(key);
         }
