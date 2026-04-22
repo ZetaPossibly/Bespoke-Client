@@ -3,7 +3,7 @@
   const freeLookUi = new window.BUIM("Freelook", prefix)
     .addItem("X Sensitivity: ", "xSens", "number", 0.2)
     .addItem("Y Sensitivity: ", "ySens", "number", 0.2)
-    .addItem("Smooth Speed: ", "SmoothSpeed", "number", 10);
+    .addItem("Smooth Speed: ", "SmoothSpeed", "number", 20);
 
   let tiltSilk = new Silk(0, { speed: freeLookUi.get("SmoothSpeed"), sensitivity: freeLookUi.get("ySens") });
   let headingSilk = new Silk(0, { speed: freeLookUi.get("SmoothSpeed"), sensitivity: freeLookUi.get("xSens") });

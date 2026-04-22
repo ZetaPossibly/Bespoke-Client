@@ -34,10 +34,9 @@
   };
 
   const lookoutUi = new window.BUIM("Lookout", "lookout")
-    .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 2)
-    //.addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
+    .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 57)  // was 2
     .addItem("Snappiness", "snappiness", "number", 10)
-    .addItem("Deadzone", "deadzone", "number", 3);
+    .addItem("Deadzone", "deadzone", "number", 3);  // now 3 degrees, which makes sense
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk = new Silk(0, { min: config.pitch.min, max: config.pitch.max });
@@ -139,18 +138,12 @@
             maxFacesDetected: 1,
             callbackReady: catchError,
             callbackTrack: function (detectState) {
-              if (geofs.camera.freeLookEnabled) {
-                return;
-              }
-
               pitchSilk.setTarget(-detectState.rx);
               yawSilk.setTarget(-detectState.ry);
               rollSilk.setTarget(-detectState.rz);
               //leftRightSilk.setTarget(-detectState.x);
               //forwardBackwardSilk.setTarget(detectState.s);
               //upDownSilk.setTarget(detectState.y);
-
-              geofs.camera.freeLookBase = [yawSilk.get(), pitchSilk.get()];
             },
           });
           hasInit = true;

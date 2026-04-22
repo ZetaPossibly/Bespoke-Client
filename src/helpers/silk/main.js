@@ -24,7 +24,6 @@
         enabled = true,
         sensitivity = 100,
         calibrationValue = 0,
-        clampHardness = 1.5,
         defaultValue = initial,
       } = {},
     ) {
@@ -42,7 +41,6 @@
       this.enabled = enabled;
       this.sensitivity = sensitivity;
       this.calibrationValue = calibrationValue;
-      this.clampHardness = clampHardness;
       this.defaultValue = defaultValue;
     }
 
