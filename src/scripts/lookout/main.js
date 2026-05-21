@@ -84,7 +84,7 @@
   lookoutUi.on("toggle", () => {
     if (geofs.camera.currentModeName == "cockpit") {
       geofs.camera.setPosition(0, 0, 0);
-      geofs.camera.setRotation(0, 0, 0);
+      geofs.camera.lookAround(0, 0, 0);
     }
   });
 
@@ -100,7 +100,7 @@
 
   // Reads smoothed Silk values and applies them to the camera.
   const applyTransformsToCamera = function () {
-    geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get());
+    geofs.camera.lookAround(yawSilk.get(), pitchSilk.get(), rollSilk.get());
 
     // let rawPositionVector = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()]
     // const toRotate = 0.0174532925 * geofs.animation.values.aroll
