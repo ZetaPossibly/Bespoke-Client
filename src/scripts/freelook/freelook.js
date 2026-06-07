@@ -92,14 +92,13 @@
   // ─── Per-frame render loop ────────────────────────────────────────────────
   geofs.api.viewer.scene.preRender.addEventListener(() => {
     const resetSpeed = parseFloat(freeLookUi.get("ResetSpeed")) || 0.25;
-    const dt = window.gameDeltaTime || 0;
 
     if (isActive) {
       // Sync speed from UI each frame so live tweaks take effect
       headingSilk.speed = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
       tiltSilk.speed = parseFloat(freeLookUi.get("SmoothSpeed")) || 0.4;
 
-      geofs.camera.lookAround(freeLookBase[0] + headingSilk.update(dt), freeLookBase[1] + tiltSilk.update(dt));
+      geofs.camera.lookAround(freeLookBase[0] + headingSilk.update(), freeLookBase[1] + tiltSilk.update());
     } else if (isResetAnimating) {
       const orientations = geofs.camera.currentDefinition?.orientations?.current;
       if (!orientations) {
