@@ -83,10 +83,16 @@
         return this.current; // anchor holds, output stays put
       }
 
+      // Guard against undefined or invalid gameDeltaTime (before first clock tick)
+      const dt = window.gameDeltaTime ?? 0;
+      if (dt <= 0) {
+        return this.current;
+      }
+
       // Chase the point on the edge of the radius toward the target,
       // so the output smoothly follows but never "jumps" to catch up fully
       const pull = diff - Math.sign(diff) * this.radius;
-      const t = 1 - Math.exp(-this.speed * window.gameDeltaTime);
+      const t = 1 - Math.exp(-this.speed * dt);
       this.current += pull * t;
       this.current = Math.min(this.max, Math.max(this.min, this.current));
 
