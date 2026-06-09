@@ -24,6 +24,7 @@
         enabled = true,
         sensitivity = 100,
         calibrationValue = 0,
+        clampHardness = 1.5,
         defaultValue = initial,
       } = {},
     ) {
@@ -41,6 +42,7 @@
       this.enabled = enabled;
       this.sensitivity = sensitivity;
       this.calibrationValue = calibrationValue;
+      this.clampHardness = clampHardness;
       this.defaultValue = defaultValue;
     }
 
@@ -69,7 +71,7 @@
       this.calibrationValue = this.get() + this.calibrationValue;
     }
 
-    update() {
+    update(dt) {
       if (!this.enabled) {
         this.current = this.defaultValue;
         return this.current;
@@ -81,12 +83,6 @@
       // Only move if input has been dragged outside the radius
       if (dist <= this.radius) {
         return this.current; // anchor holds, output stays put
-      }
-
-      // Guard against undefined or invalid gameDeltaTime (before first clock tick)
-      const dt = window.gameDeltaTime ?? 0;
-      if (dt <= 0) {
-        return this.current;
       }
 
       // Chase the point on the edge of the radius toward the target,
