@@ -118,7 +118,7 @@ geofs.camera.update = function (e) {
             switch (s.type) {
                 case "tilt":
                     if (s.lastValue == c) continue;
-                    geofs.camera.setRotation(null, c);
+                    geofs.camera.lookAround(null, c);
                     break;
                 case "offset":
                     if (s.lastValue == c) continue;
