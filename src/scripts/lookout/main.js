@@ -128,8 +128,8 @@
   geofs.api.viewer.scene.preRender.addEventListener(() => {
     const dt = window.gameDeltaTime || 0;
 
-    rotationalAxes.forEach((axis) => axis.update(dt));
-    //positionalAxes.forEach((axis) => axis.update(dt));
+    rotationalAxes.forEach((axis) => axis.update());
+    //positionalAxes.forEach((axis) => axis.update());
 
     if (geofs.camera.currentModeName == "cockpit" && lookoutUi.isEnabled) applyTransformsToCamera();
   });
