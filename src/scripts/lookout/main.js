@@ -30,13 +30,13 @@
       min: -0.1,
       max: 0.2,
     },
-    algorithm: window.bespokeClient.data.jeelizModels.default,
+    algorithm: window.bespokeClient.data.jeelizModels.veryLight,
   };
 
   const lookoutUi = new window.BUIM("Lookout", "lookout")
     .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 57)  // was 2
     .addItem("Snappiness", "snappiness", "number", 10)
-    .addItem("Deadzone", "deadzone", "number", 3);  // now 3 degrees, which makes sense
+    .addItem("Deadzone", "deadzone", "number", 3)  // now 3 degrees, which makes sense;
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk = new Silk(0, { min: config.pitch.min, max: config.pitch.max });
