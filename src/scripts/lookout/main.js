@@ -30,7 +30,7 @@
       min: -0.1,
       max: 0.2,
     },
-    algorithm: window.bespokeClient.data.jeelizModels.veryLight,
+    algorithm: window.bespokeClient.data.jeelizModels.default,
   };
 
   const lookoutUi = new window.BUIM("Lookout", "lookout")
@@ -91,8 +91,8 @@
   const addCanvas = function (id) {
     const canvas = document.createElement("canvas");
     canvas.id = id;
-    canvas.width = 600;
-    canvas.height = 600;
+    canvas.width = 320;
+    canvas.height = 320;
     canvas.style.display = "none";
     document.body.appendChild(canvas);
     return canvas;
