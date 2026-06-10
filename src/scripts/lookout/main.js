@@ -30,13 +30,13 @@
       min: -0.1,
       max: 0.2,
     },
-    algorithm: window.bespokeClient.data.jeelizModels.default,
+    algorithm: window.bespokeClient.data.jeelizModels.veryLight,
   };
 
   const lookoutUi = new window.BUIM("Lookout", "lookout")
-    .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 57) // was 2
+    .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 57)  // was 2
     .addItem("Snappiness", "snappiness", "number", 10)
-    .addItem("Deadzone", "deadzone", "number", 3); // now 3 degrees, which makes sense;
+    .addItem("Deadzone", "deadzone", "number", 3)  // now 3 degrees, which makes sense;
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk = new Silk(0, { min: config.pitch.min, max: config.pitch.max });
@@ -70,7 +70,7 @@
     rotationalAxes.forEach((axis) => {
       axis.speed = smoothSpeed;
       axis.radius = deadzone;
-      axis.sensitivity = rotSens;
+      axis.sensitivity = rotSens
     });
     // positionalAxes.forEach((axis) => {
     //   axis.speed = smoothSpeed;
@@ -98,30 +98,15 @@
     return canvas;
   };
 
-  let lastYaw = 0;
-  let lastPitch = 0;
-  let lastRoll = 0;
-
-  function applyTransformsToCamera() {
-    const yaw = yawSilk.get();
-    const pitch = pitchSilk.get();
-    const roll = rollSilk.get();
-
-    if (yaw === lastYaw && pitch === lastPitch && roll === lastRoll) {
-      return;
-    }
-
-    lastYaw = yaw;
-    lastPitch = pitch;
-    lastRoll = roll;
-
-    geofs.camera.lookAround(yaw, pitch, roll);
+  // Reads smoothed Silk values and applies them to the camera.
+  const applyTransformsToCamera = function () {
+    geofs.camera.lookAround(yawSilk.get(), pitchSilk.get(), rollSilk.get());
 
     // let rawPositionVector = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()]
     // const toRotate = 0.0174532925 * geofs.animation.values.aroll
     // const rotatedVector = V3.rotate(rawPositionVector, [0, 0, 1], -toRotate)
     // geofs.camera.setPosition(rotatedVector[0], rotatedVector[1], rotatedVector[2]);
-  }
+  };
 
   const catchError = function (error) {
     if (!error) {
@@ -133,9 +118,7 @@
   geofs.api.viewer.scene.preRender.addEventListener(() => {
     const dt = window.gameDeltaTime || 0;
 
-    for (let i = 0; i < rotationalAxes.length; i++) {
-      rotationalAxes[i].update();
-    }
+    rotationalAxes.forEach((axis) => axis.update());
     //positionalAxes.forEach((axis) => axis.update());
 
     if (geofs.camera.currentModeName == "cockpit" && lookoutUi.isEnabled) applyTransformsToCamera();

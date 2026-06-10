@@ -1,10 +1,16 @@
 (() => {
-  let lastTime = performance.now();
+  let lastTime;
+  window.gameDeltaTime = 0;
+  geofs.api.viewer.clock.onTick.addEventListener((clock) => {
+    const currentTime = Cesium.JulianDate.toDate(clock.currentTime).getTime();
 
-  geofs.api.viewer.scene.preRender.addEventListener(() => {
-    const now = performance.now();
-    window.gameDeltaTime = (now - lastTime) * 0.001;
-    lastTime = now;
+    if (lastTime === undefined) {
+      lastTime = currentTime;
+      return;
+    }
+
+    window.gameDeltaTime = (currentTime - lastTime) / 1000;
+    lastTime = currentTime;
   });
 
   window.Silk = class {
@@ -65,15 +71,24 @@
     };
 
     update() {
-      if (!this.enabled) return this.defaultValue;
+      if (!this.enabled) {
+        return this.defaultValue;
+      }
 
       const diff = this.target - this.current;
+      const dist = Math.abs(diff);
 
-      if (Math.abs(diff) <= this.radius) {
+      if (dist <= this.radius) {
         return this.current;
       }
 
-      this.current += (diff - Math.sign(diff) * this.radius) * (1 - Math.exp(-this.speed * window.gameDeltaTime));
+      const pull = diff - Math.sign(diff) * this.radius;
+
+      const dt = window.gameDeltaTime || 0;
+      const t = 1 - Math.exp(-this.speed * dt);
+
+      this.current += pull * t;
+      this.current = Math.min(this.max, Math.max(this.min, this.current));
 
       return this.current;
     }
