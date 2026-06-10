@@ -91,8 +91,8 @@
   const addCanvas = function (id) {
     const canvas = document.createElement("canvas");
     canvas.id = id;
-    canvas.width = 320;
-    canvas.height = 320;
+    canvas.width = 500;
+    canvas.height = 500;
     canvas.style.display = "none";
     document.body.appendChild(canvas);
     return canvas;
