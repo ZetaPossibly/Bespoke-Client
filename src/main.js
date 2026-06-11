@@ -39,7 +39,6 @@ const scripts = {
     freelook: getUrl("scripts/freelook/freelook.js"),
 
     //slew: getUrl("scripts/external/slew/slew.js") 
-    // will add support for these in the new uilater
 }
 
 const data = {

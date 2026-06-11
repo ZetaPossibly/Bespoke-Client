@@ -18,21 +18,21 @@
                 backdrop-filter: blur(10px);
             }
             
-            .geofs-transparentUI .geofs-ui-bottom {
+            .geofs-ui-bottom {
                 background-color: #0000005e;
                 backdrop-filter: blur(5px);
                 }
 
-            .geofs-expand-left.geofs-transparentUI .geofs-chat-messages {
+            .geofs-chat-messages {
                 left: 38%;
             }
 
-            .geofs-transparentUI .geofs-list {
+            .geofs-list {
                 background: #0000003b;
                 backdrop-filter: blur(5px);
             }
 
-            .geofs-transparentUI #Qantas94Heavy-ap {
+            #Qantas94Heavy-ap {
                 background-color: #000000;
                 backdrop-filter: blur(5px);
             }
@@ -139,6 +139,8 @@
         if (!benevolanceUi.isEnabled) {
             remove_styles()
         } else {
+            geofs.preferences.interface.transparent = true
+            ui.applyPreferences()
             apply_styles()
         }
         restart_mp()
