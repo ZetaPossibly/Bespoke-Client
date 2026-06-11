@@ -118,6 +118,7 @@
     let prefix = "benevolance"
     let benevolanceUi = new window.BUIM("Benevolance", prefix)
     benevolanceUi
+        .addSubHeading("Dark theme automatically enabled 'Transparent UI'. Using without it, is not supported. ")
         .addDropdown("Map Style", "MapStyle", mapTilesets, mapTilesets["GeoFS"])
         .addItem("Remove Foos from NAV", "RemoveFoos", "checkbox", false)
     

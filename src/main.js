@@ -38,6 +38,10 @@ const scripts = {
     benevolance: getUrl("scripts/benevolance/benevolance.js"),
     freelook: getUrl("scripts/freelook/freelook.js"),
 
+    characteristics: getUrl("scripts/infoPanels/characteristics.js"),
+    fpsDisplay: getUrl("scripts/infoPanels/fps.js"),
+    missileList: getUrl("scripts/infoPanels/missiles.js")
+
     //slew: getUrl("scripts/external/slew/slew.js") 
 }
 
