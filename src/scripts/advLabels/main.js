@@ -141,7 +141,7 @@
                 verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
                 eyeOffset: new Cesium.Cartesian3(0, 0, 0),
                 fillColor: Cesium.Color.fromCssColorString("#ab3b35ff"),
-                outlineColor: Cesium.Color.RED,
+                outlineColor: Cesium.Color.TRANSPARENT,
                 outlineWidth: 4,
             };
         } else {
