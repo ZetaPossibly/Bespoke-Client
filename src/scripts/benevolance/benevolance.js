@@ -18,21 +18,21 @@
                 backdrop-filter: blur(10px);
             }
             
-            .geofs-ui-bottom {
+            .geofs-transparentUI .geofs-ui-bottom {
                 background-color: #0000005e;
                 backdrop-filter: blur(5px);
                 }
 
-            .geofs-chat-messages {
+            .geofs-expand-left.geofs-transparentUI .geofs-chat-messages {
                 left: 38%;
             }
 
-            .geofs-list {
+            .geofs-transparentUI .geofs-list {
                 background: #0000003b;
                 backdrop-filter: blur(5px);
             }
 
-            #Qantas94Heavy-ap {
+            .geofs-transparentUI #Qantas94Heavy-ap {
                 background-color: #000000;
                 backdrop-filter: blur(5px);
             }
