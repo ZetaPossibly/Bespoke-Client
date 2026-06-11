@@ -53,7 +53,7 @@
                 color: white;
             }
 
-            .mdl-button {
+            .geofs-transparentUI .geofs-ui-bottom .mdl-button {
                 color: white;
             }
 
