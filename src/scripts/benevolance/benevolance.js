@@ -2,14 +2,15 @@
     let mapTilesets = {
         "CartoDB Dark": "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
         "Google": "https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
-        "GeoFS": "https://data.geo-fs.com/osm/{z}/{x}/{y}.png",
+        "GeoFS 3.9": "https://data.geo-fs.com/osm/{z}/{x}/{y}.png",
         "GeoFS 4.0": "https://data.geo-fs.com/osm25/{z}/{x}/{y}.png",
         "ESRI Satellite": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        "Earth at Night": "https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/2012-01-01/{tilematrixset}{maxZoom}/{z}/{y}/{x}.jpg",
-        "Better Earth at night": "https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/2012-01-01/GoogleMapsCompatible_Level{z}/{z}/{y}/{x}.jpg",
+        "Earth at night": "https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/2012-01-01/GoogleMapsCompatible_Level{z}/{z}/{y}/{x}.jpg",
         "OSM": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     }
     function apply_styles() {
+        geofs.preferences.interface.transparent = true
+        ui.applyPreferences()
         const style = document.createElement("style");
         style.id = "BespokeTheme"
         style.textContent = `
@@ -21,7 +22,7 @@
             .geofs-transparentUI .geofs-ui-bottom {
                 background-color: #0000005e;
                 backdrop-filter: blur(5px);
-                }
+            }
 
             .geofs-expand-left.geofs-transparentUI .geofs-chat-messages {
                 left: 38%;
@@ -37,7 +38,7 @@
                 backdrop-filter: blur(5px);
             }
 
-            html {
+            .geofs-transparentUI {
                 color: rgb(255 255 255 / 87%);
             }
 
@@ -139,8 +140,6 @@
         if (!benevolanceUi.isEnabled) {
             remove_styles()
         } else {
-            geofs.preferences.interface.transparent = true
-            ui.applyPreferences()
             apply_styles()
         }
         restart_mp()
