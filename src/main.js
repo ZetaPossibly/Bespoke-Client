@@ -34,7 +34,6 @@ const helpers = {
 const scripts = {
     lookout: getUrl("scripts/lookout/main.js"),
     chatFix: getUrl("scripts/chatFix/main.js"),
-    advLabels: getUrl("scripts/advLabels/main.js"),
     benevolance: getUrl("scripts/benevolance/benevolance.js"),
     freelook: getUrl("scripts/freelook/freelook.js"),
 
