@@ -24,6 +24,22 @@
                 backdrop-filter: blur(5px);
             }
 
+            /* Livery Selector */ 
+            #customDiv {
+                background-color: #0000005e;
+                backdrop-filter: blur(5px);
+            }
+
+            #liverylist {
+                background-color: #0000005e;
+                backdrop-filter: blur(5px);
+            }
+
+            #favorites {
+                background-color: #0000005e;
+                backdrop-filter: blur(5px);
+            }
+
             .geofs-expand-left.geofs-transparentUI .geofs-chat-messages {
                 left: 38%;
             }
