@@ -105,37 +105,69 @@
 
     const degToRad = Math.PI / 180;
 
+    const degToRad = Math.PI / 180;
+
     // Aircraft orientation
     const roll = geofs.animation.values.aroll * degToRad;
     const pitch = geofs.animation.values.atilt * degToRad;
     const heading = geofs.animation.values.heading * degToRad;
 
-    // Local movement inputs
+    // Local camera inputs (aircraft space)
     const right = leftRightSilk.get();
     const forward = forwardBackwardSilk.get();
     const up = upDownSilk.get();
 
-    // World basis vectors
-    const worldUp = [0, 0, 1];
-    const worldNorth = [0, 1, 0];
-    const worldEast = [1, 0, 0];
+    // --- Build rotation matrices ---
 
-    // 1. Apply heading (yaw) around world up axis
-    const aircraftForward = V3.rotate(worldNorth, worldUp, heading);
-    const aircraftRight = V3.rotate(worldEast, worldUp, heading);
+    // Yaw (heading) — rotates around the UP axis
+    const cosH = Math.cos(heading),
+      sinH = Math.sin(heading);
+    const Ry = [
+      [cosH, 0, sinH],
+      [0, 1, 0],
+      [-sinH, 0, cosH],
+    ];
 
-    // 2. Apply pitch around the aircraft's right axis
-    const pitchedForward = V3.rotate(aircraftForward, aircraftRight, pitch);
-    const pitchedUp = V3.rotate(worldUp, aircraftRight, pitch);
+    // Pitch (tilt) — rotates around the RIGHT axis
+    const cosP = Math.cos(pitch),
+      sinP = Math.sin(pitch);
+    const Rx = [
+      [1, 0, 0],
+      [0, cosP, -sinP],
+      [0, sinP, cosP],
+    ];
 
-    // 3. Apply roll around the aircraft's (pitched) forward axis
-    const rolledRight = V3.rotate(aircraftRight, pitchedForward, roll);
-    const rolledUp = V3.rotate(pitchedUp, pitchedForward, roll);
+    // Roll — rotates around the FORWARD axis
+    const cosR = Math.cos(roll),
+      sinR = Math.sin(roll);
+    const Rz = [
+      [cosR, -sinR, 0],
+      [sinR, cosR, 0],
+      [0, 0, 1],
+    ];
 
-    // Combine axes weighted by inputs to get world-space movement
-    const v = V3.add(V3.scale(rolledRight, right), V3.add(V3.scale(pitchedForward, forward), V3.scale(rolledUp, up)));
+    // --- Combine: world = Ry * Rx * Rz (yaw → pitch → roll) ---
+    function mulMat(A, B) {
+      return A.map((row) => [0, 1, 2].map((j) => row.reduce((sum, _, k) => sum + A[row.indexOf(row[k])][k] * B[k][j], 0)));
+    }
+    // Cleaner mat multiply:
+    function matMul(A, B) {
+      const R = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+      ];
+      for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) for (let k = 0; k < 3; k++) R[i][j] += A[i][k] * B[k][j];
+      return R;
+    }
 
-    geofs.camera.setPosition(v[0], v[1], v[2]);
+    const R = matMul(matMul(Ry, Rx), Rz);
+
+    // --- Apply to local vector ---
+    const localVec = [right, forward, up];
+    const world = R.map((row) => row.reduce((sum, val, i) => sum + val * localVec[i], 0));
+
+    geofs.camera.setPosition(world[0], world[1], world[2]);
   };
 
   const catchError = function (error) {
