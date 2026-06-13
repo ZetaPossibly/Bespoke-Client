@@ -1,27 +1,52 @@
-
-const fpsDisplay = document.createElement('div');
-fpsDisplay.style.position = 'fixed';
-fpsDisplay.style.top = '85px';
-fpsDisplay.style.right = '10px';
-fpsDisplay.style.padding = '5px 10px';
-fpsDisplay.style.backgroundColor = 'rgba(0,0,0,0.75)';
-fpsDisplay.style.color = 'white';
-fpsDisplay.style.fontSize = '14px';
-fpsDisplay.style.fontFamily = "'Courier New', monospace";
-fpsDisplay.style.boxShadow = '0 2px 10px rgba(0,0,0,0.4)'
-fpsDisplay.style.zIndex = '9999';
-fpsDisplay.style.borderRadius = '8px'
-fpsDisplay.style.cursor = "pointer";
-fpsDisplay.style.userSelect = "none";
-fpsDisplay.style.opacity = "1";
-fpsDisplay.style.transition = "opacity 0.3s";
-fpsDisplay.addEventListener('click', () => {
-    fpsDisplay.style.opacity = fpsDisplay.style.opacity === "1" ? "0" : "1";
-});
-document.body.appendChild(fpsDisplay);
-
-let lastTime = performance.now();
+let fpsDisplay = null;
+let rafId = null;
+let lastTime = null;
 let frameCount = 0;
+
+function createFPSDisplay() {
+    if (fpsDisplay) return;
+
+    fpsDisplay = document.createElement('div');
+    fpsDisplay.style.cssText = `
+        position: fixed;
+        top: 85px;
+        right: 10px;
+        padding: 5px 10px;
+        background-color: rgba(0,0,0,0.75);
+        color: white;
+        font-size: 14px;
+        font-family: 'Courier New', monospace;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        z-index: 9999;
+        border-radius: 8px;
+        cursor: pointer;
+        user-select: none;
+        opacity: 1;
+        transition: opacity 0.3s;
+    `;
+
+    fpsDisplay.addEventListener('click', () => {
+        fpsDisplay.style.opacity = fpsDisplay.style.opacity === '1' ? '0' : '1';
+    });
+
+    document.body.appendChild(fpsDisplay);
+
+    lastTime = performance.now();
+    frameCount = 0;
+    rafId = requestAnimationFrame(updateFPS);
+}
+
+function destroyFPSDisplay() {
+    if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+    }
+
+    if (fpsDisplay) {
+        fpsDisplay.remove();
+        fpsDisplay = null;
+    }
+}
 
 function updateFPS() {
     const now = performance.now();
@@ -30,12 +55,12 @@ function updateFPS() {
 
     if (delta >= 1000) {
         const fps = (frameCount / delta) * 1000;
-        fpsDisplay.textContent = `FPS: ${fps.toFixed(2)}`;
+        if (fpsDisplay) fpsDisplay.textContent = `FPS: ${fps.toFixed(2)}`;
         lastTime = now;
         frameCount = 0;
     }
 
-    requestAnimationFrame(updateFPS);
+    if (fpsDisplay) {
+        rafId = requestAnimationFrame(updateFPS);
+    }
 }
-
-updateFPS();
