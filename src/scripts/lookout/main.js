@@ -105,22 +105,18 @@
 
     const degToRad = Math.PI / 180;
 
-    // aircraft attitude (adjust field names if GeoFS uses different ones)
     const roll = geofs.animation.values.aroll * degToRad;
     const pitch = geofs.animation.values.atilt * degToRad;
     const yaw = geofs.animation.values.heading * degToRad;
 
-    // your offset vector
-    let v = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()];
+    // local movement inputs
+    const right = leftRightSilk.get();
+    const forward = forwardBackwardSilk.get();
+    const up = upDownSilk.get();
 
-    // rotate X (pitch)
-    v = V3.rotate(v, [1, 0, 0], pitch);
-    // rotate Y (yaw)
-    v = V3.rotate(v, [0, 1, 0], yaw);
-    // rotate Z (roll)
-    v = V3.rotate(v, [0, 0, 1], roll);
+    // aircraft-local movement vector (NO manual rotation)
+    const v = [right, forward, up];
 
-    // apply
     geofs.camera.setPosition(v[0], v[1], v[2]);
   };
 
