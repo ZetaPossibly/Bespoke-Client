@@ -4,7 +4,7 @@ const panel_scripts = {
     missileList: getUrl("scripts/infoPanels/missiles.js")
 }
 
-loadScripts(panel_scripts)
+await loadScripts(panel_scripts)
 
 const prefix = "infoPanels";
 const infoPanelsUi = new window.BUIM("Information Panels", prefix)
