@@ -103,10 +103,25 @@
   const applyTransformsToCamera = function () {
     geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get());
 
-    let rawPositionVector = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()];
-    const toRotate = 0.0174532925 * geofs.animation.values.aroll;
-    const rotatedVector = V3.rotate(rawPositionVector, [0, 0, 1], -toRotate);
-    geofs.camera.setPosition(rotatedVector[0], rotatedVector[1], rotatedVector[2]);
+    const degToRad = Math.PI / 180;
+
+    // aircraft attitude (adjust field names if GeoFS uses different ones)
+    const roll = geofs.animation.values.aroll * degToRad;
+    const pitch = geofs.animation.values.atilt * degToRad;
+    const yaw = geofs.animation.values.heading * degToRad;
+
+    // your offset vector
+    let v = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()];
+
+    // rotate X (pitch)
+    v = V3.rotate(v, [1, 0, 0], pitch);
+    // rotate Y (yaw)
+    v = V3.rotate(v, [0, 1, 0], yaw);
+    // rotate Z (roll)
+    v = V3.rotate(v, [0, 0, 1], roll);
+
+    // apply
+    geofs.camera.setPosition(v[0], v[1], v[2]);
   };
 
   const catchError = function (error) {
@@ -144,7 +159,7 @@
               rollSilk.setTarget(-detectState.rz);
               leftRightSilk.setTarget(-detectState.x);
               forwardBackwardSilk.setTarget(detectState.s);
-              console.log(detectState)
+              console.log(detectState);
               upDownSilk.setTarget(detectState.y);
             },
           });
