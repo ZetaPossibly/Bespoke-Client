@@ -105,17 +105,35 @@
 
     const degToRad = Math.PI / 180;
 
+    // Aircraft orientation
     const roll = geofs.animation.values.aroll * degToRad;
     const pitch = geofs.animation.values.atilt * degToRad;
-    const yaw = geofs.animation.values.heading * degToRad;
+    const heading = geofs.animation.values.heading * degToRad;
 
-    // local movement inputs
+    // Local movement inputs
     const right = leftRightSilk.get();
     const forward = forwardBackwardSilk.get();
     const up = upDownSilk.get();
 
-    // aircraft-local movement vector (NO manual rotation)
-    const v = [right, forward, up];
+    // World basis vectors
+    const worldUp = [0, 0, 1];
+    const worldNorth = [0, 1, 0];
+    const worldEast = [1, 0, 0];
+
+    // 1. Apply heading (yaw) around world up axis
+    const aircraftForward = V3.rotate(worldNorth, worldUp, heading);
+    const aircraftRight = V3.rotate(worldEast, worldUp, heading);
+
+    // 2. Apply pitch around the aircraft's right axis
+    const pitchedForward = V3.rotate(aircraftForward, aircraftRight, pitch);
+    const pitchedUp = V3.rotate(worldUp, aircraftRight, pitch);
+
+    // 3. Apply roll around the aircraft's (pitched) forward axis
+    const rolledRight = V3.rotate(aircraftRight, pitchedForward, roll);
+    const rolledUp = V3.rotate(pitchedUp, pitchedForward, roll);
+
+    // Combine axes weighted by inputs to get world-space movement
+    const v = V3.add(V3.scale(rolledRight, right), V3.add(V3.scale(pitchedForward, forward), V3.scale(rolledUp, up)));
 
     geofs.camera.setPosition(v[0], v[1], v[2]);
   };
