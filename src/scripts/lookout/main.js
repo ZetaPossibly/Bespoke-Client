@@ -16,17 +16,17 @@
       max: 100,
     },
     leftRight: {
-      enabled: false,
+      enabled: true,
       min: -0.5,
       max: 0.5,
     },
     forwardBackward: {
-      enabled: false,
+      enabled: true,
       min: -0.5,
       max: 0.5,
     },
     upDown: {
-      enabled: false,
+      enabled: true,
       min: -0.1,
       max: 0.2,
     },
@@ -34,20 +34,21 @@
   };
 
   const lookoutUi = new window.BUIM("Lookout", "lookout")
-    .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 57)  // was 2
+    .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 250)
+    .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 100)
     .addItem("Snappiness", "snappiness", "number", 10)
-    .addItem("Deadzone", "deadzone", "number", 3)  // now 3 degrees, which makes sense;
+    .addItem("Deadzone", "deadzone", "number", 5);
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk = new Silk(0, { min: config.pitch.min, max: config.pitch.max });
   let yawSilk = new Silk(0, { min: config.yaw.min, max: config.yaw.max });
   let rollSilk = new Silk(0, { min: config.roll.min, max: config.roll.max });
-  //   let leftRightSilk = new Silk(0, { min: config.leftRight.min, max: config.leftRight.max });
-  //   let forwardBackwardSilk = new Silk(0, { min: config.forwardBackward.min, max: config.forwardBackward.max });
-  //   let upDownSilk = new Silk(0, { min: config.upDown.min, max: config.upDown.max });
+  let leftRightSilk = new Silk(0, { min: config.leftRight.min, max: config.leftRight.max });
+  let forwardBackwardSilk = new Silk(0, { min: config.forwardBackward.min, max: config.forwardBackward.max });
+  let upDownSilk = new Silk(0, { min: config.upDown.min, max: config.upDown.max });
 
   const rotationalAxes = [pitchSilk, yawSilk, rollSilk];
-  //const positionalAxes = [leftRightSilk, forwardBackwardSilk, upDownSilk];
+  const positionalAxes = [leftRightSilk, forwardBackwardSilk, upDownSilk];
 
   let calibrate = function () {
     console.log("Calibrating");
@@ -55,9 +56,9 @@
     rotationalAxes.forEach((axis) => {
       setTimeout(axis.calibrate, 3000);
     });
-    // positionalAxes.forEach((axis) => {
-    //   axis.calibrate();
-    // });
+    positionalAxes.forEach((axis) => {
+      setTimeout(axis.calibrate, 3000);
+    });
   };
   lookoutUi.addButton("Calibrate", calibrate);
 
@@ -65,18 +66,18 @@
     const smoothSpeed = parseFloat(lookoutUi.get("snappiness")) || 15;
     const deadzone = parseFloat(lookoutUi.get("deadzone")) || 0;
     const rotSens = parseFloat(lookoutUi.get("RotationalSensitivity"));
-    //const posSens = parseFloat(lookoutUi.get("PositionalSensitivity"));
+    const posSens = parseFloat(lookoutUi.get("PositionalSensitivity"));
 
     rotationalAxes.forEach((axis) => {
       axis.speed = smoothSpeed;
       axis.radius = deadzone;
-      axis.sensitivity = rotSens
+      axis.sensitivity = rotSens;
     });
-    // positionalAxes.forEach((axis) => {
-    //   axis.speed = smoothSpeed;
-    //.  axis.sensitivity = posSens
-    //   // no deadzone for positonal
-    // });
+    positionalAxes.forEach((axis) => {
+      axis.speed = smoothSpeed;
+      axis.sensitivity = posSens;
+      // no deadzone for positonal
+    });
   };
 
   update_settings();
@@ -102,10 +103,10 @@
   const applyTransformsToCamera = function () {
     geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get());
 
-    // let rawPositionVector = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()]
-    // const toRotate = 0.0174532925 * geofs.animation.values.aroll
-    // const rotatedVector = V3.rotate(rawPositionVector, [0, 0, 1], -toRotate)
-    // geofs.camera.setPosition(rotatedVector[0], rotatedVector[1], rotatedVector[2]);
+    let rawPositionVector = [leftRightSilk.get(), forwardBackwardSilk.get(), upDownSilk.get()];
+    const toRotate = 0.0174532925 * geofs.animation.values.aroll;
+    const rotatedVector = V3.rotate(rawPositionVector, [0, 0, 1], -toRotate);
+    geofs.camera.setPosition(rotatedVector[0], rotatedVector[1], rotatedVector[2]);
   };
 
   const catchError = function (error) {
@@ -119,7 +120,7 @@
     const dt = window.gameDeltaTime || 0;
 
     rotationalAxes.forEach((axis) => axis.update());
-    //positionalAxes.forEach((axis) => axis.update());
+    positionalAxes.forEach((axis) => axis.update());
 
     if (geofs.camera.currentModeName == "cockpit" && lookoutUi.isEnabled) applyTransformsToCamera();
   });
@@ -141,9 +142,9 @@
               pitchSilk.setTarget(-detectState.rx);
               yawSilk.setTarget(-detectState.ry);
               rollSilk.setTarget(-detectState.rz);
-              //leftRightSilk.setTarget(-detectState.x);
-              //forwardBackwardSilk.setTarget(detectState.s);
-              //upDownSilk.setTarget(detectState.y);
+              leftRightSilk.setTarget(-detectState.x);
+              forwardBackwardSilk.setTarget(detectState.s);
+              upDownSilk.setTarget(detectState.y);
             },
           });
           hasInit = true;
