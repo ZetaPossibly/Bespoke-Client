@@ -1,19 +1,20 @@
-(function() {
-    let mapTilesets = {
-        "CartoDB Dark": "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-        "Google": "https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
-        "GeoFS 3.9": "https://data.geo-fs.com/osm/{z}/{x}/{y}.png",
-        "GeoFS 4.0": "https://data.geo-fs.com/osm25/{z}/{x}/{y}.png",
-        "ESRI Satellite": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        "Earth at night": "https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/2012-01-01/GoogleMapsCompatible_Level{z}/{z}/{y}/{x}.jpg",
-        "OSM": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    }
-    function apply_styles() {
-        geofs.preferences.interface.transparent = true
-        ui.applyPreferences()
-        const style = document.createElement("style");
-        style.id = "BespokeTheme"
-        style.textContent = `
+(function () {
+  let mapTilesets = {
+    "CartoDB Dark": "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    Google: "https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+    "GeoFS 3.9": "https://data.geo-fs.com/osm/{z}/{x}/{y}.png",
+    "GeoFS 4.0": "https://data.geo-fs.com/osm25/{z}/{x}/{y}.png",
+    "ESRI Satellite": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    "Earth at night":
+      "https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/2012-01-01/GoogleMapsCompatible_Level{z}/{z}/{y}/{x}.jpg",
+    OSM: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  };
+  function apply_styles() {
+    geofs.preferences.interface.transparent = true;
+    ui.applyPreferences();
+    const style = document.createElement("style");
+    style.id = "BespokeTheme";
+    style.textContent = `
             .geofs-transparentUI .geofs-map-viewport {
                 -webkit-mask-image: linear-gradient(90deg, #ffffffe0 100%, #ffffff00 100%);
                 backdrop-filter: blur(10px);
@@ -113,104 +114,150 @@
             }
         `;
 
-        document.head.appendChild(style);
+    document.head.appendChild(style);
 
-        geofs.api.map._map._layers["25"].setUrl(
-            benevolanceUi.get("MapStyle") || mapTilesets["CartoDB Dark"]
-        );
+    geofs.api.map._map._layers["25"].setUrl(benevolanceUi.get("MapStyle") || mapTilesets["CartoDB Dark"]);
 
-        geofs.api.map._map.options.maxZoom = 19
-        geofs.api.map._map._panes.mapPane.parentElement.style.background = "black"
-        change_map_tileset(benevolanceUi.get("MapStyle") || mapTilesets["GeoFS"])
-    }
+    geofs.api.map._map.options.maxZoom = 19;
+    geofs.api.map._map._panes.mapPane.parentElement.style.background = "black";
+    change_map_tileset(benevolanceUi.get("MapStyle") || mapTilesets["GeoFS"]);
+  }
 
-    function remove_styles() {
-        geofs.api.map._map.options.maxZoom = 13
-        geofs.api.map._map._panes.mapPane.parentElement.style.background = ''
-        document.getElementById("BespokeTheme")?.remove()
-        change_map_tileset(mapTilesets["GeoFS"])
-    }
+  function remove_styles() {
+    geofs.api.map._map.options.maxZoom = 13;
+    geofs.api.map._map._panes.mapPane.parentElement.style.background = "";
+    document.getElementById("BespokeTheme")?.remove();
+    change_map_tileset(mapTilesets["GeoFS"]);
+  }
 
-    let prefix = "benevolance"
-    let benevolanceUi = new window.BUIM("Benevolance", prefix)
-    benevolanceUi
-        .addSubHeading("Dark theme automatically enabled 'Transparent UI'. Using without it, is not supported. ")
-        .addDropdown("Map Style", "MapStyle", mapTilesets, mapTilesets["GeoFS"])
-        .addItem("Remove Foos from NAV", "RemoveFoos", "checkbox", false)
-    
-    let restart_mp = function () {
-        multiplayer.stop()
-        setTimeout(() => {
-            multiplayer.start()
-        }, 500)
-    }
-    
-    let change_map_tileset = function(url) {
-        if (benevolanceUi.isEnabled) {
-            geofs.api.map._map._layers["25"].setUrl(url)
-        } else {
-            geofs.api.map._map._layers["25"].setUrl(mapTilesets["GeoFS"])
-        }
-    }
+  let prefix = "benevolance";
+  let benevolanceUi = new window.BUIM("Benevolance", prefix);
+  benevolanceUi
+    .addSubHeading("Dark theme automatically enabled 'Transparent UI'. Using without it, is not supported. ")
+    .addDropdown("Map Style", "MapStyle", mapTilesets, mapTilesets["GeoFS"])
+    .addItem("Remove Foos", "RemoveFoos", "checkbox", true);
 
-    benevolanceUi.on("toggle", () => {
-        if (!benevolanceUi.isEnabled) {
-            remove_styles()
-        } else {
-            apply_styles()
-        }
-        restart_mp()
-    })
+  let restart_mp = function () {
+    multiplayer.stop();
+    setTimeout(() => {
+      multiplayer.start();
+    }, 500);
+  };
 
-    if (benevolanceUi.isEnabled) {    
-        apply_styles()
+  let change_map_tileset = function (url) {
+    if (benevolanceUi.isEnabled) {
+      geofs.api.map._map._layers["25"].setUrl(url);
     } else {
-        remove_styles()
+      geofs.api.map._map._layers["25"].setUrl(mapTilesets["GeoFS"]);
+    }
+  };
+
+  benevolanceUi.on("toggle", () => {
+    if (!benevolanceUi.isEnabled) {
+      remove_styles();
+    } else {
+      apply_styles();
+    }
+    restart_mp();
+  });
+
+  if (benevolanceUi.isEnabled) {
+    apply_styles();
+  } else {
+    remove_styles();
+  }
+
+  benevolanceUi.on("MapStyle:change", (tileset) => {
+    if (benevolanceUi.isEnabled) geofs.api.map._map._layers["25"].setUrl(tileset);
+  });
+
+  benevolanceUi.on("RemoveFoos:change", () => {
+    if (benevolanceUi.isEnabled) restart_mp();
+  });
+
+  var toGo = document.getElementsByClassName("geofs-datasourceSelector");
+  while (toGo[0]) {
+    toGo[0].parentNode.removeChild(toGo[0]);
+  }
+
+  toGo = document.getElementsByClassName("geofs-debug-info");
+  while (toGo[0]) {
+    toGo[0].parentNode.removeChild(toGo[0]);
+  }
+
+  geofs.map.addPlayerMarker = function (e, t, a) {
+    if (!ui.playerMarkers[e]) {
+      var o = {
+        coords: [0, 0],
+        icon: geofs.api.map.getIcon(t, geofs.map.icons[t || "blue"]),
+        label: a || "-",
+      };
+      if (benevolanceUi.getBool("RemoveFoos") && benevolanceUi.isEnabled) {
+        if (o.label !== "-" && multiplayer.users[e].callsign !== "Foo" && multiplayer.users[e].callsign !== "") {
+          ui.playerMarkers[e] = new geofs.api.map.marker(o);
+        }
+      } else {
+        ui.playerMarkers[e] = new geofs.api.map.marker(o);
+      }
     }
 
-    benevolanceUi.on("MapStyle:change", (tileset) => {
-        if (benevolanceUi.isEnabled) geofs.api.map._map._layers["25"].setUrl(tileset)
-    })
-
-    benevolanceUi.on("RemoveFoos:change", () => {
-       if (benevolanceUi.isEnabled) restart_mp()
-    })
-
-    var toGo = document.getElementsByClassName('geofs-datasourceSelector');
-    while(toGo[0]) {
-        toGo[0].parentNode.removeChild(toGo[0]);
+    if (benevolanceUi.getBool("RemoveFoos") && benevolanceUi.isEnabled) {
+      if (o.label !== "-" && multiplayer.users[e].callsign !== "Foo" && multiplayer.users[e].callsign !== "") {
+        return (geofs.api.map._map && this.mapActive && ui.playerMarkers[e].addToMap(), ui.playerMarkers[e]);
+      }
+    } else {
+      return (geofs.api.map._map && this.mapActive && ui.playerMarkers[e].addToMap(), ui.playerMarkers[e]);
     }
+  };
 
-    toGo = document.getElementsByClassName('geofs-debug-info')
-    while(toGo[0]) {
-        toGo[0].parentNode.removeChild(toGo[0]);
+  multiplayer.User.prototype.addCallsign = function (e, t) {
+    if (benevolanceUi.getBool("RemoveFoos") && benevolanceUi.isEnabled) {
+      if (e == "Foo" || e == "") {
+        return;
+      }
     }
+    if (((this.label = geofs.api.addLabel(e, null, multiplayer.labelOptions[t])), multiplayer.iconOptions[t])) {
+      var a = Object.assign({}, multiplayer.iconOptions[t], {
+        pixelOffset: new Cesium.Cartesian2(-(4 * e.length + 5), 2),
+      });
+      this.icon = new geofs.api.billboard(null, null, a);
+    }
+  };
+  multiplayer.update = function (e) {
+    try {
+      for (var t in (multiplayer.lastResponse &&
+        (multiplayer.updateUsers(multiplayer.lastResponse.users), (multiplayer.lastResponse = null)),
+      multiplayer.nextUpdateTime && Date.now() > multiplayer.nextUpdateTime && multiplayer.sendUpdate(),
+      multiplayer.visibleUsers)) {
+        var a,
+          o = multiplayer.visibleUsers[t];
 
-    geofs.map.addPlayerMarker = function(e, t, a) {
-        if (!ui.playerMarkers[e]) {
-            var o = {
-                coords: [0, 0],
-                icon: geofs.api.map.getIcon(t, geofs.map.icons[t || "blue"]),
-                label: a || "-"
-            };
-            if (benevolanceUi.getBool("RemoveFoos") && benevolanceUi.isEnabled) {
-                if (o.label !== "-" && multiplayer.users[e].callsign !== "Foo" && multiplayer.users[e].callsign !== "") {
-                    ui.playerMarkers[e] = new geofs.api.map.marker(o)
-                }
-            } else {
-                ui.playerMarkers[e] = new geofs.api.map.marker(o)
-            }
+        if (benevolanceUi.getBool("RemoveFoos") && benevolanceUi.isEnabled && (o.callsign === "" || o.callsign === "Foo")) {
+          o.model && o.model.setVisibility && o.model.setVisibility(false);
+          o.label && (o.label.style.display = "none");
+          o.icon && o.icon.setVisibility && o.icon.setVisibility(false);
+          continue;
         }
 
-        if (benevolanceUi.getBool("RemoveFoos") && benevolanceUi.isEnabled) {
-            if (o.label !== "-" && multiplayer.users[e].callsign !== "Foo" && multiplayer.users[e].callsign !== "") {
-                return geofs.api.map._map && this.mapActive && ui.playerMarkers[e].addToMap(),
-                ui.playerMarkers[e]
-            }
-        } else {
-            return geofs.api.map._map && this.mapActive && ui.playerMarkers[e].addToMap(),
-            ui.playerMarkers[e]
-        }
-    }
+        o.model && o.model.setVisibility && o.model.setVisibility(true);
+        o.label && (o.label.style.display = "");
+        o.icon && o.icon.setVisibility && o.icon.setVisibility(true);
 
+        ((o.currentServerTime = multiplayer.getServerTime()),
+          o.model
+            ? ((o.elapsedTime = o.elapsedTime + e),
+              ((a = M3.add(o.referenceCoord, M3.scale(o.correctedVelocity, o.elapsedTime)))[3] = fixAngle(a[3])),
+              (a[4] = fixAngle(a[4])),
+              (a[5] = fixAngle(a[5])),
+              (o.currentInterpolatedCoord = a),
+              (o.referencePoint.lla = o.currentInterpolatedCoord),
+              o.model.setPositionOrientationAndScale([a[0], a[1], a[2]], [a[3], a[4], a[5]]))
+            : (a = o.lastUpdate.co));
+        var n = [a[0], a[1], a[2]];
+        (geofs.api.setLabelPosition(o.label, n), o.icon && o.icon.setLocation(n));
+      }
+    } catch (r) {
+      geofs.debug.error(r, "multiplayer.update");
+    }
+  };
 })();
