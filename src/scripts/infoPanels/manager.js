@@ -9,7 +9,7 @@ function initUI() {
   const infoPanelsUi = new window.BUIM("Information Panels", prefix)
     .addItem("Flight Details", "FlightDisplay", "checkbox", true)
     .addItem("FPS Counter", "FpsCounter", "checkbox", true)
-    .addItem("Missile List", "MissileList", "checkbox", true);
+    .addItem("Missile List", "MissileList", "checkbox", false);
 
   function createPanels() {
     if (infoPanelsUi.getBool("FpsCounter")) createFPSDisplay();
