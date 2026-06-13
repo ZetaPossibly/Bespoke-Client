@@ -27,7 +27,7 @@
     },
     upDown: {
       enabled: true,
-      min: -0.1,
+      min: -0.2,
       max: 0.2,
     },
     algorithm: window.bespokeClient.data.jeelizModels.default,
@@ -144,6 +144,7 @@
               rollSilk.setTarget(-detectState.rz);
               leftRightSilk.setTarget(-detectState.x);
               forwardBackwardSilk.setTarget(detectState.s);
+              console.log(detectState)
               upDownSilk.setTarget(detectState.y);
             },
           });
