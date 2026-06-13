@@ -105,8 +105,6 @@
 
     const degToRad = Math.PI / 180;
 
-    const degToRad = Math.PI / 180;
-
     // Aircraft orientation
     const roll = geofs.animation.values.aroll * degToRad;
     const pitch = geofs.animation.values.atilt * degToRad;
