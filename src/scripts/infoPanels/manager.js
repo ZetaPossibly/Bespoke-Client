@@ -32,7 +32,7 @@ function initUI() {
   // Individual setting toggles
   infoPanelsUi.on("FlightDisplay:change", (enabled) => {
     if (infoPanelsUi.isEnabled) {
-      enabled ? flightDisplay.destroy() : flightDisplay.create();
+      enabled ? flightDisplay.create(): flightDisplay.destroy()
     }
   });
 
