@@ -86,7 +86,7 @@ const initClient = async function() {
     setTimeout(async () => {
         await loadScripts(helpers)
         await loadScripts(scripts);
-    }, 1000);
+    }, 10);
 }
 
 initClient()
