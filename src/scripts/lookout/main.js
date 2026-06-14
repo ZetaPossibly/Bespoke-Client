@@ -20,11 +20,11 @@
       min: -0.5,
       max: 0.5,
     },
-    forwardBackward: {
-      enabled: true,
-      min: -0.5,
-      max: 0.5,
-    },
+    // forwardBackward: {
+    //   enabled: true,
+    //   min: -0.5,
+    //   max: 0.5,
+    // },
     upDown: {
       enabled: true,
       min: -0.2,
@@ -35,20 +35,20 @@
 
   const lookoutUi = new window.BUIM("Lookout", "lookout")
     .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 250)
-    .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 100)
+    .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
     .addItem("Snappiness", "snappiness", "number", 10)
-    .addItem("Deadzone", "deadzone", "number", 5);
+    .addItem("Angle Hold Radius", "deadzone", "number", 5);
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk = new Silk(0, { min: config.pitch.min, max: config.pitch.max });
   let yawSilk = new Silk(0, { min: config.yaw.min, max: config.yaw.max });
   let rollSilk = new Silk(0, { min: config.roll.min, max: config.roll.max });
   let leftRightSilk = new Silk(0, { min: config.leftRight.min, max: config.leftRight.max });
-  let forwardBackwardSilk = new Silk(0, { min: config.forwardBackward.min, max: config.forwardBackward.max });
+  //let forwardBackwardSilk = new Silk(0, { min: config.forwardBackward.min, max: config.forwardBackward.max });
   let upDownSilk = new Silk(0, { min: config.upDown.min, max: config.upDown.max });
 
   const rotationalAxes = [pitchSilk, yawSilk, rollSilk];
-  const positionalAxes = [leftRightSilk, forwardBackwardSilk, upDownSilk];
+  const positionalAxes = [leftRightSilk, upDownSilk]; // forwardBackwardSilk
 
   let calibrate = function () {
     console.log("Calibrating");
@@ -112,10 +112,10 @@
 
     // local camera movement inputs
     const right = leftRightSilk.get();
-    const forward = forwardBackwardSilk.get();
+    //const forward = forwardBackwardSilk.get();
     const up = upDownSilk.get();
 
-    const v = [right, forward, up];
+    const v = [right, 0, up];
 
     geofs.camera.setOffsets(...v);
   };
@@ -154,7 +154,7 @@
               yawSilk.setTarget(-detectState.ry);
               rollSilk.setTarget(-detectState.rz);
               leftRightSilk.setTarget(-detectState.x);
-              forwardBackwardSilk.setTarget(detectState.s);
+              //forwardBackwardSilk.setTarget(detectState.s);
               console.log(detectState);
               upDownSilk.setTarget(detectState.y);
             },
