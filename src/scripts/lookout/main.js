@@ -105,67 +105,19 @@
 
     const degToRad = Math.PI / 180;
 
-    // Aircraft orientation
-    const roll = geofs.animation.values.aroll * degToRad;
-    const pitch = geofs.animation.values.atilt * degToRad;
-    const heading = geofs.animation.values.heading * degToRad;
+    // // aircraft details
+    // const roll = geofs.animation.values.aroll * degToRad;
+    // const pitch = geofs.animation.values.atilt * degToRad;
+    // const heading = geofs.animation.values.heading * degToRad;
 
-    // Local camera inputs (aircraft space)
+    // local camera movement inputs
     const right = leftRightSilk.get();
     const forward = forwardBackwardSilk.get();
     const up = upDownSilk.get();
 
-    // --- Build rotation matrices ---
+    const v = [right, forward, up];
 
-    // Yaw (heading) — rotates around the UP axis
-    const cosH = Math.cos(heading),
-      sinH = Math.sin(heading);
-    const Ry = [
-      [cosH, 0, sinH],
-      [0, 1, 0],
-      [-sinH, 0, cosH],
-    ];
-
-    // Pitch (tilt) — rotates around the RIGHT axis
-    const cosP = Math.cos(pitch),
-      sinP = Math.sin(pitch);
-    const Rx = [
-      [1, 0, 0],
-      [0, cosP, -sinP],
-      [0, sinP, cosP],
-    ];
-
-    // Roll — rotates around the FORWARD axis
-    const cosR = Math.cos(roll),
-      sinR = Math.sin(roll);
-    const Rz = [
-      [cosR, -sinR, 0],
-      [sinR, cosR, 0],
-      [0, 0, 1],
-    ];
-
-    // --- Combine: world = Ry * Rx * Rz (yaw → pitch → roll) ---
-    function mulMat(A, B) {
-      return A.map((row) => [0, 1, 2].map((j) => row.reduce((sum, _, k) => sum + A[row.indexOf(row[k])][k] * B[k][j], 0)));
-    }
-    // Cleaner mat multiply:
-    function matMul(A, B) {
-      const R = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-      ];
-      for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) for (let k = 0; k < 3; k++) R[i][j] += A[i][k] * B[k][j];
-      return R;
-    }
-
-    const R = matMul(matMul(Ry, Rx), Rz);
-
-    // --- Apply to local vector ---
-    const localVec = [right, forward, up];
-    const world = R.map((row) => row.reduce((sum, val, i) => sum + val * localVec[i], 0));
-
-    geofs.camera.setPosition(world[0], world[1], world[2]);
+    geofs.camera.setOffsets(...v);
   };
 
   const catchError = function (error) {
