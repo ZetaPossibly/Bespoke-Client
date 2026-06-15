@@ -27,7 +27,7 @@
     // },
     upDown: {
       enabled: true,
-      min: -0.2,
+      min: -0.4,
       max: 0.2,
     },
     algorithm: window.bespokeClient.data.jeelizModels.default,
@@ -35,9 +35,9 @@
 
   const lookoutUi = new window.BUIM("Lookout", "lookout")
     .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 250)
-    .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 1)
-    .addItem("Snappiness", "snappiness", "number", 10)
-    .addItem("Angle Hold Radius", "deadzone", "number", 5);
+    .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 2)
+    .addItem("Snappiness", "snappiness", "number", 5)
+    .addItem("Angle Hold Radius", "deadzone", "number", 10);
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk = new Silk(0, { min: config.pitch.min, max: config.pitch.max });

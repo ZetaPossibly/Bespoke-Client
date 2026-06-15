@@ -127,7 +127,7 @@
     geofs.api.map._map.options.maxZoom = 13;
     geofs.api.map._map._panes.mapPane.parentElement.style.background = "";
     document.getElementById("BespokeTheme")?.remove();
-    change_map_tileset(mapTilesets["GeoFS"]);
+    geofs.version === "3.9" ? change_map_tileset(mapTilesets["GeoFS 3.9"]) : change_map_tileset(mapTilesets["GeoFS 4.0"]);
   }
 
   let prefix = "benevolance";
@@ -184,6 +184,12 @@
   while (toGo[0]) {
     toGo[0].parentNode.removeChild(toGo[0]);
   }
+
+  $(document).on("click", ".geofs-closeHaring", function (e) {
+    e.stopImmediatePropagation();
+
+    $(this).parents(".geofs-haring").remove();
+  });
 
   geofs.map.addPlayerMarker = function (e, t, a) {
     if (!ui.playerMarkers[e]) {

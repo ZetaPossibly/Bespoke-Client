@@ -451,7 +451,7 @@ window.BUIM = (() => {
           localStorage.removeItem(key);
         }
       }
-      Location.reload();
+      window.location.reload()
     }
 
     // ── Public API ───────────────────────────────────────────────────────
