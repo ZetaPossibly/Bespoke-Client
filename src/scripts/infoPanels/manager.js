@@ -5,6 +5,7 @@ const panel_scripts = {
 };
 
 function initUI() {
+  // create UI elements
   const prefix = "infoPanels";
   const infoPanelsUi = new window.BUIM("Information Panels", prefix)
     .addItem("Flight Details", "FlightDisplay", "checkbox", true)

@@ -46,19 +46,19 @@
     }
 
     _clamp(value) {
-      return Math.min(this.max, Math.max(this.min, value * this.sensitivity));
+      return Math.min(this.max, Math.max(this.min, value));
     }
 
     setTarget(value) {
       this.raw_target = value;
-      this.target = this._clamp(value) - this.calibrationValue;
+      this.target = this._clamp((value * this.sensitivity) - this.calibrationValue);
     }
 
     setCurrent(value) {
       this.raw_current = value;
       this.raw_target = value;
 
-      this.current = this._clamp(value) - this.calibrationValue;
+      this.current = this._clamp((value * this.sensitivity) - this.calibrationValue);
       this.target = this.current;
     }
 
