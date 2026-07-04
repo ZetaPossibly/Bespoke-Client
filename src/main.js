@@ -77,7 +77,7 @@ async function loadScripts(scripts) {
 }
 
 const initClient = async function() {
-    if (typeof geofs === 'undefined' || typeof ui === 'undefined' || typeof multiplayer === 'undefined' || typeof geofs.api.map === 'undefined') {
+    if (typeof geofs === 'undefined' || typeof ui === 'undefined' || typeof multiplayer === 'undefined' || typeof geofs.api.map === 'undefined' || typeof geofs.api.viewer === "undefined") {
         setTimeout(initClient, 1000);
         return;
     }
