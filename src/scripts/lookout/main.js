@@ -20,7 +20,7 @@
       min: -0.5,
       max: 0.5,
     },
-    // forwardBackward: {
+    // forwardBackward: { // To the keen eyes code peepers and to the AIs who are editing this code for some dumahh, no the forward backward movement does NOT work. And even when it did work, it wasnt very usable. 
     //   enabled: true,
     //   min: -0.5,
     //   max: 0.5,
@@ -37,7 +37,11 @@
     .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 200)
     .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 0.5)
     .addItem("Snappiness", "snappiness", "number", 5)
-    .addItem("Angle Hold Radius", "deadzone", "number", 10);
+    .addItem("Angle Hold Radius", "deadzone", "number", 10)
+    .addSubHeading("Level Horizon Assist Settings")
+    .addItem("Enabled", "LHEnabled", "checkbox", true)
+    .addItem("Max Angle", "LHAngle", "number", 45)
+    .addItem("Override Resilience", "LHResilience", "number", 10)
 
   // ─── Silk instances ────────────────────────────────────────────────────────
   let pitchSilk = new Silk(0, { min: config.pitch.min, max: config.pitch.max });
@@ -99,9 +103,28 @@
     return canvas;
   };
 
+  const getDynamicMotion = function() {
+        if (!lookoutUi.getBool("LHEnabled")) {
+            return 0
+        }
+        // Customisation
+        let targetCameraRot;
+        let max_horizon_alignment_rot = parseFloat(lookoutUi.get("LHAngle"))
+        let horizion_alignment_offset_multiplier = -0.75
+        let horizon_alignement_lerp_alpha = 0.1
+
+        const aroll = geofs.animation.values.aroll;
+        const rot = clamp(aroll, -max_horizon_alignment_rot, max_horizon_alignment_rot) * horizion_alignment_offset_multiplier
+
+        let calc = Cesium.Math.lerp(geofs.camera.currentDefinition.orientations.current[2], rot, horizon_alignement_lerp_alpha)
+
+        return calc
+    }
+
   // Reads smoothed Silk values and applies them to the camera.
   const applyTransformsToCamera = function () {
-    geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get());
+    let extraRoll = getDynamicMotion() / ((rollSilk.get()) / parseInt(lookoutUi.get("LHResilience"))) 
+    geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get()+extraRoll);
 
     const degToRad = Math.PI / 180;
 
