@@ -36,8 +36,8 @@ const scripts = {
     chatFix: getUrl("scripts/chatFix/main.js"),
     benevolance: getUrl("scripts/benevolance/benevolance.js"),
     freelook: getUrl("scripts/freelook/freelook.js"),
-
-    missileList: getUrl("scripts/infoPanels/manager.js")
+    missileList: getUrl("scripts/infoPanels/manager.js"),
+    waypointViz: getUrl("scripts/waypoint viz/main.js"),
 
     //slew: getUrl("scripts/external/slew/slew.js") 
 }
