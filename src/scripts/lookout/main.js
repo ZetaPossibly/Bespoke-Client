@@ -34,8 +34,8 @@
   };
 
   const lookoutUi = new window.BUIM("Lookout", "lookout")
-    .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 250)
-    .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 2)
+    .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 200)
+    .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 0.5)
     .addItem("Snappiness", "snappiness", "number", 5)
     .addItem("Angle Hold Radius", "deadzone", "number", 10);
 
