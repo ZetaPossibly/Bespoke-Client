@@ -267,7 +267,7 @@ window.BUIM = (() => {
         "p",
         { className: "buim-menu-subtitle" },
         "An Eschaton Project · Made by Zeta ",
-        el("a", {href: "https://tally.so/r/BzYANK", target: "_blank"}, "Give Feedback"),
+        el("a", { href: "https://tally.so/r/BzYANK", target: "_blank" }, "Give Feedback"),
       ),
     );
     _menuEl.appendChild(header);
@@ -306,7 +306,7 @@ window.BUIM = (() => {
 
   ui.expandLeft = function () {
     ($("body").addClass("geofs-expand-left"), geofs.handleResize());
-    toggleMenu(false)
+    toggleMenu(false);
   };
 
   // ─── Keyboard shortcut helpers ────────────────────────────────────────────
@@ -391,6 +391,11 @@ window.BUIM = (() => {
         className: "buim-enable-checkbox",
       });
       this.#enableCheckbox.checked = Store.getBool(this.#key("Enabled"), true);
+
+      this.#enableCheckbox.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+
       this.#enableCheckbox.addEventListener("change", (e) => {
         e.stopPropagation(); // don't collapse the section
         Store.set(this.#key("Enabled"), e.target.checked);
@@ -452,7 +457,7 @@ window.BUIM = (() => {
           localStorage.removeItem(key);
         }
       }
-      window.location.reload()
+      window.location.reload();
     }
 
     // ── Public API ───────────────────────────────────────────────────────
@@ -491,6 +496,12 @@ window.BUIM = (() => {
         type,
         className: type === "checkbox" ? "buim-checkbox" : "buim-input",
       });
+
+      if (type !== "checkbox") {
+        ["keydown", "keyup", "keypress"].forEach((eventType) => {
+          input.addEventListener(eventType, (e) => e.stopPropagation());
+        });
+      }
 
       if (type === "checkbox") {
         input.checked = stored === "true";
@@ -565,8 +576,8 @@ window.BUIM = (() => {
      * @returns {Section} this (chainable)
      */
     addSubHeading(text) {
-        const subheading = el(`label`, { textContent: text, className: "buim-header" })
-        const row = el("div", { className: "buim-row" }, subheading);
+      const subheading = el(`label`, { textContent: text, className: "buim-header" });
+      const row = el("div", { className: "buim-row" }, subheading);
       this.#appendToBody(row);
       return this;
     }
@@ -615,6 +626,14 @@ window.BUIM = (() => {
 
       // Global key listener for this shortcut
       document.addEventListener("keydown", (e) => {
+        const target = e.target;
+        const isTyping =
+          target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable;
+
+        if (isTyping) return;
         if (shortcutMatches(e, Store.get(key) ?? defaultValue) && this.isEnabled) onKeyDown(e);
       });
       if (onKeyUp) {

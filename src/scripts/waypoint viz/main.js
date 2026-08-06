@@ -20,7 +20,6 @@
 
       heightReference: vizUi.get("heightReference"),
       terrainOffsetMeters: parseFloat(vizUi.get("terrainOffsetMeters")) || 10,
-      defaultAltitudeFt: parseFloat(vizUi.get("defaultAltitudeFt")) || 1000,
     };
   }
 
@@ -99,7 +98,6 @@
         "absolute",
       )
       .addItem("Terrain Offset (m)", "terrainOffsetMeters", "number", 10)
-      .addItem("Default Fallback Alt (ft)", "defaultAltitudeFt", "number", 1000);
 
     // Synchronization Settings
     vizUi
@@ -141,7 +139,6 @@
         "pathClampToGround",
         "heightReference",
         "terrainOffsetMeters",
-        "defaultAltitudeFt",
       ];
 
       settingsKeys.forEach((key) => {
