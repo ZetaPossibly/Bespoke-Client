@@ -35,7 +35,7 @@
     if (!viz) return;
 
     if (vizUi.isEnabled && vizUi.getBool("autoSync")) {
-      viz.startAutoSync({ intervalMs });
+      viz.startAutoSync();
     } else {
       viz.stopAutoSync();
     }
