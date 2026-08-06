@@ -82,7 +82,7 @@
     scaleByDistance: true,
     scaleByDistanceParams: [100, 2.0, 50000, 0.2], // [nearDistance(m), nearScale, farDistance(m), farScale]
 
-    altitudeUnits: 'ft',            // 'ft' or 'm'
+    altitudeUnits: 'm',            // 'ft' or 'm'
     heightReference: 'absolute',    // 'absolute' | 'relative' | 'clamp'
     defaultAltitudeFt: 1000,        // fallback if terrain alt sampling fails
     terrainOffsetMeters: 10,        // height above ground level when unknown waypoint alt

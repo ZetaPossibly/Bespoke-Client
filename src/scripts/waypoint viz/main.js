@@ -18,7 +18,6 @@
       pathAlpha: parseFloat(vizUi.get("pathAlpha")) || 0.8,
       pathClampToGround: vizUi.getBool("pathClampToGround"),
 
-      altitudeUnits: vizUi.get("altitudeUnits"),
       heightReference: vizUi.get("heightReference"),
       terrainOffsetMeters: parseFloat(vizUi.get("terrainOffsetMeters")) || 10,
       defaultAltitudeFt: parseFloat(vizUi.get("defaultAltitudeFt")) || 1000,
@@ -36,7 +35,6 @@
     if (!viz) return;
 
     if (vizUi.isEnabled && vizUi.getBool("autoSync")) {
-      const intervalMs = Math.max(500, parseInt(vizUi.get("syncInterval"), 10) || 2000);
       viz.startAutoSync({ intervalMs });
     } else {
       viz.stopAutoSync();
@@ -91,15 +89,6 @@
     vizUi
       .addSubHeading("Altitude & Elevation")
       .addDropdown(
-        "Altitude Units",
-        "altitudeUnits",
-        {
-          "Feet (ft)": "ft",
-          "Meters (m)": "m",
-        },
-        "ft",
-      )
-      .addDropdown(
         "Height Reference",
         "heightReference",
         {
@@ -116,7 +105,6 @@
     vizUi
       .addSubHeading("Sync Settings")
       .addItem("Auto Sync Route", "autoSync", "checkbox", true)
-      .addItem("Sync Interval (ms)", "syncInterval", "number", 2000);
 
     // Actions
     vizUi
@@ -151,7 +139,6 @@
         "pathWidth",
         "pathAlpha",
         "pathClampToGround",
-        "altitudeUnits",
         "heightReference",
         "terrainOffsetMeters",
         "defaultAltitudeFt",
@@ -163,7 +150,6 @@
 
       // Handle Sync settings changes
       vizUi.on("autoSync:change", () => handleAutoSync(viz, vizUi));
-      vizUi.on("syncInterval:change", () => handleAutoSync(viz, vizUi));
 
       // Main Section Toggle (Enable/Disable Checkbox in Menu Header)
       vizUi.on("toggle", (enabled) => {
