@@ -127,7 +127,7 @@
   const applyTransformsToCamera = function () {
     let resilience = parseInt(lookoutUi.get("LHResilience")) || 10;
     let extraRoll = getDynamicMotion() / (Math.abs(rollSilk.get()) / resilience + 1);
-    geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), Math.max(rollSilk.get(), extraRoll));
+    geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get() + extraRoll);
 
     const degToRad = Math.PI / 180;
 
