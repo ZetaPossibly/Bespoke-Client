@@ -107,6 +107,7 @@ window.BUIM = (() => {
       cursor: pointer;
       font-size: 0.8rem;
       transition: background 120ms;
+      width: 100%;
     }
     .buim-btn:hover { background: rgba(255,255,255,0.2); }
     .buim-btn-reset { margin-top: 8px; width: 100%; }
@@ -553,7 +554,8 @@ window.BUIM = (() => {
     addButton(label, onClick) {
       const btn = el("button", { className: "buim-btn", textContent: label });
       btn.addEventListener("click", onClick);
-      this.#appendToBody(btn);
+      const row = el("div", { className: "buim-row" }, btn);
+      this.#appendToBody(row);
       return this;
     }
 
@@ -563,7 +565,9 @@ window.BUIM = (() => {
      * @returns {Section} this (chainable)
      */
     addSubHeading(text) {
-      this.#appendToBody(el(`label`, { textContent: text, className: "buim-header" }));
+        const subheading = el(`label`, { textContent: text, className: "buim-header" })
+        const row = el("div", { className: "buim-row" }, subheading);
+      this.#appendToBody(row);
       return this;
     }
 
