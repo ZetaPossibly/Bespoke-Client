@@ -97,7 +97,7 @@
     labelOutlineWidth: 3,
     labelStyle: 'FILL',
     lablelHorizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-    labelPixelOffset: [0, 25], 
+    labelPixelOffset: [0, -25], 
     labelShowBackground: true,
     labelBackgroundColor: 'rgb(0, 0, 0)',
     labelVisibilityDistance: null,

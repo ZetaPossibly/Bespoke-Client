@@ -109,8 +109,8 @@
     // Actions
     vizUi
       .addSubHeading("Actions")
-      .addButton("Fly / Zoom to Route", () => {
-        if (window.viz) window.viz.zoomTo(2.0);
+      .addButton("Zoom to Route", () => {
+        if (window.viz) {geofs.camera.set(4); window.viz.zoomTo(2.0);} // set to free cam then move
       })
       .addButton("Force Refresh Waypoints", () => {
         if (window.viz) {
