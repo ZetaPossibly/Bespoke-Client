@@ -123,7 +123,8 @@
 
   // Reads smoothed Silk values and applies them to the camera.
   const applyTransformsToCamera = function () {
-    let extraRoll = getDynamicMotion() / ((rollSilk.get()) / parseInt(lookoutUi.get("LHResilience"))) 
+    let resilience = parseInt(lookoutUi.get("LHResilience")) || 10;
+    let extraRoll = getDynamicMotion() / (Math.abs(rollSilk.get()) / resilience + 1);
     geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get()+extraRoll);
 
     const degToRad = Math.PI / 180;
