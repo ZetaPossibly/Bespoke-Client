@@ -265,8 +265,8 @@ window.BUIM = (() => {
       el(
         "p",
         { className: "buim-menu-subtitle" },
-        "An Eschaton Project · Made by Zeta <br>",
-        el("a", {href: "https://tally.so/r/BzYANK"}, "Give Feedback"),
+        "An Eschaton Project · Made by Zeta ",
+        el("a", {href: "https://tally.so/r/BzYANK", target: "_blank"}, "Give Feedback"),
       ),
     );
     _menuEl.appendChild(header);
