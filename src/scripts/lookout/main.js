@@ -118,15 +118,13 @@
     const aroll = geofs.animation.values.aroll;
     const rot = clamp(aroll, -max_horizon_alignment_rot, max_horizon_alignment_rot) * horizion_alignment_offset_multiplier;
 
-    let calc = Cesium.Math.lerp(geofs.camera.currentDefinition.orientations.current[2], rot, horizon_alignement_lerp_alpha);
-
-    return calc;
+    return rot;
   };
 
   // Reads smoothed Silk values and applies them to the camera.
   const applyTransformsToCamera = function () {
-    let resilience = parseInt(lookoutUi.get("LHResilience")) || 10;
-    let extraRoll = getDynamicMotion() / (Math.abs(rollSilk.get()) / resilience + 1);
+    let resilience = Math.max(1, parseInt(lookoutUi.get("LHResilience")) || 10);
+    let extraRoll = getDynamicMotion() / Math.max(1, Math.abs(rollSilk.get()) / resilience);
     geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get() + extraRoll);
 
     const degToRad = Math.PI / 180;
