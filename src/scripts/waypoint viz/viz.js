@@ -144,7 +144,7 @@
     scaleByDistance: true,
     scaleByDistanceParams: [100, 2.0, 50000, 0.2], // [nearDistance(m), nearScale, farDistance(m), farScale]
 
-    altitudeUnits: 'm',            // 'ft' or 'm'
+    altitudeUnits: 'ft',            // 'ft' or 'm'
     heightReference: 'absolute',    // 'absolute' | 'relative' | 'clamp'
     defaultAltitudeFt: 1000,        // fallback if terrain alt sampling fails
     terrainOffsetMeters: 10,        // height above ground level when unknown waypoint alt
@@ -174,7 +174,7 @@
 
     showAltitudeWall: true,
     altitudeWallColor: '#6fb3ff',
-    altitudeWallFadeColor: '#6fb3ff',
+    altitudeWallFadeColor: '#6fb2ff00',
     altitudeWallAlpha: 0.7,
     altitudeWallFadeRatio: 0.5,
     altitudeWallFadeMinMeters: 1,
@@ -184,8 +184,8 @@
 
     // --- Altitude Wall Proximity Fade Settings ---
     altitudeWallProximityFade: true,
-    altitudeWallProximityFadeNearDistance: 100, // Distance (m) where wall becomes completely transparent
-    altitudeWallProximityFadeFarDistance: 1000,  // Distance (m) where wall reaches full opacity
+    altitudeWallProximityFadeNearDistance: 500, // Distance (m) where wall becomes completely transparent
+    altitudeWallProximityFadeFarDistance: 5000,  // Distance (m) where wall reaches full opacity
 
     activeIndex: null,
     activeStyle: { color: '#ff00ff', pointSize: 16, outlineColor: '#ffffff' },
@@ -386,7 +386,8 @@
 
     _defaultLabelText(wp, index) {
       const style = this._resolveTypeStyle(wp.type);
-      const ident = Util.cleanIdent(wp.ident) || `WP${index + 1}`;
+      const ident = Util.cleanIdent(wp.ident);
+      if (!ident) return '';
       return `${style.labelPrefix}${ident}`;
     }
 
@@ -556,24 +557,29 @@
         }
 
         if (opts.showLabels) {
-          entityOptions.label = new Cesium.LabelGraphics({
-            text: opts.labelFormatter ? opts.labelFormatter(wp, index, this) : this._defaultLabelText(wp, index),
-            font: opts.labelFont,
-            fillColor: Util.toColor(opts.labelFillColor),
-            outlineColor: Util.toColor(opts.labelOutlineColor),
-            outlineWidth: opts.labelOutlineWidth,
-            style: Cesium.LabelStyle[opts.labelStyle] ?? Cesium.LabelStyle.FILL_AND_OUTLINE,
-            pixelOffset: new Cesium.Cartesian2(opts.labelPixelOffset[0], opts.labelPixelOffset[1]),
-            showBackground: opts.labelShowBackground,
-            backgroundColor: Util.toColor(opts.labelBackgroundColor),
-            heightReference: this._resolveHeightReferenceEnum(),
-            verticalOrigin: Cesium.VerticalOrigin.CENTER,
-            horizontalOrigin: opts.lablelHorizontalOrigin,
-            distanceDisplayCondition: opts.labelVisibilityDistance
-              ? new Cesium.DistanceDisplayCondition(0, opts.labelVisibilityDistance)
-              : undefined,
-            scaleByDistance: scaleScalar
-          });
+          const labelText = opts.labelFormatter ? opts.labelFormatter(wp, index, this) : this._defaultLabelText(wp, index);
+          const normalizedLabelText = typeof labelText === 'string' ? labelText.trim() : '';
+
+          if (normalizedLabelText) {
+            entityOptions.label = new Cesium.LabelGraphics({
+              text: normalizedLabelText,
+              font: opts.labelFont,
+              fillColor: Util.toColor(opts.labelFillColor),
+              outlineColor: Util.toColor(opts.labelOutlineColor),
+              outlineWidth: opts.labelOutlineWidth,
+              style: Cesium.LabelStyle[opts.labelStyle] ?? Cesium.LabelStyle.FILL_AND_OUTLINE,
+              pixelOffset: new Cesium.Cartesian2(opts.labelPixelOffset[0], opts.labelPixelOffset[1]),
+              showBackground: opts.labelShowBackground,
+              backgroundColor: Util.toColor(opts.labelBackgroundColor),
+              heightReference: this._resolveHeightReferenceEnum(),
+              verticalOrigin: Cesium.VerticalOrigin.CENTER,
+              horizontalOrigin: opts.lablelHorizontalOrigin,
+              distanceDisplayCondition: opts.labelVisibilityDistance
+                ? new Cesium.DistanceDisplayCondition(0, opts.labelVisibilityDistance)
+                : undefined,
+              scaleByDistance: scaleScalar
+            });
+          }
         }
 
         const entity = this._dataSource.entities.add(entityOptions);

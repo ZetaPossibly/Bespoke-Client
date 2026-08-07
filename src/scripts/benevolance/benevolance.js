@@ -26,17 +26,7 @@
             }
 
             /* Livery Selector */ 
-            #customDiv {
-                background-color: #0000005e;
-                backdrop-filter: blur(5px);
-            }
-
-            #liverylist {
-                background-color: #0000005e;
-                backdrop-filter: blur(5px);
-            }
-
-            #favorites {
+            #favorites li.livery-list-item, #airlinelist li.livery-list-item, #liverylist li.livery-list-item {
                 background-color: #0000005e;
                 backdrop-filter: blur(5px);
             }
