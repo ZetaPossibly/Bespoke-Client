@@ -41,6 +41,10 @@ In a clean, simple and elegant user interface which does not clutter your page a
 - FPS display
 - Flight characteristics display
 
+"Waypoint Visualisation"
+- Fully customisable waypoint display
+- See your flight plan, in-game instead of just in nav.
+
 ## Contact & [Give Feedback](https://tally.so/r/BzYANK)
 Talk to me via discord, @zetainbeta_43414. I am open to suggestions. Please ensure bugs get to me as soon as noticed. 
 
@@ -56,6 +60,7 @@ The vision is an integrated, seamless experience for GeoFS with a modular and sc
 > - Autothrottle Integration + keybinds for control
 > - Slew mode integration with customisable keybings
 > - Over G Blackout rendering
+> - Aircraft Fuel
 ... and so much more to create the best one stop shop for every GeoFS player, regardless of what they are doing.
 
 If you want me to integrate your script, please DM me on discord!

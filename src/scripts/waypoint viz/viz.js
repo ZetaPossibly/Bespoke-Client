@@ -110,6 +110,16 @@
     pathColorMode: 'byType',         // 'solid' | 'byType'
     pathClampToGround: false,
 
+    showAltitudeWall: true,
+    altitudeWallColor: '#6fb3ff',
+    altitudeWallFadeColor: '#6fb3ff',
+    altitudeWallAlpha: 0.7,
+    altitudeWallFadeRatio: 0.5,
+    altitudeWallFadeMinMeters: 1,
+    altitudeWallFadeMaxMeters: 500,
+    altitudeWallStepMeters: 20,
+    altitudeWallOutline: false,
+
     activeIndex: null,
     activeStyle: { color: '#ff00ff', pointSize: 16, outlineColor: '#ffffff' },
 
@@ -339,6 +349,7 @@
 
     async _resolvePositionsAsync(indexed, token) {
       const positions = new Array(indexed.length);
+      const heights = new Array(indexed.length);
       const missingIndices = [];
       const cartographicsToSample = [];
 
@@ -349,6 +360,7 @@
           const heightMeters = this.options.altitudeUnits === 'ft' ? Util.feetToMeters(altFt) : altFt;
           const h = this.options.heightReference === 'clamp' ? 0 : heightMeters;
           positions[i] = Cesium.Cartesian3.fromDegrees(wp.lon, wp.lat, h);
+          heights[i] = h;
         } else {
           missingIndices.push(i);
           cartographicsToSample.push(Cesium.Cartographic.fromDegrees(wp.lon, wp.lat));
@@ -369,7 +381,7 @@
           }
         }
 
-        if (token !== this._renderToken) return positions;
+        if (token !== this._renderToken) return { positions, heights };
 
         missingIndices.forEach((idx, mIdx) => {
           const wp = indexed[idx].wp;
@@ -388,10 +400,11 @@
           const finalHeight = groundHeight + (this.options.terrainOffsetMeters || 30);
           const h = this.options.heightReference === 'clamp' ? 0 : finalHeight;
           positions[idx] = Cesium.Cartesian3.fromDegrees(wp.lon, wp.lat, h);
+          heights[idx] = h;
         });
       }
 
-      return positions;
+      return { positions, heights };
     }
 
     // Non-blocking rendering
@@ -402,17 +415,20 @@
       const indexed = waypoints.map(wp => ({ wp, index: this._waypoints.indexOf(wp) }));
 
       // Step 1: Async position resolution
-      const positions = await this._resolvePositionsAsync(indexed, token);
+      const resolved = await this._resolvePositionsAsync(indexed, token);
       if (token !== this._renderToken) return;
+
+      const positions = resolved.positions;
+      const heights = resolved.heights;
 
       // Step 2: Clear old visual entities
       this._dataSource.entities.removeAll();
 
       // Step 3: Batch build entities asynchronously without blocking main thread
-      await this._buildEntitiesAsync(indexed, positions, token);
+      await this._buildEntitiesAsync(indexed, positions, heights, token);
     }
 
-    async _buildEntitiesAsync(indexed, positions, token) {
+    async _buildEntitiesAsync(indexed, positions, heights, token) {
       const opts = this.options;
       const batchSize = 40;
 
@@ -499,11 +515,11 @@
       }
 
       if (opts.showPath && indexed.length > 1) {
-        this._renderPath(indexed, positions);
+        this._renderPath(indexed, positions, heights);
       }
     }
 
-    _renderPath(indexed, positions) {
+    _renderPath(indexed, positions, heights) {
       const opts = this.options;
 
       if (opts.pathColorMode === 'byType') {
@@ -538,6 +554,40 @@
             clampToGround: opts.pathClampToGround
           })
         });
+      }
+
+      if (opts.showAltitudeWall && Array.isArray(positions) && positions.length > 1) {
+        const fadeRatio = Util.toNumber(opts.altitudeWallFadeRatio, 0.2);
+        const fadeMin = Math.max(1, Util.toNumber(opts.altitudeWallFadeMinMeters, 40));
+        const fadeMax = Math.max(fadeMin, Util.toNumber(opts.altitudeWallFadeMaxMeters, 800));
+        const stepMeters = Math.max(1, Util.toNumber(opts.altitudeWallStepMeters, 20));
+        const maxHeight = Math.max(0, ...heights.map(height => Util.toNumber(height, 0)));
+        const fadeDistance = Math.max(fadeMin, Math.min(fadeMax, maxHeight * fadeRatio));
+        const bandCount = Math.max(1, Math.ceil(fadeDistance / stepMeters));
+        const topColor = Util.toColor(opts.altitudeWallColor || '#6fb3ff');
+        const fadeColor = Util.toColor(opts.altitudeWallFadeColor || opts.altitudeWallColor || '#6fb3ff');
+
+        for (let band = 0; band < bandCount; band++) {
+          const bandTop = heights.map(height => Math.max(0, Util.toNumber(height, 0) - (band * stepMeters)));
+          const bandBottom = heights.map(height => Math.max(0, Util.toNumber(height, 0) - ((band + 1) * stepMeters)));
+          const alphaRatio = Math.max(0, 1 - ((band + 0.5) * stepMeters) / fadeDistance);
+          const alpha = Math.max(0, Math.min(1, opts.altitudeWallAlpha * alphaRatio));
+          const materialColor = Util.toColor(band === 0 ? topColor : fadeColor, alpha);
+
+          const hasVisibleHeight = bandTop.some((top, idx) => top > bandBottom[idx]);
+          if (!hasVisibleHeight) continue;
+
+          this._dataSource.entities.add({
+            id: `${this._id}-altitude-wall-${band}`,
+            wall: new Cesium.WallGraphics({
+              positions,
+              minimumHeights: bandBottom,
+              maximumHeights: bandTop,
+              material: materialColor,
+              outline: !!opts.altitudeWallOutline
+            })
+          });
+        }
       }
     }
 
