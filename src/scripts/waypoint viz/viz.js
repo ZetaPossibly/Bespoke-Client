@@ -42,6 +42,68 @@
     }
   };
 
+  // Helper to create a GLSL material property for proximity fading standard geometries like WallGraphics
+  function getProximityFadeMaterial(color, nearDistance, farDistance) {
+    const materialType = 'GeoFSWallProximityFade';
+
+    if (!Cesium.Material._materialCache.getMaterial(materialType)) {
+      Cesium.Material._materialCache.addMaterial(materialType, {
+        fabric: {
+          type: materialType,
+          uniforms: {
+            color: new Cesium.Color(1.0, 1.0, 1.0, 1.0),
+            nearDistance: 100.0,
+            farDistance: 1000.0
+          },
+          source: `
+            czm_material czm_getMaterial(czm_materialInput materialInput) {
+              czm_material material = czm_getDefaultMaterial(materialInput);
+              vec4 col = color;
+              float eyeDist = length(materialInput.positionToEyeEC);
+              float fade = clamp((eyeDist - nearDistance) / max(farDistance - nearDistance, 0.001), 0.0, 1.0);
+              material.diffuse = col.rgb;
+              material.alpha = col.a * fade;
+              return material;
+            }
+          `
+        },
+        translucent: function () {
+          return true;
+        }
+      });
+    }
+
+    class WallProximityFadeMaterialProperty {
+      constructor(c, near, far) {
+        this._color = c;
+        this._near = near;
+        this._far = far;
+        this.definitionChanged = new Cesium.Event();
+      }
+      getType() {
+        return materialType;
+      }
+      getValue(time, result) {
+        if (!result) result = {};
+        result.color = this._color;
+        result.nearDistance = this._near;
+        result.farDistance = this._far;
+        return result;
+      }
+      equals(other) {
+        return (
+          this === other ||
+          (other instanceof WallProximityFadeMaterialProperty &&
+            Cesium.Property.equals(this._color, other._color) &&
+            this._near === other._near &&
+            this._far === other._far)
+        );
+      }
+    }
+
+    return new WallProximityFadeMaterialProperty(color, nearDistance, farDistance);
+  }
+
   // Small canvas-drawn triangular arrow for heading billboards
   function buildArrowCanvas(cssColor) {
     const size = 32;
@@ -119,6 +181,11 @@
     altitudeWallFadeMaxMeters: 500,
     altitudeWallStepMeters: 20,
     altitudeWallOutline: false,
+
+    // --- Altitude Wall Proximity Fade Settings ---
+    altitudeWallProximityFade: true,
+    altitudeWallProximityFadeNearDistance: 100, // Distance (m) where wall becomes completely transparent
+    altitudeWallProximityFadeFarDistance: 1000,  // Distance (m) where wall reaches full opacity
 
     activeIndex: null,
     activeStyle: { color: '#ff00ff', pointSize: 16, outlineColor: '#ffffff' },
@@ -567,6 +634,10 @@
         const topColor = Util.toColor(opts.altitudeWallColor || '#6fb3ff');
         const fadeColor = Util.toColor(opts.altitudeWallFadeColor || opts.altitudeWallColor || '#6fb3ff');
 
+        const useProximityFade = !!opts.altitudeWallProximityFade;
+        const proxNear = Util.toNumber(opts.altitudeWallProximityFadeNearDistance, 100);
+        const proxFar = Util.toNumber(opts.altitudeWallProximityFadeFarDistance, 1000);
+
         for (let band = 0; band < bandCount; band++) {
           const bandTop = heights.map(height => Math.max(0, Util.toNumber(height, 0) - (band * stepMeters)));
           const bandBottom = heights.map(height => Math.max(0, Util.toNumber(height, 0) - ((band + 1) * stepMeters)));
@@ -577,13 +648,17 @@
           const hasVisibleHeight = bandTop.some((top, idx) => top > bandBottom[idx]);
           if (!hasVisibleHeight) continue;
 
+          const wallMaterial = useProximityFade
+            ? getProximityFadeMaterial(materialColor, proxNear, proxFar)
+            : materialColor;
+
           this._dataSource.entities.add({
             id: `${this._id}-altitude-wall-${band}`,
             wall: new Cesium.WallGraphics({
               positions,
               minimumHeights: bandBottom,
               maximumHeights: bandTop,
-              material: materialColor,
+              material: wallMaterial,
               outline: !!opts.altitudeWallOutline
             })
           });
