@@ -162,19 +162,30 @@
   geofs.api.viewer.scene.preRender.addEventListener(() => {
     const dt = window.gameDeltaTime || 0;
 
+    // 1. Capture orientation when mouse click STARTS (clone array by value)
     if (mouseDownOrientation === null && controls.mouse.down) {
-        mouseDownOrientation = geofs.camera.currentDefinition.orientations.current;
+      mouseDownOrientation = [...geofs.camera.currentDefinition.orientations.current];
     }
+
+    // 2. Ignore head tracking updates while actively dragging with mouse
     if (controls.mouse.down) {
       return;
     }
-    if (mouseDownOrientation) {
-        let change = [mouseDownOrientation[0] - geofs.camera.currentDefinition.orientations.current[0], mouseDownOrientation[1] - geofs.camera.currentDefinition.orientations.current[1], mouseDownOrientation[2] - geofs.camera.currentDefinition.orientations.current[2]];
-        mouseDownOrientation = null;
 
-        yawSilk.setCalibrationValue(change[0]);
-        pitchSilk.setCalibrationValue(change[1]);
-        rollSilk.setCalibrationValue(change[2]);
+    // 3. Mouse released -> compute shift and accumulate into calibration
+    if (mouseDownOrientation) {
+      const currentOrient = geofs.camera.currentDefinition.orientations.current;
+
+      let change = [
+        mouseDownOrientation[0] - currentOrient[0],
+        mouseDownOrientation[1] - currentOrient[1],
+        mouseDownOrientation[2] - currentOrient[2],
+      ];
+      mouseDownOrientation = null;
+
+      yawSilk.setCalibrationValue(yawSilk.calibrationValue + change[0]);
+      pitchSilk.setCalibrationValue(pitchSilk.calibrationValue + change[1]);
+      rollSilk.setCalibrationValue(rollSilk.calibrationValue + change[2]);
     }
 
     rotationalAxes.forEach((axis) => axis.update());
