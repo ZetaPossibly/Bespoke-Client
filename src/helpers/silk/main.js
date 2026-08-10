@@ -51,24 +51,26 @@
 
     setTarget(value) {
       this.raw_target = value;
-      this.target = this._clamp((value * this.sensitivity) - this.calibrationValue);
+      this.target = this._clamp(value * this.sensitivity - this.calibrationValue);
     }
 
     setCurrent(value) {
       this.raw_current = value;
       this.raw_target = value;
 
-      this.current = this._clamp((value * this.sensitivity) - this.calibrationValue);
+      this.current = this._clamp(value * this.sensitivity - this.calibrationValue);
       this.target = this.current;
+    }
+
+    setCalibrationValue(value) {
+      this.calibrationValue = value;
+      this.current = this._clamp(this.raw_current * this.sensitivity - this.calibrationValue);
+      this.target = this._clamp(this.raw_target * this.sensitivity - this.calibrationValue);
     }
 
     setEnabled(value) {
       this.enabled = value;
     }
-
-    calibrate = () => {
-      this.calibrationValue = this.get() + this.calibrationValue;
-    };
 
     update() {
       if (!this.enabled) {
@@ -95,7 +97,7 @@
 
     get = () => {
       if (!this.enabled) return this.defaultValue;
-      return this.current;
+      return this.current + this.defaultValue;
     };
   };
 })();

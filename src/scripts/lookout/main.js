@@ -44,29 +44,32 @@
   const rotationalAxes = [pitchSilk, yawSilk, rollSilk];
   const positionalAxes = [leftRightSilk, upDownSilk]; // forwardBackwardSilk
 
-  let calibrate = function () {
-    console.log("Calibrating");
-    ui.notification.show("Calibrating in 3 seconds, look at the center of your screen.");
-    rotationalAxes.forEach((axis) => {
-      setTimeout(axis.calibrate, 3000);
-    });
-    positionalAxes.forEach((axis) => {
-      setTimeout(axis.calibrate, 3000);
-    });
+  geofs.camera.setRotation = function (e, t, a) {
+    // fix default geofs falsy error when inputing 0 values
+    var o = geofs.camera.definitions[geofs.camera.currentModeName];
+
+    return "follow" == geofs.camera.currentModeName || "fixed" == geofs.camera.currentModeName
+      ? ((o.orientations.current[0] = e ?? o.orientations.last[0]),
+        (o.orientations.current[1] = t ?? o.orientations.last[1]),
+        (o.orientations.current[2] = a ?? o.orientations.last[2]),
+        !0)
+      : "cockpit" == geofs.camera.currentModeName &&
+          ((o.orientations.current[0] = e ?? o.orientations.last[0]),
+          (o.orientations.current[1] = t ?? o.orientations.last[1]),
+          (o.orientations.current[2] = a ?? o.orientations.last[2]),
+          (geofs.camera.hasMoved = !0),
+          !0);
   };
 
   const lookoutUi = new window.BUIM("Lookout", "lookout")
     .addItem("Rotational Sensitivity", "RotationalSensitivity", "number", 200)
     .addItem("Positional Sensitivity", "PositionalSensitivity", "number", 0.5)
-    .addItem("Snappiness", "snappiness", "number", 5)
+    .addItem("Snappiness", "snappiness", "number", 10)
     .addItem("Angle Hold Radius", "deadzone", "number", 10)
-    .addButton("Calibrate", calibrate)
     .addSubHeading("Level Horizon Assist Settings")
     .addItem("Enabled", "LHEnabled", "checkbox", true)
     .addItem("Max Angle", "LHAngle", "number", 45)
-    .addItem("Override Resilience", "LHResilience", "number", 10);
-
-
+    .addItem("Override Resilience", "LHResilience", "number", 5);
 
   let update_settings = function () {
     const smoothSpeed = parseFloat(lookoutUi.get("snappiness")) || 15;
@@ -96,13 +99,13 @@
   });
 
   const addCanvas = function (id) {
-    const canvas = document.createElement("canvas");
-    canvas.id = id;
-    canvas.width = 500;
-    canvas.height = 500;
-    canvas.style.display = "none";
-    document.body.appendChild(canvas);
-    return canvas;
+    window.jeelizCanvas = document.createElement("canvas");
+    window.jeelizCanvas.id = id;
+    window.jeelizCanvas.width = 500;
+    window.jeelizCanvas.height = 500;
+    window.jeelizCanvas.style.display = "none";
+    document.body.appendChild(window.jeelizCanvas);
+    return window.jeelizCanvas;
   };
 
   const getDynamicMotion = function () {
@@ -121,11 +124,15 @@
     return rot;
   };
 
-  // Reads smoothed Silk values and applies them to the camera.
-  const applyTransformsToCamera = function () {
+  const getLHRoll = function () {
     let resilience = Math.max(1, parseInt(lookoutUi.get("LHResilience")) || 10);
     let extraRoll = getDynamicMotion() / Math.max(1, Math.abs(rollSilk.get()) / resilience);
-    geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get() + extraRoll);
+    return extraRoll;
+  };
+
+  // Reads smoothed Silk values and applies them to the camera.
+  const applyTransformsToCamera = function () {
+    geofs.camera.setRotation(yawSilk.get(), pitchSilk.get(), rollSilk.get() + getLHRoll());
 
     const degToRad = Math.PI / 180;
 
@@ -151,8 +158,17 @@
     alert("An error occurred: " + error);
   };
 
+  let mouseDownOrientation = null;
   geofs.api.viewer.scene.preRender.addEventListener(() => {
     const dt = window.gameDeltaTime || 0;
+
+    if (controls.mouse.down) {
+      mouseDownOrientation = geofs.camera.currentDefinition.orientations.current;
+      yawSilk.setCurrent(mouseDownOrientation[0]);
+      pitchSilk.setCurrent(mouseDownOrientation[1]);
+      rollSilk.setCurrent(mouseDownOrientation[2]);
+      return;
+    }
 
     rotationalAxes.forEach((axis) => axis.update());
     positionalAxes.forEach((axis) => axis.update());
@@ -178,8 +194,7 @@
               yawSilk.setTarget(-detectState.ry);
               rollSilk.setTarget(-detectState.rz);
               leftRightSilk.setTarget(-detectState.x);
-              //forwardBackwardSilk.setTarget(detectState.s);
-              console.log(detectState);
+              //forwardBackwardSilk.setTarget(detectState.s);s
               upDownSilk.setTarget(detectState.y);
             },
           });
