@@ -138,7 +138,7 @@
     // 3. Linear Head-Roll Override (Smooth Linear Fade instead of harsh division)
     // 1.0 = full horizon assist (head straight)
     // 0.0 = zero horizon assist (head tilted beyond overrideAngle)
-    const headTiltRatio = Math.abs(headRoll) / Math.max(1, currentLHRoll);
+    const headTiltRatio = Math.abs(headRoll) / Math.max(1, (currentLHRoll/2));
     const headOverrideFactor = Math.max(0, 1 - headTiltRatio);
 
     // Calculate target offset
