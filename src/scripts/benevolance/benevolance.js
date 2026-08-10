@@ -95,6 +95,11 @@
                 background-color: #000000ca !important;
                 box-shadow: none
             }
+
+            .geofs-map-popup > button {
+                color: white !important
+            }
+            
             .mdl-chip {
                 background-color: #000000ca;
                 color: white;
