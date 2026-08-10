@@ -162,12 +162,19 @@
   geofs.api.viewer.scene.preRender.addEventListener(() => {
     const dt = window.gameDeltaTime || 0;
 
+    if (mouseDownOrientation === null && controls.mouse.down) {
+        mouseDownOrientation = geofs.camera.currentDefinition.orientations.current;
+    }
     if (controls.mouse.down) {
-      mouseDownOrientation = geofs.camera.currentDefinition.orientations.current;
-      yawSilk.setCurrent(mouseDownOrientation[0]);
-      pitchSilk.setCurrent(mouseDownOrientation[1]);
-      rollSilk.setCurrent(mouseDownOrientation[2]);
       return;
+    }
+    if (mouseDownOrientation) {
+        let change = [mouseDownOrientation[0] - geofs.camera.currentDefinition.orientations.current[0], mouseDownOrientation[1] - geofs.camera.currentDefinition.orientations.current[1], mouseDownOrientation[2] - geofs.camera.currentDefinition.orientations.current[2]];
+        mouseDownOrientation = null;
+
+        yawSilk.setCalibrationValue(change[0]);
+        pitchSilk.setCalibrationValue(change[1]);
+        rollSilk.setCalibrationValue(change[2]);
     }
 
     rotationalAxes.forEach((axis) => axis.update());
