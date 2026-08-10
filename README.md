@@ -55,8 +55,8 @@ The vision is an integrated, seamless experience for GeoFS with a modular and sc
 - Customisable Smoke (colours, size, location, toggle keybinds etc) 
 - Customisable map filters
 - Friend lists, favourite locations etc
-- Integration with other scripts
 - Situational Awareness + extending its ability to be able to see more information and stay aware of your surroundings.
+- Integration with other scripts
 > - Autothrottle Integration + keybinds for control
 > - Slew mode integration with customisable keybings
 > - Over G Blackout rendering
