@@ -208,9 +208,9 @@
       pitchSilk.setCalibrationValue(pitchSilk.calibrationValue + change[1]);
       rollSilk.setCalibrationValue(rollSilk.calibrationValue + change[2]);
 
-      yawSilk.setCurrent(currentOrient[0]);
-      pitchSilk.setCurrent(currentOrient[1]);
-      rollSilk.setCurrent(currentOrient[2]);
+      yawSilk.current = currentOrient[0];
+      pitchSilk.current = currentOrient[1];
+      rollSilk.current = currentOrient[2];
     }
 
     rotationalAxes.forEach((axis) => axis.update());
