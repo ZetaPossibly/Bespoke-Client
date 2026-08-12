@@ -3,133 +3,119 @@ varying vec2 v_textureCoordinates;
 
 uniform float blackoutStrength; // +Gz force (0.0 to 1.0)
 uniform float redoutStrength;   // -Gz force (0.0 to 1.0)
-uniform float u_time;           // Time in seconds (e.g. performance.now() / 1000.0)
 
-// Pseudo-random hash for retinal oxygen starvation noise (phosphenes)
-float hash(vec2 p) {
-    p = fract(p * vec2(123.34, 456.21));
-    p += dot(p, p + 45.32);
-    return fract(p.x * p.y);
+// Fast, high-frequency spatial noise (simulates starving photoreceptor noise)
+float pseudoNoise(vec2 uv) {
+    return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-// Rec.709 Luminance
-float getLuminance(vec3 color) {
-    return dot(color, vec3(0.2126, 0.7152, 0.0722));
-}
-
-// Aspect ratio-corrected UV distance from center
+// Aspect-ratio-corrected UV distance from screen center
 float getAspectDistance(vec2 uv) {
     vec2 aspectUV = (uv - vec2(0.5)) * vec2(czm_viewport.z / czm_viewport.w, 1.0);
     return length(aspectUV);
 }
 
-// Radial chromatic aberration (lens/cornea distortion under intraocular pressure)
-vec4 sampleChromaticAberration(vec2 uv, float intensity) {
-    if (intensity <= 0.001) return texture2D(colorTexture, uv);
-
-    vec2 dir = (uv - vec2(0.5)) * intensity * 0.02;
-    float r = texture2D(colorTexture, clamp(uv + dir, 0.0, 1.0)).r;
-    float g = texture2D(colorTexture, uv).g;
-    float b = texture2D(colorTexture, clamp(uv - dir, 0.0, 1.0)).b;
-    float a = texture2D(colorTexture, uv).a;
-
-    return vec4(r, g, b, a);
+// 5-tap radial optic blur along vision axes
+vec4 applyRadialBlur(vec2 uv, float intensity) {
+    if (intensity <= 0.0001) {
+        return texture2D(colorTexture, uv);
+    }
+    
+    vec2 dir = uv - vec2(0.5);
+    vec4 colorSum = vec4(0.0);
+    
+    // Fixed GLSL ES 1.0 / WebGL 1 loop count
+    for (int i = 0; i < 5; i++) {
+        vec2 sampleUV = uv - dir * (float(i) * intensity * 0.008);
+        colorSum += texture2D(colorTexture, clamp(sampleUV, 0.0, 1.0));
+    }
+    
+    return colorSum / 5.0;
 }
 
-// +Gz Blackout: Contrast Loss, Irregular Tunneling, Heartbeat Pulsing & Retinal Static
-vec4 applyBlackout(vec2 uv, float heartbeat) {
-    if (blackoutStrength <= 0.001) {
+// +Gz Blackout: Purkinje Greyout -> Retinal Noise -> Tunneling -> Total Darkness
+vec4 applyBlackout(vec2 uv) {
+    if (blackoutStrength <= 0.0001) {
         return texture2D(colorTexture, uv);
     }
 
-    // Dynamic G-strength modulated slightly by systolic heart pulses
-    float dynamicG = clamp(blackoutStrength - (heartbeat * 0.08 * blackoutStrength), 0.0, 1.0);
+    float str = clamp(blackoutStrength, 0.0, 1.0);
+    float dist = getAspectDistance(uv);
 
-    // 1. Radial Chromatic Aberration
-    vec4 sceneColor = sampleChromaticAberration(uv, dynamicG * 0.8);
+    // 1. Radial Optic Blur (Scales exponentially with strength to preserve clear onset)
+    float blurFactor = pow(str, 1.6) * (0.2 + dist * 0.8);
+    vec4 sceneColor = applyRadialBlur(uv, blurFactor);
 
-    // 2. Contrast Collapse (Greyout washes out highlights into mid-grey)
-    float contrastLoss = clamp(dynamicG * 0.75, 0.0, 0.7);
-    vec3 flatGrey = vec3(0.5);
-    sceneColor.rgb = mix(sceneColor.rgb, flatGrey, contrastLoss);
-
-    // 3. Color Desaturation
-    float lum = getLuminance(sceneColor.rgb);
-    sceneColor.rgb = mix(sceneColor.rgb, vec3(lum), clamp(dynamicG * 1.2, 0.0, 1.0));
-
-    // 4. Organic, Non-Spherical Tunnel Vision Edge
-    vec2 aspectUV = (uv - vec2(0.5)) * vec2(czm_viewport.z / czm_viewport.w, 1.0);
-    float angle = atan(aspectUV.y, aspectUV.x);
+    // 2. Purkinje Scotopic Shift (Cone loss -> Rod monochrome transition)
+    // Rods are insensitive to red (0.05) and sensitive to green/blue (0.60, 0.35)
+    float scotopicLum = dot(sceneColor.rgb, vec3(0.05, 0.60, 0.35));
     
-    // Perturb radius with noise to simulate biological retinal ischemia boundaries
-    float organicDistortion = sin(angle * 6.0 + u_time * 2.0) * 0.025 * dynamicG;
-    float dist = length(aspectUV) + organicDistortion;
+    // Peripheral greyout onset (smooth exponential curve)
+    float desatAmount = clamp(pow(str, 1.2) * 1.1 + (dist * str * 0.5), 0.0, 1.0);
+    vec3 desaturatedRGB = mix(sceneColor.rgb, vec3(scotopicLum), desatAmount);
 
-    float tunnelRadius = mix(0.75, 0.02, pow(dynamicG, 1.2));
-    float edgeSoftness = mix(0.35, 0.06, dynamicG);
+    // 3. Retinal Ischemic Static / Visual Grain
+    float visualNoise = (pseudoNoise(uv * 400.0) - 0.5) * 0.07 * pow(str, 0.8);
+    vec3 noisyRGB = clamp(desaturatedRGB + vec3(visualNoise), 0.0, 1.0);
+
+    // 4. Dynamic Tunnel Radius Curve (Guarantees silky-smooth onset)
+    // str = 0.05 -> tunnelRadius ~ 1.6 (offscreen, 0% harsh circle)
+    // str = 0.50 -> tunnelRadius ~ 0.7 (peripheral field contracting)
+    // str = 1.00 -> tunnelRadius = 0.0 (total blackout)
+    float tunnelRadius = mix(1.8, 0.0, pow(str, 0.75));
+    float edgeSoftness = mix(0.75, 0.15, str);
     float tunnelMask = smoothstep(tunnelRadius, tunnelRadius - edgeSoftness, dist);
 
-    // 5. Retinal Starvation Static / Sparkles (Phosphenes near the collapsing boundary)
-    float borderZone = smoothstep(0.12, 0.0, abs(dist - tunnelRadius)) * dynamicG;
-    float staticNoise = hash(uv * 800.0 + fract(u_time * 10.0));
-    vec3 noiseColor = vec3(staticNoise) * borderZone * 0.3;
+    // 5. Combine Tunnel Mask and Global Dimming
+    vec3 finalRGB = noisyRGB * tunnelMask;
 
-    // Apply tunnel mask, noise, and final global dimming
-    vec3 finalRGB = (sceneColor.rgb * tunnelMask) + noiseColor;
-    float globalDarkening = 1.0 - smoothstep(0.7, 1.0, dynamicG);
+    // Smooth overall screen blackout at severe levels (>0.65)
+    float globalDarkening = 1.0 - smoothstep(0.65, 1.0, str);
     finalRGB *= globalDarkening;
 
     return vec4(finalRGB, sceneColor.a);
 }
 
-// -Gz Redout: Lower Eyelid Creep, Ocular Scattering & Heartbeat Red Flushes
-vec4 applyRedout(vec4 inColor, vec2 uv, float heartbeat) {
-    if (redoutStrength <= 0.001) {
+// -Gz Redout: Blood-absorption filter + Eyelid engorgement + Crimson veiling glare
+vec4 applyRedout(vec4 inColor, vec2 uv) {
+    if (redoutStrength <= 0.0001) {
         return inColor;
     }
 
     float str = clamp(redoutStrength, 0.0, 1.0);
-    
-    // Heartbeat causes red pressure flushes
-    float pulseStr = clamp(str + (heartbeat * 0.15 * str), 0.0, 1.0);
+    float dist = getAspectDistance(uv);
 
-    // 1. Lower Eyelid Intrusion (Skin & blood forced UPWARD over the eye)
-    // Eyelid height rises from y = 0.0 up to 0.85
-    float eyelidHeight = mix(-0.1, 0.85, pow(pulseStr, 1.1));
-    float eyelidWave = sin(uv.x * 5.0) * 0.03; // Soft anatomical eyelid contour
-    float eyelidMask = smoothstep(eyelidHeight, eyelidHeight - 0.3, uv.y + eyelidWave);
-
-    // 2. Light passing through blood-filled tissue (Translucent dermal red shift)
-    float lum = getLuminance(inColor.rgb);
-    vec3 bloodTranslucency = vec3(
-        clamp(lum * 1.4 + 0.25, 0.0, 1.0), 
-        lum * 0.08,                        
-        lum * 0.03                         
+    // 1. Ocular Blood Absorption Spectrum (Green/Blue light absorbed by eye blood)
+    float photopicLum = dot(inColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+    vec3 bloodTint = vec3(
+        clamp(photopicLum * 1.35 + 0.15, 0.0, 1.0), // Red channel filtered through capillaries
+        photopicLum * 0.10,                        // Green channel absorbed
+        photopicLum * 0.04                         // Blue channel absorbed
     );
 
-    // 3. Dense Crimson Blood pooling at bottom of field
-    vec3 deepCapillaryRed = vec3(0.55, 0.01, 0.01);
-    
-    // Mix scene with blood-translucency tint
-    vec3 tintedScene = mix(inColor.rgb, bloodTranslucency, pulseStr * 0.8);
+    // Smooth tint onset
+    float tintAmount = pow(str, 1.1);
+    vec3 tintedScene = mix(inColor.rgb, bloodTint, tintAmount * 0.85);
 
-    // Apply the upper eyelid creep mask
-    vec3 finalRedout = mix(deepCapillaryRed, tintedScene, eyelidMask);
+    // 2. Lower-eyelid Blood Pooling (-G forces force blood into lower eyelids/retinal bottom)
+    float lowerEyelidBias = pow(1.0 - uv.y, 2.2) * 0.45; 
+    float edgeRedFactor = smoothstep(0.2, 0.95, dist + lowerEyelidBias) * pow(str, 0.9);
 
-    // 4. Retinal Ocular Pressure Glare (High pressure light scattering)
-    float dist = getAspectDistance(uv);
-    finalRedout += vec3(0.2, 0.01, 0.01) * pulseStr * (1.0 - dist) * heartbeat;
+    vec3 deepBloodRed = vec3(0.48, 0.01, 0.01);
+    vec3 pooledRGB = mix(tintedScene, deepBloodRed, edgeRedFactor);
 
-    return vec4(finalRedout, inColor.a);
+    // 3. Intraocular Veiling Glare / Light Scattering
+    // High intraocular blood pressure scatters scene brightness into crimson halos
+    vec3 crimsonBloom = vec3(photopicLum * 0.35, photopicLum * 0.01, 0.0) * pow(str, 1.2);
+    vec3 finalRedoutRGB = clamp(pooledRGB + crimsonBloom, 0.0, 1.0);
+
+    return vec4(finalRedoutRGB, inColor.a);
 }
 
 void main() {
     vec2 uv = v_textureCoordinates;
-
-    // Simulate high-G rapid heart rate (~170 BPM = ~2.83 Hz)
-    float heartbeat = pow(max(0.0, sin(u_time * 17.8)), 3.0);
-
-    // Process +Gz Blackout, then layer -Gz Redout
-    vec4 blackoutColor = applyBlackout(uv, heartbeat);
-    gl_FragColor = applyRedout(blackoutColor, uv, heartbeat);
+    
+    // Process +Gz Blackout first, then apply -Gz Redout
+    vec4 blackoutColor = applyBlackout(uv);
+    gl_FragColor = applyRedout(blackoutColor, uv);
 }
