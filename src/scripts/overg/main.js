@@ -13,7 +13,7 @@
         .addSubHeading("Assistive Gear (enable for fighter-jet flight")
         .addItem("Wear G-Suit (+1.5G Tol)", "gSuitEnabled", "checkbox", true)
         .addItem(
-            "Anti-G Straining Maneuver Trained (+1.0G Tol)",
+            "Anti-G Straining Maneuver Trained (+3.0G Tol)",
             "agsmEnabled",
             "checkbox",
             true,
@@ -28,23 +28,23 @@
     function getUpdatedConf() {
         return {
             // Positive G Settings
-            baseTolerance: overgUi.get("gTol") || 5.0,
+            baseTolerance: parseFloat(overgUi.get("gTol")) || 5.0,
             gSuitBonus: overgUi.getBool("gSuitEnabled") ? 1.5 : 0,
             agsmBonus: overgUi.getBool("agsmEnabled") ? 3.0 : 0,
             onsetSensitivity: 0.1,
-            o2ReserveTime: 5.0,
+            blackoutReserveTime: 5.0,
             recoveryRate: 0.1,
 
             // Negative G Settings (Humans tolerate much less -G)
-            negBaseTolerance: overgUi.get("negGTol") || -2.0,
+            negBaseTolerance: parseFloat(overgUi.get("negGTol")) || -2.0,
             negRedoutTime: 3.0, // Seconds until full redout at limit
             negFlushMultiplier: 0.7, // Accelerated blackout clearance during negative G transition
 
             cockpitOnly: overgUi.getBool("cockpitOnly"),
-            maxStrength: overgUi.get("maxStrength") || 1.0,
+            maxStrength: parseFloat(overgUi.get("maxStrength")) || 1.0,
             overEnabled: overgUi.getBool("overEnabled"),
             underEnabled: overgUi.getBool("underEnabled"),
-        }
+        };
     }
 
     let G_CONFIG = getUpdatedConf();
@@ -59,31 +59,41 @@
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     geofs["overgOverlay.glsl"] = await response.text();
 
-    let o2Reserve = 1.0; // Positive G vision tracker (1 = clear, 0 = blackout)
+    let blackoutReserve = 1.0; // Positive G vision tracker (1 = clear, 0 = blackout)
     let redoutLevel = 0.0; // Negative G vision tracker (0 = clear, 1 = total redout)
     let lastG = 1.0;
 
     function getGState() {
         let dt = window.gameDeltaTime || 0.016; // Default to 60fps if gameDeltaTime is not available or is 0 (prevent division by zero)
 
-        if ((G_CONFIG.cockpitOnly && geofs.animation.values.view !== "cockpit") || !overgUi.isEnabled) {
-            o2Reserve = Math.min(1.0, o2Reserve + dt * G_CONFIG.recoveryRate);
-            redoutLevel = Math.max(0.0, redoutLevel - dt * 0.5);
-            return { blackout: 0, redout: 0 };
-        }
-
-        let currentG = geofs.animation.values.loadFactor || 1.0;
+        let currentG = geofs.animation.values.loadFactor;
 
         // G-onset rate
         let dG = currentG - lastG;
         let onsetRate = Math.max(0, dG / dt);
         lastG = currentG;
 
-        let blackoutLevel = 0
-        let redoutLevelFinal = 0
+        if (
+            (G_CONFIG.cockpitOnly &&
+                geofs.animation.values.view !== "cockpit") ||
+            !overgUi.isEnabled
+        ) {
+            blackoutReserve = Math.min(
+                1.0,
+                blackoutReserve + dt * G_CONFIG.recoveryRate,
+            );
+            redoutLevel = Math.max(0.0, redoutLevel - dt * 0.5);
+            return { blackout: 0, redout: 0 };
+        }
+
+        let blackoutLevel = 0;
+        let redoutLevelFinal = 0;
 
         if (G_CONFIG.overEnabled) {
-            let onsetPenalty = Math.min(1.5, onsetRate * G_CONFIG.onsetSensitivity);
+            let onsetPenalty = Math.min(
+                1.5,
+                onsetRate * G_CONFIG.onsetSensitivity,
+            );
             let posEffectiveLimit =
                 G_CONFIG.baseTolerance +
                 G_CONFIG.gSuitBonus +
@@ -93,24 +103,34 @@
             if (currentG > posEffectiveLimit) {
                 // Oxygen reserve depletes
                 let excessG = currentG - posEffectiveLimit;
-                let drainRate = excessG / 3.0 / G_CONFIG.o2ReserveTime;
-                o2Reserve = Math.max(0.0, o2Reserve - drainRate * dt);
+                let drainRate = excessG / 3.0 / G_CONFIG.blackoutReserveTime;
+                blackoutReserve = Math.max(
+                    0.0,
+                    blackoutReserve - drainRate * dt,
+                );
             } else if (currentG < 0.0) {
                 let flushSpeed =
                     G_CONFIG.recoveryRate *
                     G_CONFIG.negFlushMultiplier *
                     Math.abs(currentG);
-                o2Reserve = Math.min(1.0, o2Reserve + flushSpeed * dt);
+                blackoutReserve = Math.min(
+                    1.0,
+                    blackoutReserve + flushSpeed * dt,
+                );
             } else {
                 // oxygenation
                 let margin = Math.max(
                     0,
                     (posEffectiveLimit - currentG) / posEffectiveLimit,
                 );
-                let recoveryFactor = G_CONFIG.recoveryRate * (0.5 + 0.5 * margin);
-                o2Reserve = Math.min(1.0, o2Reserve + recoveryFactor * dt);
+                let recoveryFactor =
+                    G_CONFIG.recoveryRate * (0.5 + 0.5 * margin);
+                blackoutReserve = Math.min(
+                    1.0,
+                    blackoutReserve + recoveryFactor * dt,
+                );
             }
-            blackoutLevel = (1.0 - o2Reserve) * G_CONFIG.maxStrength;
+            blackoutLevel = (1.0 - blackoutReserve) * G_CONFIG.maxStrength;
         }
 
         if (G_CONFIG.underEnabled) {
