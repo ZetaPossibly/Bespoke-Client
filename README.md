@@ -64,9 +64,9 @@ The vision is an integrated, seamless experience for GeoFS with a modular and sc
 > - Extending ability to be able to see more information and stay aware of your surroundings
 > - Flight path vectoras
 > - Target disgnator boxes
-- Integration with other scripts
-> - Autothrottle Integration + keybinds for control
-> - Slew mode integration with customisable keybings
+- Integration with other scripts, modified and improved. Integrated with the UI and extended customisability/
+> - Modifiedd Autothrottle Integration + keybinds for mouseless control
+> - Slew mode integration
 > - Aircraft Fuel
 ... and so much more to create the best one stop shop for every GeoFS player, regardless of what they are doing.
 
