@@ -1,7 +1,4 @@
 let fpsDisplay = null;
-let rafId = null;
-let lastTime = null;
-let frameCount = 0;
 
 function createFPSDisplay() {
     if (fpsDisplay) return;
@@ -31,17 +28,11 @@ function createFPSDisplay() {
 
     document.body.appendChild(fpsDisplay);
 
-    lastTime = performance.now();
     frameCount = 0;
     rafId = requestAnimationFrame(updateFPS);
 }
 
 function destroyFPSDisplay() {
-    if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-    }
-
     if (fpsDisplay) {
         fpsDisplay.remove();
         fpsDisplay = null;
@@ -49,18 +40,5 @@ function destroyFPSDisplay() {
 }
 
 function updateFPS() {
-    const now = performance.now();
-    frameCount++;
-    const delta = now - lastTime;
-
-    if (delta >= 1000) {
-        const fps = (frameCount / delta) * 1000;
-        if (fpsDisplay) fpsDisplay.textContent = `FPS: ${fps.toFixed(2)}`;
-        lastTime = now;
-        frameCount = 0;
-    }
-
-    if (fpsDisplay) {
-        rafId = requestAnimationFrame(updateFPS);
-    }
+    if (fpsDisplay) fpsDisplay.textContent = 1/window.gameDeltaTime
 }
