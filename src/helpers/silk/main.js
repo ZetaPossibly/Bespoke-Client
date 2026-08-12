@@ -1,103 +1,97 @@
 (() => {
-  let lastTime;
-  window.gameDeltaTime = 0;
-  geofs.api.viewer.clock.onTick.addEventListener((clock) => {
-    const currentTime = Cesium.JulianDate.toDate(clock.currentTime).getTime();
+    window.Silk = class {
+        constructor(
+            initial = 0,
+            {
+                speed = 10,
+                radius = 0.05,
+                min = -Infinity,
+                max = Infinity,
+                enabled = true,
+                sensitivity = 100,
+                calibrationValue = 0,
+                defaultValue = initial,
+            } = {},
+        ) {
+            this.speed = speed;
+            this.radius = radius;
+            this.min = min;
+            this.max = max;
+            this.enabled = enabled;
+            this.sensitivity = sensitivity;
+            this.calibrationValue = calibrationValue;
+            this.defaultValue = defaultValue;
 
-    if (lastTime === undefined) {
-      lastTime = currentTime;
-      return;
-    }
+            this.raw_current = initial;
+            this.raw_target = initial;
+            this.current = 0;
+            this.target = 0;
 
-    window.gameDeltaTime = (currentTime - lastTime) / 1000;
-    lastTime = currentTime;
-  });
+            this.setCurrent(initial);
+            this.setTarget(initial);
+        }
 
-  window.Silk = class {
-    constructor(
-      initial = 0,
-      {
-        speed = 10,
-        radius = 0.05,
-        min = -Infinity,
-        max = Infinity,
-        enabled = true,
-        sensitivity = 100,
-        calibrationValue = 0,
-        defaultValue = initial,
-      } = {},
-    ) {
-      this.speed = speed;
-      this.radius = radius;
-      this.min = min;
-      this.max = max;
-      this.enabled = enabled;
-      this.sensitivity = sensitivity;
-      this.calibrationValue = calibrationValue;
-      this.defaultValue = defaultValue;
+        _clamp(value) {
+            return Math.min(this.max, Math.max(this.min, value));
+        }
 
-      this.raw_current = initial;
-      this.raw_target = initial;
-      this.current = 0;
-      this.target = 0;
+        setTarget(value) {
+            this.raw_target = value;
+            this.target = this._clamp(
+                value * this.sensitivity - this.calibrationValue,
+            );
+        }
 
-      this.setCurrent(initial);
-      this.setTarget(initial);
-    }
+        setCurrent(value) {
+            this.raw_current = value;
+            this.raw_target = value;
 
-    _clamp(value) {
-      return Math.min(this.max, Math.max(this.min, value));
-    }
+            this.current = this._clamp(
+                value * this.sensitivity - this.calibrationValue,
+            );
+            this.target = this.current;
+        }
 
-    setTarget(value) {
-      this.raw_target = value;
-      this.target = this._clamp(value * this.sensitivity - this.calibrationValue);
-    }
+        setCalibrationValue(value) {
+            this.calibrationValue = value;
+            this.current = this._clamp(
+                this.raw_current * this.sensitivity - this.calibrationValue,
+            );
+            this.target = this._clamp(
+                this.raw_target * this.sensitivity - this.calibrationValue,
+            );
+        }
 
-    setCurrent(value) {
-      this.raw_current = value;
-      this.raw_target = value;
+        setEnabled(value) {
+            this.enabled = value;
+        }
 
-      this.current = this._clamp(value * this.sensitivity - this.calibrationValue);
-      this.target = this.current;
-    }
+        update() {
+            if (!this.enabled) {
+                return this.defaultValue;
+            }
 
-    setCalibrationValue(value) {
-      this.calibrationValue = value;
-      this.current = this._clamp(this.raw_current * this.sensitivity - this.calibrationValue);
-      this.target = this._clamp(this.raw_target * this.sensitivity - this.calibrationValue);
-    }
+            const diff = this.target - this.current;
+            const dist = Math.abs(diff);
 
-    setEnabled(value) {
-      this.enabled = value;
-    }
+            if (dist <= this.radius) {
+                return this.current;
+            }
 
-    update() {
-      if (!this.enabled) {
-        return this.defaultValue;
-      }
+            const pull = diff - Math.sign(diff) * this.radius;
 
-      const diff = this.target - this.current;
-      const dist = Math.abs(diff);
+            const dt = window.gameDeltaTime || 0;
+            const t = 1 - Math.exp(-this.speed * dt);
 
-      if (dist <= this.radius) {
-        return this.current;
-      }
+            this.current += pull * t;
+            this.current = Math.min(this.max, Math.max(this.min, this.current));
 
-      const pull = diff - Math.sign(diff) * this.radius;
+            return this.current;
+        }
 
-      const dt = window.gameDeltaTime || 0;
-      const t = 1 - Math.exp(-this.speed * dt);
-
-      this.current += pull * t;
-      this.current = Math.min(this.max, Math.max(this.min, this.current));
-
-      return this.current;
-    }
-
-    get = () => {
-      if (!this.enabled) return this.defaultValue;
-      return this.current + this.defaultValue;
+        get = () => {
+            if (!this.enabled) return this.defaultValue;
+            return this.current + this.defaultValue;
+        };
     };
-  };
 })();
