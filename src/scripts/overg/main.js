@@ -198,6 +198,9 @@
                 uniforms: {
                     blackoutStrength: 0.0,
                     redoutStrength: 0.0,
+                    u_time: function() {
+                        return performance.now() / 1000.0; // Pass time in seconds
+                    }
                 },
             });
             geofs.api.viewer.scene.postProcessStages.add(geofs.fx.overg.shader);
