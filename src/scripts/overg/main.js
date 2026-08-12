@@ -10,7 +10,8 @@
         .addItem("UnderG Enabled", "underEnabled", "checkbox", true)
         .addItem("Base G Tolerance", "gTol", "number", 5)
         .addItem("Base Neg-G Tolerance", "negGTol", "number", -2)
-        .addSubHeading("Assistive Gear (enable for fighter-jet flight")
+        .addItem("Recover Rate", "recoveryRate", "number", 0.5)
+        .addSubHeading("Assistive Techniques (enable for fighter-jet flight")
         .addItem("Wear G-Suit (+1.5G Tol)", "gSuitEnabled", "checkbox", true)
         .addItem(
             "Anti-G Straining Maneuver Trained (+3.0G Tol)",
@@ -19,7 +20,7 @@
             true,
         )
         .addItem(
-            "Max shader strength multiplier",
+            "Max Strength Multiplier",
             "maxStrength",
             "number",
             1.0,
@@ -28,20 +29,20 @@
     function getUpdatedConf() {
         return {
             // Positive G Settings
-            baseTolerance: parseFloat(overgUi.get("gTol")) || 5.0,
+            baseTolerance: parseFloat(overgUi.get("gTol")) ?? 5.0,
             gSuitBonus: overgUi.getBool("gSuitEnabled") ? 1.5 : 0,
             agsmBonus: overgUi.getBool("agsmEnabled") ? 3.0 : 0,
             onsetSensitivity: 0.1,
             blackoutReserveTime: 5.0,
-            recoveryRate: 0.1,
+            recoveryRate: parseFloat(overgUi.get("recoveryRate")) ?? 0.5,
 
             // Negative G Settings (Humans tolerate much less -G)
-            negBaseTolerance: parseFloat(overgUi.get("negGTol")) || -2.0,
+            negBaseTolerance: parseFloat(overgUi.get("negGTol")) ?? -2.0,
             negRedoutTime: 3.0, // Seconds until full redout at limit
             negFlushMultiplier: 0.7, // Accelerated blackout clearance during negative G transition
 
             cockpitOnly: overgUi.getBool("cockpitOnly"),
-            maxStrength: parseFloat(overgUi.get("maxStrength")) || 1.0,
+            maxStrength: parseFloat(overgUi.get("maxStrength")) ?? 1.0,
             overEnabled: overgUi.getBool("overEnabled"),
             underEnabled: overgUi.getBool("underEnabled"),
         };
