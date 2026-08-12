@@ -45,6 +45,11 @@ In a clean, simple and elegant user interface which does not clutter your page a
 - Fully customisable waypoint display
 - See your flight plan, in-game instead of just in nav.
 
+"OverG Shaders"
+- Customisable blackout and redout
+- Can be disabled and configured for realism (AGSM training, G-suit)
+ 
+
 ## Contact & [Give Feedback](https://tally.so/r/BzYANK)
 Talk to me via discord, @zetainbeta_43414. I am open to suggestions. Please ensure bugs get to me as soon as noticed. 
 
@@ -55,11 +60,13 @@ The vision is an integrated, seamless experience for GeoFS with a modular and sc
 - Customisable Smoke (colours, size, location, toggle keybinds etc) 
 - Customisable map filters
 - Friend lists, favourite locations etc
-- Situational Awareness + extending its ability to be able to see more information and stay aware of your surroundings.
+- Situational Awareness
+> - Extending ability to be able to see more information and stay aware of your surroundings
+> - Flight path vectoras
+> - Target disgnator boxes
 - Integration with other scripts
 > - Autothrottle Integration + keybinds for control
 > - Slew mode integration with customisable keybings
-> - Over G Blackout rendering
 > - Aircraft Fuel
 ... and so much more to create the best one stop shop for every GeoFS player, regardless of what they are doing.
 

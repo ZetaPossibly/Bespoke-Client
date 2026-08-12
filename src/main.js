@@ -39,6 +39,7 @@ const scripts = {
     freelook: getUrl("scripts/freelook/freelook.js"),
     missileList: getUrl("scripts/infoPanels/manager.js"),
     waypointViz: getUrl("scripts/waypoint viz/main.js"),
+    overG: getUrl("scripts/overg/main.js"),
 
     //slew: getUrl("scripts/external/slew/slew.js") 
 }
