@@ -54,10 +54,10 @@
     }, 1000);
 
     // fetch shader
-    const shaderURL = getUrl("scripts/overg/overlayG.glsl");
+    const shaderURL = getUrl("scripts/overg/overlay.glsl");
     const response = await fetch(shaderURL);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    geofs["overlayG.glsl"] = await response.text();
+    geofs["overgOverlay.glsl"] = await response.text();
 
     let o2Reserve = 1.0; // Positive G vision tracker (1 = clear, 0 = blackout)
     let redoutLevel = 0.0; // Negative G vision tracker (0 = clear, 1 = total redout)
@@ -135,7 +135,7 @@
     geofs.fx.overg = {
         create: function () {
             geofs.fx.overg.shader = new Cesium.PostProcessStage({
-                fragmentShader: geofs["overlayG.glsl"],
+                fragmentShader: geofs["overgOverlay.glsl"],
                 uniforms: {
                     blackoutStrength: 0.0,
                     redoutStrength: 0.0,
