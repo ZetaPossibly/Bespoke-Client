@@ -71,6 +71,7 @@
 
         // G-onset rate
         let dG = currentG - lastG;
+        console.log(dG)
         let onsetRate = Math.max(0, dG / dt);
         lastG = currentG;
 
