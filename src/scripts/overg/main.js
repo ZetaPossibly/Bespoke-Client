@@ -79,8 +79,8 @@
         let onsetRate = Math.max(0, dG / dt);
         lastG = currentG;
 
-        const blackoutLevel = 0
-        const redoutLevelFinal = 0
+        let blackoutLevel = 0
+        let redoutLevelFinal = 0
 
         if (G_CONFIG.overEnabled) {
             let onsetPenalty = Math.min(1.5, onsetRate * G_CONFIG.onsetSensitivity);
