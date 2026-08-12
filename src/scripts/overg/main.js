@@ -1,4 +1,4 @@
-(function () {
+(async function () {
     "use strict";
 
     const overgUi = new window.BUIM("OverG Shaders", "overg");
@@ -79,6 +79,9 @@
         let onsetRate = Math.max(0, dG / dt);
         lastG = currentG;
 
+        const blackoutLevel = 0
+        const redoutLevelFinal = 0
+
         if (G_CONFIG.overEnabled) {
             let onsetPenalty = Math.min(1.5, onsetRate * G_CONFIG.onsetSensitivity);
             let posEffectiveLimit =
@@ -107,7 +110,7 @@
                 let recoveryFactor = G_CONFIG.recoveryRate * (0.5 + 0.5 * margin);
                 o2Reserve = Math.min(1.0, o2Reserve + recoveryFactor * dt);
             }
-            const blackoutLevel = (1.0 - o2Reserve) * G_CONFIG.maxStrength;
+            blackoutLevel = (1.0 - o2Reserve) * G_CONFIG.maxStrength;
         }
 
         if (G_CONFIG.underEnabled) {
@@ -120,12 +123,12 @@
                 // Rapid dissipation of redout when blood pressure in head returns to normal
                 redoutLevel = Math.max(0.0, redoutLevel - dt * 0.6);
             }
-            const redoutLevelFinal = redoutLevel * G_CONFIG.maxStrength;
+            redoutLevelFinal = redoutLevel * G_CONFIG.maxStrength;
         }
 
         return {
-            blackout: blackoutLevel || 0,
-            redout: redoutLevelFinal || 0,
+            blackout: blackoutLevel,
+            redout: redoutLevelFinal,
         };
     }
 
