@@ -8,9 +8,9 @@ uniform float redoutStrength;   // (0.0 to 1.0) 0 is no visual effect, 1 is comp
 const vec3  REDOUT_TINT       = vec3(0.55, 0.02, 0.03); // pooled blood tint, not pure red
 const float GREYOUT_FRACTION  = 0.35;  // fraction of blackoutStrength spent on peripheral desaturation
                                         // before tunnel vision starts closing (grey-out precedes tunnel/blackout)
-const float VIGNETTE_SOFTNESS = 0.35;  // feather width of the closing tunnel edge
-const float MAX_VIGNETTE_R    = 0.85;  // radius (screen-space, aspect corrected) where closure begins
-const float REDOUT_DARKEN_AT  = 0.7;   // extreme -Gz also causes vision loss, just red-tinted first
+const float VIGNETTE_SOFTNESS = 0.7;  // feather width of the closing tunnel edge
+const float MAX_VIGNETTE_R    = 1;  // radius (screen-space, aspect corrected) where closure begins
+const float REDOUT_DARKEN_AT  = 0.8;   // extreme -Gz also causes vision loss, just red-tinted first
 
 float luma(vec3 c) {
     return dot(c, vec3(0.299, 0.587, 0.114));

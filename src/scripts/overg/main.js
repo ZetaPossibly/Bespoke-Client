@@ -6,6 +6,7 @@
     // Display Controls
     overgUi
         .addItem("Cockpit Only", "cockpitOnly", "checkbox", true)
+        .addItem("Enable G-LOC Hold", "glocEnabled", "checkbox", false)
         .addItem("OverG Enabled", "overEnabled", "checkbox", true)
         .addItem("UnderG Enabled", "underEnabled", "checkbox", true)
         .addItem("Base G Tolerance", "gTol", "number", 5)
@@ -37,6 +38,7 @@
             // Negative G settings (humans tolerate far less -G than +G)
             negBaseTolerance: safeParseFloat(overgUi.get("negGTol"), -2.0),
             cockpitOnly: overgUi.getBool("cockpitOnly"),
+            glocEnabled: overgUi.getBool("glocEnabled"),
 
             overEnabled: overgUi.getBool("overEnabled"),
             underEnabled: overgUi.getBool("underEnabled"),
@@ -48,12 +50,10 @@
             onsetPenaltyPerGs: 0.35, // +Gz tolerance lost per G/s of onset rate ("push-pull effect": rapid onset outruns the baroreceptor reflex)
             onsetPenaltyMax: 2.5, // cap, matches centrifuge studies showing ~2-3G tolerance loss under rapid onset
 
-            blackoutAttackTau: 0.6, // s, greyout/tunnel closing in
+            blackoutAttackTau: 1.2, // s, greyout/tunnel closing in
             blackoutReleaseTau: 2.5, // s, cerebral reperfusion lag - vision doesn't snap back the instant G drops
             redoutAttackTau: 0.35, // s, ocular vascular engorgement is fast
             redoutReleaseTau: 1.5, // s
-
-            glocHoldTime: 4.0, // s, vision stays pinned at full blackout after true G-LOC (real TUC/recovery is 12-24s; shortened for gameplay)
         };
     }
 
@@ -143,17 +143,20 @@
             ? clamp01(negExcess / G_CONFIG.negSaturationRange)
             : 0;
 
-        // --- G-LOC hold: once fully blacked out, vision stays gone briefly even if G drops right away ---
-        if (getGState.blackoutLevel >= 0.995) {
-            getGState.glocTimer = G_CONFIG.glocHoldTime;
+        // G-LOC hold: once fully blacked out, vision stays gone briefly even if G drops right away
+        if (getGState.blackoutLevel >= 0.995 && G_CONFIG.glocEnabled) {
+            getGState.glocTimer = 20; // seconds
         }
         if (getGState.glocTimer > 0) {
-            targetBlackout = 1.0;
+            if (getGState.glocTimer < 10) {
+                // for the last 10 seconds of G-LOC, fade back in gradually
+                targetBlackout = Math.max(targetBlackout, 0.7);
+            } else {
+                targetBlackout = 1.0;
+            }
             getGState.glocTimer = Math.max(0, getGState.glocTimer - dt);
         }
 
-        // --- Smooth toward target (physiological state always progresses, regardless of view/UI gating below,
-        //     because the pilot's body doesn't know or care what camera is active) ---
         getGState.blackoutLevel = approach(
             getGState.blackoutLevel,
             targetBlackout,
@@ -169,7 +172,6 @@
             dt,
         );
 
-        // --- View / UI gating only affects what gets displayed, not the underlying physiology ---
         const uiActive =
             overgUi.isEnabled &&
             (!G_CONFIG.cockpitOnly ||
