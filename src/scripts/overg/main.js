@@ -11,8 +11,7 @@
         .addItem("UnderG Enabled", "underEnabled", "checkbox", true)
         .addItem("Base G Tolerance", "gTol", "number", 5)
         .addItem("Base Neg-G Tolerance", "negGTol", "number", -2)
-        .addItem("Recover Rate", "recoveryRate", "number", 0.5)
-        .addSubHeading("Assistive Techniques (enable for fighter-jet flight")
+        .addSubHeading("Assistive Techniques (for fighters)")
         .addItem("Wear G-Suit (+1.5G Tol)", "gSuitEnabled", "checkbox", true)
         .addItem(
             "Anti-G Straining Maneuver Trained (+3.0G Tol)",
@@ -20,7 +19,6 @@
             "checkbox",
             true,
         )
-        .addItem("Max Strength Multiplier", "maxStrength", "number", 1.0);
 
     // Helper to safely parse numbers with fallback
     function safeParseFloat(val, fallback) {
@@ -130,7 +128,7 @@
             G_CONFIG.gSuitBonus +
             G_CONFIG.agsmBonus -
             onsetPenalty;
-        const effToleranceNeg = G_CONFIG.negBaseTolerance; // G-suit and AGSM give ~no protection against -Gz
+        const effToleranceNeg = G_CONFIG.negBaseTolerance;
 
         // --- G excess past tolerance -> target visual strength ---
         const posExcess = Math.max(0, currentG - effTolerancePos);
@@ -144,7 +142,7 @@
             : 0;
 
         // G-LOC hold: once fully blacked out, vision stays gone briefly even if G drops right away
-        if (getGState.blackoutLevel >= 0.995 && G_CONFIG.glocEnabled) {
+        if (getGState.blackoutLevel === 1.0 && G_CONFIG.glocEnabled) {
             getGState.glocTimer = 20; // seconds
         }
         if (getGState.glocTimer > 0) {
@@ -153,6 +151,7 @@
                 targetBlackout = Math.max(targetBlackout, 0.7);
             } else {
                 targetBlackout = 1.0;
+                targetRedout = 0.0; // G-LOC overrides redout, even if -Gz is present
             }
             getGState.glocTimer = Math.max(0, getGState.glocTimer - dt);
         }
