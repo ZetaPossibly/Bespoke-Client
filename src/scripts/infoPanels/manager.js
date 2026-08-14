@@ -39,7 +39,7 @@ function initUI() {
 
   infoPanelsUi.on("FpsCounter:change", (enabled) => {
     if (infoPanelsUi.isEnabled) {
-      enabled ? createFPSDisplay() : destroyFPSDisplay();
+      enabled ? window.createFPSDisplay() : window.destroyFPSDisplay();
     }
   });
 

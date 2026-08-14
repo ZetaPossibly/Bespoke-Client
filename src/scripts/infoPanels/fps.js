@@ -1,7 +1,7 @@
 (function () {
     let fpsDisplay = null;
 
-    function createFPSDisplay() {
+    window.createFPSDisplay = function () {
         if (fpsDisplay) return;
 
         fpsDisplay = document.createElement("div");
@@ -55,7 +55,7 @@
         rafId = requestAnimationFrame(updateFPS);
     }
 
-    function destroyFPSDisplay() {
+    window.destroyFPSDisplay = function () {
         if (fpsDisplay) {
             fpsDisplay.remove();
             fpsDisplay = null;
