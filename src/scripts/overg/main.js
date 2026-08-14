@@ -19,12 +19,7 @@
             "checkbox",
             true,
         )
-        .addItem(
-            "Max Strength Multiplier",
-            "maxStrength",
-            "number",
-            1.0,
-        );
+        .addItem("Max Strength Multiplier", "maxStrength", "number", 1.0);
 
     // Helper to safely parse numbers with fallback
     function safeParseFloat(val, fallback) {
@@ -34,23 +29,31 @@
 
     function getUpdatedConf() {
         return {
-            // Positive G Settings
+            // Positive G settings
             baseTolerance: safeParseFloat(overgUi.get("gTol"), 5.0),
             gSuitBonus: overgUi.getBool("gSuitEnabled") ? 1.5 : 0,
             agsmBonus: overgUi.getBool("agsmEnabled") ? 3.0 : 0,
-            onsetSensitivity: 0.1,
-            blackoutReserveTime: 5.0,
-            recoveryRate: safeParseFloat(overgUi.get("recoveryRate"), 0.5),
 
-            // Negative G Settings (Humans tolerate much less -G)
+            // Negative G settings (humans tolerate far less -G than +G)
             negBaseTolerance: safeParseFloat(overgUi.get("negGTol"), -2.0),
-            negRedoutTime: 3.0, // Seconds until full redout at limit
-            negFlushMultiplier: 0.7, // Accelerated blackout clearance during negative G transition
-
             cockpitOnly: overgUi.getBool("cockpitOnly"),
-            maxStrength: safeParseFloat(overgUi.get("maxStrength"), 1.0),
+
             overEnabled: overgUi.getBool("overEnabled"),
             underEnabled: overgUi.getBool("underEnabled"),
+
+            // --- Realism tuning (aviation-medicine derived, not exposed in UI) ---
+            posSaturationRange: 2.5, // G past tolerance needed to go from onset -> full blackout
+            negSaturationRange: 1.5, // G past tolerance needed to go from onset -> full redout (vascular engorgement is quicker than +Gz greyout)
+
+            onsetPenaltyPerGs: 0.35, // +Gz tolerance lost per G/s of onset rate ("push-pull effect": rapid onset outruns the baroreceptor reflex)
+            onsetPenaltyMax: 2.5, // cap, matches centrifuge studies showing ~2-3G tolerance loss under rapid onset
+
+            blackoutAttackTau: 0.6, // s, greyout/tunnel closing in
+            blackoutReleaseTau: 2.5, // s, cerebral reperfusion lag - vision doesn't snap back the instant G drops
+            redoutAttackTau: 0.35, // s, ocular vascular engorgement is fast
+            redoutReleaseTau: 1.5, // s
+
+            glocHoldTime: 4.0, // s, vision stays pinned at full blackout after true G-LOC (real TUC/recovery is 12-24s; shortened for gameplay)
         };
     }
 
@@ -66,12 +69,19 @@
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     geofs["overgOverlay.glsl"] = await response.text();
 
-    let blackoutReserve = 1.0; // Positive G vision tracker (1 = clear, 0 = blackout)
-    let redoutLevel = 0.0; // Negative G vision tracker (0 = clear, 1 = total redout)
-    let lastG = 1.0;
+    function clamp01(x) {
+        return Math.max(0, Math.min(1, x));
+    }
+
+    // Asymmetric exponential approach: different time constant depending on whether
+    // we're building the effect up or letting it recover.
+    function approach(current, target, attackTau, releaseTau, dt) {
+        const tau = target > current ? attackTau : releaseTau;
+        const alpha = 1 - Math.exp(-dt / Math.max(tau, 0.0001));
+        return current + (target - current) * alpha;
+    }
 
     function getGState() {
-        // Safe delta time calculation (cap at max 100ms to prevent alt-tab / lag spikes from breaking state)
         let dt = window.gameDeltaTime;
         if (typeof dt !== "number" || isNaN(dt) || dt <= 0) {
             dt = 0.016;
@@ -80,114 +90,100 @@
 
         // Safely retrieve loadFactor (fallback to 1.0G if undefined, null, or NaN during plane spawn/reset)
         let rawG = geofs?.animation?.values?.loadFactor;
-        let currentG = (typeof rawG === "number" && !isNaN(rawG)) ? rawG : 1.0;
+        let currentG = typeof rawG === "number" && !isNaN(rawG) ? rawG : 1.0;
 
         // Clamp extreme physics glitches (e.g. crash/respawn loadFactor spikes)
         currentG = Math.max(-15.0, Math.min(25.0, currentG));
 
-        // G-onset rate
+        // G-onset rate (only the +Gz direction is used for the tolerance penalty below -
+        // the rapid-onset tolerance-loss effect is specifically documented for +Gz)
         let dG = currentG - lastG;
         let onsetRate = Math.max(0, dG / dt);
         lastG = currentG;
 
-        // View or UI disable check
+        // Init persistent state on the function itself (survives across calls, self-contained)
         if (
-            (G_CONFIG.cockpitOnly && geofs?.animation?.values?.view !== "cockpit") ||
-            !overgUi.isEnabled
-        ) {
-            blackoutReserve = Math.min(
-                1.0,
-                blackoutReserve + dt * G_CONFIG.recoveryRate,
-            );
-            redoutLevel = Math.max(0.0, redoutLevel - dt * 0.5);
+            typeof getGState.blackoutLevel !== "number" ||
+            isNaN(getGState.blackoutLevel)
+        )
+            getGState.blackoutLevel = 0;
+        if (
+            typeof getGState.redoutLevel !== "number" ||
+            isNaN(getGState.redoutLevel)
+        )
+            getGState.redoutLevel = 0;
+        if (
+            typeof getGState.glocTimer !== "number" ||
+            isNaN(getGState.glocTimer)
+        )
+            getGState.glocTimer = 0;
 
-            // Sanitize values
-            if (isNaN(blackoutReserve)) blackoutReserve = 1.0;
-            if (isNaN(redoutLevel)) redoutLevel = 0.0;
+        // --- Effective tolerances ---
+        const onsetPenalty = Math.min(
+            onsetRate * G_CONFIG.onsetPenaltyPerGs,
+            G_CONFIG.onsetPenaltyMax,
+        );
+        const effTolerancePos =
+            G_CONFIG.baseTolerance +
+            G_CONFIG.gSuitBonus +
+            G_CONFIG.agsmBonus -
+            onsetPenalty;
+        const effToleranceNeg = G_CONFIG.negBaseTolerance; // G-suit and AGSM give ~no protection against -Gz
 
-            return { blackout: 0, redout: 0 };
+        // --- G excess past tolerance -> target visual strength ---
+        const posExcess = Math.max(0, currentG - effTolerancePos);
+        const negExcess = Math.max(0, effToleranceNeg - currentG);
+
+        let targetBlackout = G_CONFIG.overEnabled
+            ? clamp01(posExcess / G_CONFIG.posSaturationRange)
+            : 0;
+        let targetRedout = G_CONFIG.underEnabled
+            ? clamp01(negExcess / G_CONFIG.negSaturationRange)
+            : 0;
+
+        // --- G-LOC hold: once fully blacked out, vision stays gone briefly even if G drops right away ---
+        if (getGState.blackoutLevel >= 0.995) {
+            getGState.glocTimer = G_CONFIG.glocHoldTime;
+        }
+        if (getGState.glocTimer > 0) {
+            targetBlackout = 1.0;
+            getGState.glocTimer = Math.max(0, getGState.glocTimer - dt);
         }
 
-        let blackoutLevel = 0;
-        let redoutLevelFinal = 0;
+        // --- Smooth toward target (physiological state always progresses, regardless of view/UI gating below,
+        //     because the pilot's body doesn't know or care what camera is active) ---
+        getGState.blackoutLevel = approach(
+            getGState.blackoutLevel,
+            targetBlackout,
+            G_CONFIG.blackoutAttackTau,
+            G_CONFIG.blackoutReleaseTau,
+            dt,
+        );
+        getGState.redoutLevel = approach(
+            getGState.redoutLevel,
+            targetRedout,
+            G_CONFIG.redoutAttackTau,
+            G_CONFIG.redoutReleaseTau,
+            dt,
+        );
 
-        if (G_CONFIG.overEnabled) {
-            let onsetPenalty = Math.min(
-                1.5,
-                onsetRate * G_CONFIG.onsetSensitivity,
-            );
-            
-            // Prevent posEffectiveLimit from reaching zero or negative to avoid division by zero
-            let posEffectiveLimit = Math.max(
-                0.5,
-                G_CONFIG.baseTolerance +
-                G_CONFIG.gSuitBonus +
-                G_CONFIG.agsmBonus -
-                onsetPenalty
-            );
+        // --- View / UI gating only affects what gets displayed, not the underlying physiology ---
+        const uiActive =
+            overgUi.isEnabled &&
+            (!G_CONFIG.cockpitOnly ||
+                geofs?.animation?.values?.view === "cockpit");
 
-            let reserveTime = Math.max(0.1, G_CONFIG.blackoutReserveTime);
+        let outBlackout = uiActive ? getGState.blackoutLevel : 0;
+        let outRedout = uiActive ? getGState.redoutLevel : 0;
 
-            if (currentG > posEffectiveLimit) {
-                // Oxygen reserve depletes
-                let excessG = currentG - posEffectiveLimit;
-                let drainRate = excessG / 3.0 / reserveTime;
-                blackoutReserve = Math.max(
-                    0.0,
-                    blackoutReserve - drainRate * dt,
-                );
-            } else if (currentG < 0.0) {
-                let flushSpeed =
-                    G_CONFIG.recoveryRate *
-                    G_CONFIG.negFlushMultiplier *
-                    Math.abs(currentG);
-                blackoutReserve = Math.min(
-                    1.0,
-                    blackoutReserve + flushSpeed * dt,
-                );
-            } else {
-                // Oxygenation
-                let margin = Math.max(
-                    0,
-                    (posEffectiveLimit - currentG) / posEffectiveLimit,
-                );
-                let recoveryFactor =
-                    G_CONFIG.recoveryRate * (0.5 + 0.5 * margin);
-                blackoutReserve = Math.min(
-                    1.0,
-                    blackoutReserve + recoveryFactor * dt,
-                );
-            }
-            blackoutLevel = (1.0 - blackoutReserve) * G_CONFIG.maxStrength;
-        } else {
-            blackoutReserve = Math.min(1.0, blackoutReserve + dt * G_CONFIG.recoveryRate);
-        }
-
-        if (G_CONFIG.underEnabled) {
-            let redoutTime = Math.max(0.1, G_CONFIG.negRedoutTime);
-            if (currentG < G_CONFIG.negBaseTolerance) {
-                // Exceeding negative G limit
-                let excessNegG = Math.abs(currentG - G_CONFIG.negBaseTolerance);
-                let redoutRate = excessNegG / 2.0 / redoutTime;
-                redoutLevel = Math.min(1.0, redoutLevel + redoutRate * dt);
-            } else {
-                // Rapid dissipation of redout when blood pressure in head returns to normal
-                redoutLevel = Math.max(0.0, redoutLevel - dt * 0.6);
-            }
-            redoutLevelFinal = redoutLevel * G_CONFIG.maxStrength;
-        } else {
-            redoutLevel = Math.max(0.0, redoutLevel - dt * 0.6);
-        }
-
-        // Hard recovery protection against NaN propagating to WebGL uniforms
-        if (isNaN(blackoutReserve)) blackoutReserve = 1.0;
-        if (isNaN(redoutLevel)) redoutLevel = 0.0;
-        if (isNaN(blackoutLevel)) blackoutLevel = 0.0;
-        if (isNaN(redoutLevelFinal)) redoutLevelFinal = 0.0;
+        // Final NaN guard before hitting WebGL uniforms
+        if (typeof outBlackout !== "number" || isNaN(outBlackout))
+            outBlackout = 0;
+        if (typeof outRedout !== "number" || isNaN(outRedout)) outRedout = 0;
 
         return {
-            blackout: Math.max(0.0, Math.min(1.0, blackoutLevel)),
-            redout: Math.max(0.0, Math.min(1.0, redoutLevelFinal)),
+            blackout: outBlackout,
+            redout: outRedout,
         };
     }
 
