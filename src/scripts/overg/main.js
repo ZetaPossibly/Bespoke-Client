@@ -6,7 +6,6 @@
     // Display Controls
     overgUi
         .addItem("Cockpit Only", "cockpitOnly", "checkbox", true)
-        .addItem("Enable G-LOC Hold", "glocEnabled", "checkbox", false)
         .addItem("OverG Enabled", "overEnabled", "checkbox", true)
         .addItem("UnderG Enabled", "underEnabled", "checkbox", true)
         .addItem("Base G Tolerance", "gTol", "number", 5)
@@ -36,7 +35,6 @@
             // Negative G settings (humans tolerate far less -G than +G)
             negBaseTolerance: safeParseFloat(overgUi.get("negGTol"), -2.0),
             cockpitOnly: overgUi.getBool("cockpitOnly"),
-            glocEnabled: overgUi.getBool("glocEnabled"),
 
             overEnabled: overgUi.getBool("overEnabled"),
             underEnabled: overgUi.getBool("underEnabled"),
@@ -112,11 +110,6 @@
             isNaN(getGState.redoutLevel)
         )
             getGState.redoutLevel = 0;
-        if (
-            typeof getGState.glocTimer !== "number" ||
-            isNaN(getGState.glocTimer)
-        )
-            getGState.glocTimer = 0;
 
         // --- Effective tolerances ---
         const onsetPenalty = Math.min(
@@ -141,20 +134,6 @@
             ? clamp01(negExcess / G_CONFIG.negSaturationRange)
             : 0;
 
-        // G-LOC hold: once fully blacked out, vision stays gone briefly even if G drops right away
-        if (getGState.blackoutLevel === 1.0 && G_CONFIG.glocEnabled) {
-            getGState.glocTimer = 20; // seconds
-        }
-        if (getGState.glocTimer > 0) {
-            if (getGState.glocTimer < 10) {
-                // for the last 10 seconds of G-LOC, fade back in gradually
-                targetBlackout = Math.max(targetBlackout, 0.7);
-            } else {
-                targetBlackout = 1.0;
-                targetRedout = 0.0; // G-LOC overrides redout, even if -Gz is present
-            }
-            getGState.glocTimer = Math.max(0, getGState.glocTimer - dt);
-        }
 
         getGState.blackoutLevel = approach(
             getGState.blackoutLevel,
