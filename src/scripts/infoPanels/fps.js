@@ -29,7 +29,6 @@ function createFPSDisplay() {
     document.body.appendChild(fpsDisplay);
 
     frameCount = 0;
-    rafId = requestAnimationFrame(updateFPS);
 }
 
 function destroyFPSDisplay() {
@@ -40,5 +39,7 @@ function destroyFPSDisplay() {
 }
 
 function updateFPS() {
-    if (fpsDisplay) fpsDisplay.textContent = 1/window.gameDeltaTime
+    if (fpsDisplay) fpsDisplay.textContent = `FPS: ${Math.round(1 / window.gameDeltaTime)}`;
 }
+
+setInterval(updateFPS, 200);

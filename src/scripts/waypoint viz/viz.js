@@ -147,7 +147,7 @@
     altitudeUnits: 'ft',            // 'ft' or 'm'
     heightReference: 'absolute',    // 'absolute' | 'relative' | 'clamp'
     defaultAltitudeFt: 1000,        // fallback if terrain alt sampling fails
-    terrainOffsetMeters: 10,        // height above ground level when unknown waypoint alt
+    terrainOffsetMeters: 1,        // height above ground level when unknown waypoint alt
 
     pointOutlineColor: '#000000',
     pointOutlineWidth: 1,

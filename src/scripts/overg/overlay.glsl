@@ -43,19 +43,19 @@ vec4 applyBlackout(vec2 uv) {
     float dist = getAspectDistance(uv);
 
     // 1. Radial Optic Blur (Scales exponentially with strength to preserve clear onset)
-    float blurFactor = pow(str, 1.6) * (0.2 + dist * 0.8);
+    float blurFactor = pow(str, 8) * (0.2 + dist * 0.8);
     vec4 sceneColor = applyRadialBlur(uv, blurFactor);
 
     // 2. Purkinje Scotopic Shift (Cone loss -> Rod monochrome transition)
     // Rods are insensitive to red (0.05) and sensitive to green/blue (0.60, 0.35)
-    float scotopicLum = dot(sceneColor.rgb, vec3(0.05, 0.60, 0.35));
+    float scotopicLum = dot(sceneColor.rgb, vec3(0.05, 0.40, 0.25));
     
     // Peripheral greyout onset (smooth exponential curve)
-    float desatAmount = clamp(pow(str, 1.2) * 1.1 + (dist * str * 0.5), 0.0, 1.0);
+    float desatAmount = clamp(pow(str, 1.4) * 1.1 + (dist * str * 0.5), 0.0, 1.0);
     vec3 desaturatedRGB = mix(sceneColor.rgb, vec3(scotopicLum), desatAmount);
 
     // 3. Retinal Ischemic Static / Visual Grain
-    float visualNoise = (pseudoNoise(uv * 400.0) - 0.5) * 0.07 * pow(str, 0.8);
+    float visualNoise = (pseudoNoise(uv * 400.0) - 0.5) * 0.07 * pow(str, 0.6);
     vec3 noisyRGB = clamp(desaturatedRGB + vec3(visualNoise), 0.0, 1.0);
 
     // 4. Dynamic Tunnel Radius Curve (Guarantees silky-smooth onset)
@@ -63,7 +63,7 @@ vec4 applyBlackout(vec2 uv) {
     // str = 0.50 -> tunnelRadius ~ 0.7 (peripheral field contracting)
     // str = 1.00 -> tunnelRadius = 0.0 (total blackout)
     float tunnelRadius = mix(1.8, 0.0, pow(str, 0.75));
-    float edgeSoftness = mix(0.75, 0.15, str);
+    float edgeSoftness = mix(1, 0.4, str);
     float tunnelMask = smoothstep(tunnelRadius, tunnelRadius - edgeSoftness, dist);
 
     // 5. Combine Tunnel Mask and Global Dimming
@@ -106,7 +106,7 @@ vec4 applyRedout(vec4 inColor, vec2 uv) {
 
     // 3. Intraocular Veiling Glare / Light Scattering
     // High intraocular blood pressure scatters scene brightness into crimson halos
-    vec3 crimsonBloom = vec3(photopicLum * 0.35, photopicLum * 0.01, 0.0) * pow(str, 1.2);
+    vec3 crimsonBloom = vec3(photopicLum * 0.35, photopicLum * 0.01, 0.0) * pow(str, 0.7);
     vec3 finalRedoutRGB = clamp(pooledRGB + crimsonBloom, 0.0, 1.0);
 
     return vec4(finalRedoutRGB, inColor.a);
