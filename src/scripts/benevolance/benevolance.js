@@ -170,16 +170,6 @@
     if (benevolanceUi.isEnabled) restart_mp();
   });
 
-  var toGo = document.getElementsByClassName("geofs-datasourceSelector");
-  while (toGo[0]) {
-    toGo[0].parentNode.removeChild(toGo[0]);
-  }
-
-  toGo = document.getElementsByClassName("geofs-debug-info");
-  while (toGo[0]) {
-    toGo[0].parentNode.removeChild(toGo[0]);
-  }
-
   $(document).on("click", ".geofs-closeHaring", function (e) {
     e.stopImmediatePropagation();
 
