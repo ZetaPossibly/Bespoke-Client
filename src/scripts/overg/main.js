@@ -81,6 +81,8 @@
         return current + (target - current) * alpha;
     }
 
+    let lastG = 1.0; // G at last frame, used to compute onset rate (dG/dt)
+
     function getGState() {
         let dt = window.gameDeltaTime;
         if (typeof dt !== "number" || isNaN(dt) || dt <= 0) {
