@@ -107,6 +107,10 @@
             .mdl-menu {
                 color: white
             }
+
+            .geofs-onlyForSR {
+                background: none;
+            }
         `;
 
     document.head.appendChild(style);

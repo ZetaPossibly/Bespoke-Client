@@ -60,6 +60,8 @@ The vision is an integrated, seamless experience for GeoFS with a modular and sc
 - Customisable Smoke (colours, size, location, toggle keybinds etc) 
 - Customisable map filters
 - Friend lists, favourite locations etc
+- MSFS Style landing stats
+- Higher quality flight recordings
 - Situational Awareness
 > - Extending ability to be able to see more information and stay aware of your surroundings
 > - Flight path vectoras
