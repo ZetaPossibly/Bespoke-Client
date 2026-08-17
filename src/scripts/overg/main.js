@@ -60,7 +60,7 @@
     }, 1000);
 
     // fetch shader
-    const shaderURL = getUrl("scripts/overg/overlay.glsl");
+    const shaderURL = getUrl(geofs.version === "3.9" ? "scripts/overg/3.9overlay.glsl" : "scripts/overg/4.0overlay.glsl")
     const response = await fetch(shaderURL);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     geofs["overgOverlay.glsl"] = await response.text();
