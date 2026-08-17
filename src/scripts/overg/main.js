@@ -192,4 +192,11 @@
     geofs.api.viewer.scene.preRender.addEventListener(() => {
         geofs.fx.overg.update();
     });
+
+    setInterval(() => {
+        if (geofs.api.viewer.scene.postProcessStages._activeStages.at(-1) !== geofs.fx.overg.shader) {
+            geofs.api.viewer.scene.postProcessStages.destroy(geofs.fx.overg.shader);
+            geofs.api.viewer.scene.postProcessStages.add(geofs.fx.overg.shader);
+        }
+    }, 1000) // ensure the shader is always active, if adv atmo renders after.
 })();

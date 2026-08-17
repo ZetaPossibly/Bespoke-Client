@@ -109,6 +109,10 @@
             }
 
             .geofs-onlyForSR {
+                background: none !important;
+            }
+
+            .geofs-preferences .geofs-debug-info {
                 background: none;
             }
         `;
