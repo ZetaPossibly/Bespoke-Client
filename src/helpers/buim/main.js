@@ -3,15 +3,16 @@
  * An Eschaton Project. Made by Zeta.
  */
 (async function () {
+    const stylesURL = getUrl("helpers/buim/style.css");
+    const response = await fetch(stylesURL);
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    const MENU_STYLES = await response.text();
+    
     window.BUIM = (() => {
-        // ─── Constants ────────────────────────────────────────────────────────────
-
-        // fetch shader
-        const stylesURL = getUrl("helpers/buim/style.css")
-        const response = await fetch(stylesURL);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const MENU_STYLES = await response.text();
-
         // ─── Store — thin localStorage wrapper ────────────────────────────────────
 
         /**
