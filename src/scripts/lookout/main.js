@@ -108,6 +108,39 @@
     return window.jeelizCanvas;
   };
 
+  window.setJeelizResolution = function(size) {
+    if (jeelizResolution === size) return;
+
+    jeelizResolution = size;
+
+    // Stop current instance
+    try {
+        JEELIZFACEFILTER.destroy();
+    } catch (e) {}
+
+    // Remove old canvas
+    if (window.jeelizCanvas) {
+        window.jeelizCanvas.remove();
+        window.jeelizCanvas = null;
+    }
+
+    // Restart it
+    JEELIZFACEFILTER.init({
+        canvasId: addCanvas("jeeFaceFilterCanvas").id,
+        NNCPath: config.algorithm,
+        maxFacesDetected: 1,
+
+        callbackReady: catchError,
+
+        callbackTrack: function (detectState) {
+        pitchSilk.setTarget(-detectState.rx);
+        yawSilk.setTarget(-detectState.ry);
+        rollSilk.setTarget(-detectState.rz);
+        leftRightSilk.setTarget(-detectState.x);
+        upDownSilk.setTarget(detectState.y);
+        },
+    });
+
   let currentLHRoll = 0; // State variable to smooth out horizon transitions
 
   const getLHRoll = function () {
