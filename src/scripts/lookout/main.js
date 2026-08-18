@@ -113,18 +113,15 @@
 
     jeelizResolution = size;
 
-    // Stop current instance
     try {
         JEELIZFACEFILTER.destroy();
     } catch (e) {}
 
-    // Remove old canvas
     if (window.jeelizCanvas) {
         window.jeelizCanvas.remove();
         window.jeelizCanvas = null;
     }
 
-    // Restart it
     JEELIZFACEFILTER.init({
         canvasId: addCanvas("jeeFaceFilterCanvas").id,
         NNCPath: config.algorithm,
@@ -140,8 +137,9 @@
         upDownSilk.setTarget(detectState.y);
         },
     });
+  }
 
-  let currentLHRoll = 0; // State variable to smooth out horizon transitions
+  let currentLHRoll = 0;
 
   const getLHRoll = function () {
     if (!lookoutUi.getBool("LHEnabled")) {
@@ -171,14 +169,14 @@
     // 3. Linear Head-Roll Override (Smooth Linear Fade instead of harsh division)
     // 1.0 = full horizon assist (head straight)
     // 0.0 = zero horizon assist (head tilted beyond overrideAngle)
-    const headTiltRatio = Math.abs(headRoll) / Math.max(1, (currentLHRoll/2));
+    const headTiltRatio = Math.abs(headRoll) / Math.max(1, (currentLHRoll));
     const headOverrideFactor = Math.max(0, 1 - headTiltRatio);
 
     // Calculate target offset
     const targetLHRoll = baseCorrection * yawFactor * headOverrideFactor;
 
     // 4. Smooth Lerp (Prevents snapping when reaching thresholds)
-    const lerpAlpha = 0.15; // Higher = faster response, Lower = smoother
+    const lerpAlpha = 0.3;
     currentLHRoll += (targetLHRoll - currentLHRoll) * lerpAlpha;
 
     return currentLHRoll;
