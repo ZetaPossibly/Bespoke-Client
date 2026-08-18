@@ -6,135 +6,11 @@
 window.BUIM = (() => {
   // ─── Constants ────────────────────────────────────────────────────────────
 
-  const MENU_STYLES = `
-    .buim-menu {
-      position: absolute;
-      left: 0.625rem;
-      top: 3.125rem;
-      width: 250px;
-      min-width: 150px;
-      max-height: 70vh;
-      overflow-y: auto;
-      background: rgba(0, 0, 0, 0.75);
-      z-index: 9999;
-      font-size: 13px;
-      padding: 6px 12px 12px;
-      backdrop-filter: blur(5px);
-      color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-      scrollbar-color: slategrey transparent;
-      scrollbar-width: thin;
-      text-align: center;
-      display: none;
-    }
-    .buim-menu-title { margin: 8px 0 4px; }
-    .buim-menu-subtitle { margin: 0 0 8px; font-style: italic; opacity: 0.6; }
-
-    .buim-section {
-      margin: 5px 0;
-      border-radius: 4px;
-      background: linear-gradient(to bottom, black 0%, rgba(0,0,0,0));
-      backdrop-filter: blur(10px);
-    }
-    .buim-section-header {
-      padding: 10px;
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .buim-section-header:hover { background: rgba(255,255,255,0.1); border-radius: 4px; }
-    .buim-section-title { margin: 0; flex: 1; text-align: left; color: white; font-size: 0.9rem; }
-
-    .buim-section-body {
-      display: none;
-      padding: 10px;
-      border-top: 1px solid #444;
-      text-align: left;
-    }
-    .buim-section-body.open { display: block; }
-
-    .buim-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin: 4px 0;
-    }
-    .buim-label { flex: 1; opacity: 0.85; }
-
-    buim-header {
-        flex:1; 
-        opacity: 0.9;
-        font-weight: bold;
-        font-style: italic;
-    }
-
-    .buim-input {
-      background: rgba(255,255,255,0.04);
-      color: #eaeaea;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 0.85rem;
-      outline: none;
-      transition: border-color 120ms ease;
-      box-sizing: border-box;
-      width: 120px;
-    }
-    .buim-input:hover, .buim-input:focus { border-color: rgba(255,255,255,0.35); }
-
-    .buim-checkbox { width: 16px; height: 16px; cursor: pointer; }
-    .buim-enable-checkbox { width: 20px; height: 20px; cursor: pointer; flex-shrink: 0; }
-
-    .buim-select {
-      background: rgba(255,255,255,0.06);
-      color: #eaeaea;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 6px;
-      padding: 4px 6px;
-      font-size: 0.85rem;
-    }
-
-    .buim-btn {
-      background: rgba(255,255,255,0.1);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 5px;
-      padding: 4px 10px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      transition: background 120ms;
-      width: 100%;
-    }
-    .buim-btn:hover { background: rgba(255,255,255,0.2); }
-    .buim-btn-reset { margin-top: 8px; width: 100%; }
-
-    .buim-shortcut-btn {
-      background: rgba(80,120,255,0.15);
-      color: #aac4ff;
-      border: 1px solid rgba(80,120,255,0.35);
-      border-radius: 5px;
-      padding: 3px 8px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-family: monospace;
-      transition: background 120ms;
-      min-width: 80px;
-    }
-    .buim-shortcut-btn:hover { background: rgba(80,120,255,0.3); }
-    .buim-shortcut-btn.listening { background: rgba(255,80,80,0.2); color: #ffaaaa; border-color: rgba(255,80,80,0.4); }
-
-    #buim-open-btn {
-      cursor: pointer;
-      padding: 0 10px;
-      display: inline-flex;
-      align-items: center;
-      height: 100%;
-    }
-  `;
+    // fetch shader
+    const stylesURL = getUrl("helpers/buim/style.css")
+    const response = await fetch(stylesURL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const MENU_STYLES = await response.text();
 
   // ─── Store — thin localStorage wrapper ────────────────────────────────────
 
@@ -191,7 +67,7 @@ window.BUIM = (() => {
   // ─── Module-level private state ───────────────────────────────────────────
 
   let _menuEl = null; // The floating menu <div>
-  let _isOpen = false;
+  let _isOpen = true;
   let _isBootstrapped = false;
 
   const _emitter = new MicroEmitter();
