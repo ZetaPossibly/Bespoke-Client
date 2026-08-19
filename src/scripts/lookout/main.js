@@ -272,7 +272,6 @@
                         maxFacesDetected: 1,
 
                         antialias: false,
-                        animateDelay: 10,
                         nExpressions: 0,
                         scanSettings: {
                             nScaleLevels: 1, // Default is 2. Reduces the scale levels scanned.
