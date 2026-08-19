@@ -133,8 +133,6 @@
 
         // ─── Menu bootstrap ───────────────────────────────────────────────────────
 
-        // ─── Menu bootstrap ───────────────────────────────────────────────────────
-
         function bootstrapMenu() {
             if (_isBootstrapped) return;
             _isBootstrapped = true;
@@ -165,13 +163,6 @@
             _menuEl.appendChild(header);
             document.body.appendChild(_menuEl);
 
-            // Defer adding .open until after sections/content are appended to the DOM
-            if (_isOpen) {
-                requestAnimationFrame(() => {
-                    _menuEl.classList.add("open");
-                });
-            }
-
             // Trigger button — waits for the geofs bottom bar
             waitForEl(".geofs-ui-bottom").then((bottomBar) => {
                 const btn = el("div", {
@@ -187,7 +178,7 @@
                 if (container) {
                     container.addEventListener("click", (e) => {
                         const closest_div = e.target.closest("div");
-                        if (closest_div && closest_div.id == "buim-open-btn") {
+                        if (closest_div.id == "buim-open-btn") {
                             ui.collapseLeft();
                         }
                     });
@@ -198,12 +189,7 @@
         function toggleMenu(o) {
             _isOpen = typeof o === "boolean" ? o : !_isOpen;
 
-            // Use class toggling instead of direct style.display manipulation
-            if (_isOpen) {
-                _menuEl.classList.add("open");
-            } else {
-                _menuEl.classList.remove("open");
-            }
+            _menuEl.style.display = _isOpen ? "block" : "none";
 
             _emitter.emit(_isOpen ? "menu:open" : "menu:close");
         }
