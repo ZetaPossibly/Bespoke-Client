@@ -109,55 +109,6 @@
     return window.jeelizCanvas;
   };
 
-  window.setJeelizResolution = async function(mult) {
-    try {
-        await JEELIZFACEFILTER.destroy();
-    } catch (e) {}
-
-    if (window.jeelizCanvas) {
-        window.jeelizCanvas.remove();
-        window.jeelizCanvas = null;
-    }
-
-    JEELIZFACEFILTER.init({
-        canvasId: addCanvas("jeeFaceFilterCanvas").id,
-        NNCPath: config.algorithm,
-        maxFacesDetected: 1,
-
-        // Set lower webcam resolution constraints
-        videoSettings: {
-            idealWidth: 320*mult,
-            idealHeight: 180*mult,
-            minWidth: 160*mult,
-            maxWidth: 640*mult,
-            minHeight: 90*mult,
-            maxHeight: 360*mult
-        },
-
-        antialias: false,
-        animateDelay: 10,
-        nExpressions: 0,
-        scanSettings: {
-            nScaleLevels: 1, // Default is 2. Reduces the scale levels scanned.
-            nDetectsPerLoopRange: [1, 2], // Default is [2, 6]. Limits neural net loops per frame.
-            enableAsyncReadPixels: true,
-            isCleanGLStateAtEachIteration: false,
-            enableAsyncReadPixels: true // WebGL 2 only
-        },
-        
-
-        callbackReady: catchError,
-
-        callbackTrack: function (detectState) {
-            pitchSilk.setTarget(-detectState.rx);
-            yawSilk.setTarget(-detectState.ry);
-            rollSilk.setTarget(-detectState.rz);
-            leftRightSilk.setTarget(-detectState.x);
-            upDownSilk.setTarget(detectState.y);
-        },
-    });
-  }
-
   let currentLHRoll = 0;
 
   const getLHRoll = function () {
@@ -281,6 +232,18 @@
             canvasId: addCanvas("jeeFaceFilterCanvas").id,
             NNCPath: config.algorithm,
             maxFacesDetected: 1,
+
+            antialias: false,
+            animateDelay: 10,
+            nExpressions: 0,
+            scanSettings: {
+                nScaleLevels: 1, // Default is 2. Reduces the scale levels scanned.
+                nDetectsPerLoopRange: [1, 2], // Default is [2, 6]. Limits neural net loops per frame.
+                enableAsyncReadPixels: true,
+                isCleanGLStateAtEachIteration: false,
+                enableAsyncReadPixels: true // WebGL 2 only
+            },
+
             callbackReady: catchError,
             callbackTrack: function (detectState) {
               pitchSilk.setTarget(-detectState.rx);
