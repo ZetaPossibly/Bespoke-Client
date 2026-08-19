@@ -134,6 +134,18 @@
             maxHeight: 360*mult
         },
 
+        antialias: false,
+        animateDelay: 10,
+        nExpressions: 0,
+        scanSettings: {
+            nScaleLevels: 1, // Default is 2. Reduces the scale levels scanned.
+            nDetectsPerLoopRange: [1, 2], // Default is [2, 6]. Limits neural net loops per frame.
+            enableAsyncReadPixels: true,
+            isCleanGLStateAtEachIteration: false,
+            enableAsyncReadPixels: true // WebGL 2 only
+        },
+        
+
         callbackReady: catchError,
 
         callbackTrack: function (detectState) {
@@ -258,7 +270,7 @@
   });
 
   setInterval(update_settings, 1000);
-
+  let processing_listener;
   const init = function () {
     let hasInit = false;
     setInterval(function () {
@@ -279,9 +291,22 @@
               upDownSilk.setTarget(detectState.y);
             },
           });
+
+          // pause processing completely when the canvas is hidden
+          processing_listener = document.addEventListener("visibilitychange", () => {
+                if (document.hidden) {
+                    JEELIZFACEFILTER.toggle_pause(true);
+                } else {
+                    JEELIZFACEFILTER.toggle_pause(false);
+                }
+            });
+
           hasInit = true;
         }
       } else {
+        if (processing_listener) {
+            removeEventListener(processing_listener)
+        }
         JEELIZFACEFILTER.destroy();
         hasInit = false;
       }
