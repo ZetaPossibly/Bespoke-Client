@@ -579,8 +579,12 @@
                     if (
                         shortcutMatches(e, Store.get(key) ?? defaultValue) &&
                         this.isEnabled
-                    )
+                    ) {                    
+                        if (e.repeat) return
                         onKeyDown(e);
+                        e.preventDefault()
+                        e.stopPropagation()
+                    }
                 });
                 if (onKeyUp) {
                     document.addEventListener("keyup", (e) => {

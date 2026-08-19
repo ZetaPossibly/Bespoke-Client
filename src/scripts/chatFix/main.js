@@ -2,9 +2,5 @@
     const prefix = "chatFix";
     const chatFixUi = new window.BUIM("Chat Fix", prefix);
 
-    chatFixUi.addShortcut("Keybind", "Keybind", "KeyT&,false&,false&,false&,false", (e) => {
-        e.stopPropagation()
-        e.preventDefault()
-        ui.chat.showInput();
-    });
+    chatFixUi.addShortcut("Keybind", "Keybind", "KeyT&,false&,false&,false&,false", ui.chat.showInput);
 })();

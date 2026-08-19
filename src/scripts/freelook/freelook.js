@@ -80,8 +80,6 @@
     "hotkey",
     "KeyZ&,false&,false&,false&,false",
     (e) => {
-      const tag = document.activeElement?.tagName?.toLowerCase();
-      if (tag === "input" || tag === "textarea") return;
       activate();
     },
     (e) => {
