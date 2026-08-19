@@ -98,11 +98,13 @@
     }
   });
 
+  let jeelizResolution = 500
+
   const addCanvas = function (id) {
     window.jeelizCanvas = document.createElement("canvas");
     window.jeelizCanvas.id = id;
-    window.jeelizCanvas.width = 500;
-    window.jeelizCanvas.height = 500;
+    window.jeelizCanvas.width = jeelizResolution;
+    window.jeelizCanvas.height = jeelizResolution;
     window.jeelizCanvas.style.display = "none";
     document.body.appendChild(window.jeelizCanvas);
     return window.jeelizCanvas;
