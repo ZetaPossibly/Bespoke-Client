@@ -69,17 +69,21 @@
     font-size: 0.9rem;
 }
 
+:root {
+    interpolate-size: allow-keywords;
+}
+
 .buim-section-body {
-    display: grid;
-    grid-template-rows: 0fr;
+    height: 0;
     opacity: 0;
+    overflow: hidden;
     padding: 0 10px;
     border-top: 1px solid transparent;
     text-align: left;
     transform: translateY(-4px);
     filter: blur(5px);
     transition: 
-        grid-template-rows 600ms cubic-bezier(0.76, 0, 0.24, 1),
+        height 600ms cubic-bezier(0.76, 0, 0.24, 1),
         opacity 700ms ease-out,
         transform 600ms cubic-bezier(0.76, 0, 0.24, 1),
         padding 250ms ease-out,
@@ -87,14 +91,8 @@
         filter 500ms ease-out;
 }
 
-/* Crucial: Allows direct children to collapse smoothly inside the grid row */
-.buim-section-body > * {
-    min-height: 0;
-    overflow: hidden;
-}
-
 .buim-section-body.open {
-    grid-template-rows: 1fr;
+    height: auto;
     opacity: 1;
     transform: translateY(0);
     padding: 10px;
