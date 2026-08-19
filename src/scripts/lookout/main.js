@@ -98,23 +98,18 @@
     }
   });
 
-  let jeelizResolution = 500
 
   const addCanvas = function (id) {
     window.jeelizCanvas = document.createElement("canvas");
     window.jeelizCanvas.id = id;
-    window.jeelizCanvas.width = jeelizResolution;
-    window.jeelizCanvas.height = jeelizResolution;
+    window.jeelizCanvas.width = 500;
+    window.jeelizCanvas.height = 500;
     window.jeelizCanvas.style.display = "none";
     document.body.appendChild(window.jeelizCanvas);
     return window.jeelizCanvas;
   };
 
   window.setJeelizResolution = async function(size) {
-    if (jeelizResolution === size) return;
-
-    jeelizResolution = size;
-
     try {
         await JEELIZFACEFILTER.destroy();
     } catch (e) {}
@@ -128,15 +123,19 @@
         canvasId: addCanvas("jeeFaceFilterCanvas").id,
         NNCPath: config.algorithm,
         maxFacesDetected: 1,
+        videoSettings: {
+            idealWidth: size,  // Lower resolution webcam capture
+            idealHeight: size
+        },
 
         callbackReady: catchError,
 
         callbackTrack: function (detectState) {
-        pitchSilk.setTarget(-detectState.rx);
-        yawSilk.setTarget(-detectState.ry);
-        rollSilk.setTarget(-detectState.rz);
-        leftRightSilk.setTarget(-detectState.x);
-        upDownSilk.setTarget(detectState.y);
+            pitchSilk.setTarget(-detectState.rx);
+            yawSilk.setTarget(-detectState.ry);
+            rollSilk.setTarget(-detectState.rz);
+            leftRightSilk.setTarget(-detectState.x);
+            upDownSilk.setTarget(detectState.y);
         },
     });
   }
