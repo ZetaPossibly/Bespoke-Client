@@ -408,6 +408,7 @@
                     defaultValue: String(defaultValue),
                 });
 
+
                 const input = el("input", {
                     id: key,
                     type,
