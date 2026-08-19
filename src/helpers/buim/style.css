@@ -17,20 +17,6 @@
     scrollbar-color: slategrey transparent;
     scrollbar-width: thin;
     text-align: center;
-    display: block;
-
-    clip-path: inset(0 0 100% 0 round 8px);
-    animation: buim-menu-open 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes buim-menu-open {
-    from {
-        clip-path: inset(0 0 100% 0 round 8px);
-    }
-
-    to {
-        clip-path: inset(0 0 0 0 round 8px);
-    }
 }
 
 .buim-menu-title {
