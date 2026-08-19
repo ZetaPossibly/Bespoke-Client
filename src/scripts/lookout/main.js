@@ -109,7 +109,7 @@
     return window.jeelizCanvas;
   };
 
-  window.setJeelizResolution = async function(size) {
+  window.setJeelizResolution = async function(mult) {
     try {
         await JEELIZFACEFILTER.destroy();
     } catch (e) {}
@@ -123,9 +123,15 @@
         canvasId: addCanvas("jeeFaceFilterCanvas").id,
         NNCPath: config.algorithm,
         maxFacesDetected: 1,
+
+        // Set lower webcam resolution constraints
         videoSettings: {
-            idealWidth: size,  // Lower resolution webcam capture
-            idealHeight: size
+            idealWidth: 320*mult,
+            idealHeight: 180*mult,
+            minWidth: 160*mult,
+            maxWidth: 640*mult,
+            minHeight: 90*mult,
+            maxHeight: 360*mult
         },
 
         callbackReady: catchError,
