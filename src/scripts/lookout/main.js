@@ -110,13 +110,13 @@
     return window.jeelizCanvas;
   };
 
-  window.setJeelizResolution = function(size) {
+  window.setJeelizResolution = async function(size) {
     if (jeelizResolution === size) return;
 
     jeelizResolution = size;
 
     try {
-        JEELIZFACEFILTER.destroy();
+        await JEELIZFACEFILTER.destroy();
     } catch (e) {}
 
     if (window.jeelizCanvas) {
