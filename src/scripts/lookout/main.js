@@ -272,10 +272,11 @@
                         maxFacesDetected: 1,
 
                         antialias: false,
+                        animateDelay: 10,
                         nExpressions: 0,
                         scanSettings: {
-                            nScaleLevels: 1, // Default is 2. Reduces the scale levels scanned.
-                            nDetectsPerLoopRange: [1, 2], // Default is [2, 6]. Limits neural net loops per frame.
+                            nScaleLevels: 2, // Default is 2. Reduces the scale levels scanned.
+                            nDetectsPerLoopRange: [2, 4], // Default is [2, 6]. Limits neural net loops per frame.
                             isCleanGLStateAtEachIteration: false,
                         },
 
@@ -289,6 +290,7 @@
                             upDownSilk.setTarget(detectState.y);
                         },
                     });
+                    JEELIZFACEFILTER.toggle_pause(false)
 
                     // pause processing completely when the canvas is hidden
                     processing_listener = document.addEventListener(
