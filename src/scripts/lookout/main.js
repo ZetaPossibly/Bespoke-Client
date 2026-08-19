@@ -277,9 +277,7 @@
                         scanSettings: {
                             nScaleLevels: 1, // Default is 2. Reduces the scale levels scanned.
                             nDetectsPerLoopRange: [1, 2], // Default is [2, 6]. Limits neural net loops per frame.
-                            enableAsyncReadPixels: true,
                             isCleanGLStateAtEachIteration: false,
-                            enableAsyncReadPixels: true, // WebGL 2 only
                         },
 
                         callbackReady: catchError,
