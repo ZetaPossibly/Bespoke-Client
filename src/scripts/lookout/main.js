@@ -84,6 +84,11 @@
             "number",
             0.5,
         )
+        .addButton("Calibrate Positional", () => {
+            positionalAxes.forEach((axis) => {
+                setTimeout(() => {axis.setCalibrationValue(axis.get())}, 1000)
+            })
+        })
         .addItem("Snappiness", "snappiness", "number", 10)
         .addItem("Angle Hold Radius", "deadzone", "number", 10)
         .addSubHeading("Level Horizon Assist")
