@@ -89,7 +89,7 @@
         .addSubHeading("Level Horizon Assist Settings")
         .addItem("Enabled", "LHEnabled", "checkbox", true)
         .addItem("Max Angle", "LHAngle", "number", 45)
-        .addItem("Override Resilience", "LHResilience", "number", 5);
+        .addItem("Override Angle", "LHHeadRoll", "number", 45);
 
     let update_settings = function () {
         const smoothSpeed = parseFloat(lookoutUi.get("snappiness")) || 15;
@@ -136,42 +136,39 @@
             return 0;
         }
 
-        // Settings
         const maxLHAngle = parseFloat(lookoutUi.get("LHAngle")) || 45;
-        // Resilience now represents the Head Roll Angle (in degrees) at which LH completely disables
-        const overrideAngle = Math.max(
-            5,
-            parseFloat(lookoutUi.get("LHResilience")) || 25,
-        );
+        const headOverrideAngle = parseFloat(lookoutUi.get("LHHeadRoll")) || 45;
 
-        // Flight Data & Tracking Inputs
         const aircraftRoll = geofs.animation.values.aroll || 0;
-        const headRoll = rollSilk.get();
-        const headYaw = yawSilk.get();
+        const headRoll = rollSilk.get() || 0;
+        const headYaw = yawSilk.get() || 0;
 
-        // 1. Base Horizon Correction (counter-rotate camera to keep horizon level)
+        // Horizon correction from aircraft roll
         const clampedAircraftRoll = Math.max(
             -maxLHAngle,
             Math.min(maxLHAngle, aircraftRoll),
         );
+
         const baseCorrection = -clampedAircraftRoll;
 
-        // 2. Yaw Attenuation (Fade out level horizon when looking sideways)
-        // When looking 90deg left/right, aircraft roll should NOT roll the camera view.
-        const yawRad = headYaw * (Math.PI / 180);
+        // Reduce correction when looking sideways
+        const yawRad = (headYaw * Math.PI) / 180;
         const yawFactor = Math.max(0, Math.cos(yawRad));
 
-        // 3. Linear Head-Roll Override (Smooth Linear Fade instead of harsh division)
-        // 1.0 = full horizon assist (head straight)
-        // 0.0 = zero horizon assist (head tilted beyond overrideAngle)
-        const headTiltRatio = Math.abs(headRoll) / Math.max(1, currentLHRoll);
-        const headOverrideFactor = Math.max(0, 1 - headTiltRatio);
+        // Reduce correction as head rolls
+        const headTiltRatio = Math.min(
+            1,
+            Math.abs(headRoll) / Math.max(1, headOverrideAngle),
+        );
 
-        // Calculate target offset
+        const headOverrideFactor = 1 - headTiltRatio;
+
+        // Final target
         const targetLHRoll = baseCorrection * yawFactor * headOverrideFactor;
 
-        // 4. Smooth Lerp (Prevents snapping when reaching thresholds)
+        // Smooth transition
         const lerpAlpha = 0.3;
+
         currentLHRoll += (targetLHRoll - currentLHRoll) * lerpAlpha;
 
         return currentLHRoll;
@@ -185,8 +182,7 @@
             rollSilk.get() + getLHRoll(),
         );
 
-        const degToRad = Math.PI / 180;
-
+        //const degToRad = Math.PI / 180;
         // // aircraft details
         // const roll = geofs.animation.values.aroll * degToRad;
         // const pitch = geofs.animation.values.atilt * degToRad;
@@ -289,7 +285,7 @@
                             upDownSilk.setTarget(detectState.y);
                         },
                     });
-                    JEELIZFACEFILTER.toggle_pause(false)
+                    JEELIZFACEFILTER.toggle_pause(false);
 
                     // pause processing completely when the canvas is hidden
                     processing_listener = document.addEventListener(
