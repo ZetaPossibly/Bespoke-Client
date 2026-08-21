@@ -86,10 +86,9 @@
         )
         .addItem("Snappiness", "snappiness", "number", 10)
         .addItem("Angle Hold Radius", "deadzone", "number", 10)
-        .addSubHeading("Level Horizon Assist Settings")
+        .addSubHeading("Level Horizon Assist")
         .addItem("Enabled", "LHEnabled", "checkbox", true)
         .addItem("Max Angle", "LHAngle", "number", 45)
-        .addItem("Override Angle", "LHHeadRoll", "number", 45);
 
     let update_settings = function () {
         const smoothSpeed = parseFloat(lookoutUi.get("snappiness")) || 15;
@@ -137,7 +136,8 @@
         }
 
         const maxLHAngle = parseFloat(lookoutUi.get("LHAngle")) || 45;
-        const headOverrideAngle = parseFloat(lookoutUi.get("LHHeadRoll")) || 45;
+        // keep angle same to prevent wierd roll things
+        const headOverrideAngle = maxLHAngle // parseFloat(lookoutUi.get("LHHeadRoll")) || 45;
 
         const aircraftRoll = geofs.animation.values.aroll || 0;
         const headRoll = rollSilk.get() || 0;
