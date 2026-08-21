@@ -86,7 +86,7 @@
         )
         .addButton("Calibrate Positional", () => {
             positionalAxes.forEach((axis) => {
-                setTimeout(() => {axis.setCalibrationValue(axis.get())}, 1000)
+                setTimeout(() => {axis.calibrate()}, 1000)
             })
         })
         .addItem("Snappiness", "snappiness", "number", 10)

@@ -13,6 +13,9 @@
                 defaultValue = initial,
             } = {},
         ) {
+            this.initial = initial;
+            this.initialCalibrationValue = calibrationValue;
+
             this.speed = speed;
             this.radius = radius;
             this.min = min;
@@ -40,6 +43,7 @@
             this.target = this._clamp(
                 value * this.sensitivity - this.calibrationValue,
             );
+            return this;
         }
 
         setCurrent(value) {
@@ -50,6 +54,7 @@
                 value * this.sensitivity - this.calibrationValue,
             );
             this.target = this.current;
+            return this;
         }
 
         setCalibrationValue(value) {
@@ -60,10 +65,34 @@
             this.target = this._clamp(
                 this.raw_target * this.sensitivity - this.calibrationValue,
             );
+            return this;
+        }
+
+        /**
+         * Calibrates the current raw position to be the new 0 baseline.
+         * @param {number} [rawValue=this.raw_current] - Optional raw value to calibrate against.
+         */
+        calibrate(rawValue = this.raw_current) {
+            this.setCalibrationValue(rawValue * this.sensitivity);
+            this.current = 0;
+            this.target = 0;
+            return this;
+        }
+
+        /**
+         * Resets everything back to initial values.
+         * @param {number} [initial=this.initial] - Optional starting value to reset to.
+         */
+        reset(initial = this.initial) {
+            this.calibrationValue = this.initialCalibrationValue;
+            this.setCurrent(initial);
+            this.setTarget(initial);
+            return this;
         }
 
         setEnabled(value) {
             this.enabled = value;
+            return this;
         }
 
         update() {
@@ -84,7 +113,7 @@
             const t = 1 - Math.exp(-this.speed * dt);
 
             this.current += pull * t;
-            this.current = Math.min(this.max, Math.max(this.min, this.current));
+            this.current = this._clamp(this.current);
 
             return this.current;
         }
