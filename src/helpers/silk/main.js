@@ -57,23 +57,14 @@
             return this;
         }
 
-        setCalibrationValue(value) {
-            this.calibrationValue = value;
-            this.current = this._clamp(
-                this.raw_current * this.sensitivity - this.calibrationValue,
-            );
-            this.target = this._clamp(
-                this.raw_target * this.sensitivity - this.calibrationValue,
-            );
-            return this;
-        }
-
         /**
          * Calibrates the current raw position to be the new 0 baseline.
-         * @param {number} [rawValue=this.raw_current] - Optional raw value to calibrate against.
+         * @param {number} [rawValue=this.raw_target] - Raw value to calibrate against (defaults to current target input).
          */
-        calibrate(rawValue = this.raw_current) {
-            this.setCalibrationValue(rawValue * this.sensitivity);
+        calibrate(rawValue = this.raw_target) {
+            this.calibrationValue = rawValue * this.sensitivity;
+            this.raw_current = rawValue;
+            this.raw_target = rawValue;
             this.current = 0;
             this.target = 0;
             return this;
@@ -104,6 +95,8 @@
             const dist = Math.abs(diff);
 
             if (dist <= this.radius) {
+                // Keep raw_current in sync even when within deadzone
+                this.raw_current = (this.current + this.calibrationValue) / (this.sensitivity || 1);
                 return this.current;
             }
 
@@ -114,6 +107,9 @@
 
             this.current += pull * t;
             this.current = this._clamp(this.current);
+
+            // Update raw_current to match the smoothed current value
+            this.raw_current = (this.current + this.calibrationValue) / (this.sensitivity || 1);
 
             return this.current;
         }
