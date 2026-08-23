@@ -57,6 +57,17 @@
             return this;
         }
 
+        setCalibrationValue(value) {
+            this.calibrationValue = value;
+            this.current = this._clamp(
+                this.raw_current * this.sensitivity - this.calibrationValue,
+            );
+            this.target = this._clamp(
+                this.raw_target * this.sensitivity - this.calibrationValue,
+            );
+            return this;
+        }
+
         /**
          * Calibrates the current raw position to be the new 0 baseline.
          * @param {number} [rawValue=this.raw_target] - Raw value to calibrate against (defaults to current target input).
