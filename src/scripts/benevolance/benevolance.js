@@ -119,11 +119,13 @@
 
     document.head.appendChild(style);
 
-    geofs.api.map._map._layers["25"].setUrl(benevolanceUi.get("MapStyle") || mapTilesets["CartoDB Dark"]);
-
     geofs.api.map._map.options.maxZoom = 19;
     geofs.api.map._map._panes.mapPane.parentElement.style.background = "black";
-    change_map_tileset(benevolanceUi.get("MapStyle") || mapTilesets["GeoFS"]);
+    let curStyle = benevolanceUi.get("MapStyle")
+    if (!Object.values(mapTilesets).includes(curStyle)) {
+        curStyle = null
+    }
+    change_map_tileset(curStyle || mapTilesets["CartoDB Dark"]);
   }
 
   function remove_styles() {
