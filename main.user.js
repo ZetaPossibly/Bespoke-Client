@@ -11,13 +11,6 @@
 // @grant        none
 // ==/UserScript==
 
-// Capabilities:
-// - "Lookout" Headtracking for immersion in cockpit cam.
-// - "Benevolance" Dark theme + Remove Foos from map + Map Style Customisation 
-// - "chatFix" wysiwyg, fixes the chat. Re-implements the "t" keybind to send chat messages (also customisable!)
-// - "Freelook" Quickly orbit your camera 
-// - "Information Panels" FPS Display, missile list and flight characteristics display
-
 // >> Loads in the most up-to-date version of the client <<
 await loadClient() 
 
