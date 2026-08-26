@@ -1,6 +1,6 @@
 (function () {
   let mapTilesets = {
-    "CartoDB Dark": "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_25qo_1_eb7846a120e7b449cea89184", // using this key outside this project is fraudulant and a crime in most places
+    "CartoDB Dark": "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png?key=cb1_25qo_1_eb7846a120e7b449cea89184", // using this key outside this project is fraudulant and a crime in most places
     Google: "https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
     "GeoFS 3.9": "https://data.geo-fs.com/osm/{z}/{x}/{y}.png",
     "GeoFS 4.0": "https://data.geo-fs.com/osm25/{z}/{x}/{y}.png",
