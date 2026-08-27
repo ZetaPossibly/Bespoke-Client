@@ -292,6 +292,8 @@
                     });
                     JEELIZFACEFILTER.toggle_pause(false);
 
+                    setTimeout(() => {axis.calibrate()}, 500)
+
                     // pause processing completely when the canvas is hidden
                     processing_listener = document.addEventListener(
                         "visibilitychange",
