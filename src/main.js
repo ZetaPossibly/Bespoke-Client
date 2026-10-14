@@ -29,7 +29,8 @@ const helpers = {
     jeeliz: getUrl("helpers/jeeliz/main.js"),
     dt: getUrl("helpers/dt/dt.js"),
     buim: getUrl("helpers/buim/main.js"),
-    silk: getUrl("helpers/silk/main.js")
+    "buim-panel": getUrl("helpers/buim/panel.js"),
+    silk: getUrl("helpers/silk/main.js"),
 }
 
 const scripts = {
