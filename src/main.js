@@ -41,6 +41,7 @@ const scripts = {
     missileList: getUrl("scripts/infoPanels/manager.js"),
     waypointViz: getUrl("scripts/waypoint viz/main.js"),
     overG: getUrl("scripts/overg/main.js"),
+    spam: getUrl("scripts/spam/main.js"),
 
     //slew: getUrl("scripts/external/slew/slew.js") 
 }
