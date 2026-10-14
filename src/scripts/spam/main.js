@@ -23,8 +23,10 @@
             vals.time = 1
             vals.rate = 0
         })
-        .addButton("Stop Current Set", "stop", () => {
+        .addItem("Show Notice", "notice", "checkbox", true)
+        .addButton("Stop Current Set", () => {
             spamming = false
+            if (spamUi.getValue("notice")) alert("Spam Mode Enabled, Time will begin counting when you send your first message. You can disable this message in the settings. Your messages sent will no longer be sent over Multiplayer and are not visible to others. You can always stop the current set by clicking the Stop Current Set button. View your stats in the HUD panel.")
         })
 
     let spamming = spamUi.isEnabled
