@@ -23,46 +23,56 @@
             vals._startTime = 1
             vals.time = 1
             vals.rate = 0
-            if (spamUi.getBool("notice")) alert("Spam Mode Enabled, Time will begin counting when you send your first message. You can disable this message in the settings. Your messages sent will no longer be sent over Multiplayer and are not visible to others. You can always stop the current set by clicking the Stop Current Set button. View your stats in the HUD panel.")
+            if (spamUi.getBool("notice")) alert("Spam Mode Enabled, Time will begin counting when you send your first message. You can disable this message in the settings. Your messages sent will no longer be sent over Multiplayer and are not visible to others. You can always stop the current set by clicking the Stop Current Set button. View your stats in the HUD panel.");
+            ui.chat.$container.prepend('<div class="geofs-chat-message" style="color: #6f00ff; text-align: center;"> <b class="label">--START SPAM--</b></div>')
         })
         .addButton("Stop Current Set", () => {
             spamming = false
+            ui.chat.$container.prepend('<div class="geofs-chat-message" style="color: #6f00ff; text-align: center;"> <b class="label">--SPAM ENDED ABRUPTLY --</b></div>')
         })
 
     let spamming = false
 
     const panelInstance = window.createHudPanel({
         fields: {
-            spm: "SPM",
+            spm: "SPAM",
             wpm: "WPM",
-            missles: "MSLs",
+            missles: "MSL",
             time: "TIME",
             rate: "RATE"
         },
         interval: 100,
         onUpdate: (fields) => {
             if (!spamming) {
-                fields.spm.setValue("FALSE");
+                fields.spm.setValue("OFF");
                 fields.spm.setColor("red");
                 return
-            };
-            vals.time = Math.round((Date.now() - vals._startTime) / 1000) ? vals._startTime !== 1 : 0
-
+            } else if (vals._startTime === 1) { // if waiting for first message
+                fields.spm.setValue("GO!");
+                fields.spm.setColor("green");
+                vals.time = 0
+            } else {
+                vals.time = Math.round((Date.now() - vals._startTime) / 1000)
+                fields.spm.setValue(`ON`)
+                fields.spm.setColor("white");
+            }
+    
+            vals.wpm = (vals._words / ((Date.now() - vals._startTime) / 1000)) * 60
+            vals.rate = (vals.missiles / ((Date.now() - vals._startTime) / 1000)) * 60
+            
             fields.wpm.setValue(`${Math.round(vals.wpm)}`);
             fields.missles.setValue(`${Math.round(vals.missiles)}`);
             
             fields.time.setValue(`${Math.round(vals.time)}/${parseInt(spamUi.get("duration"))}s`);
             fields.rate.setValue(`${Math.round(vals.rate)}/min`);
             
-            fields.spm.setValue(`TRUE`);
-            fields.spm.setColor("white");
-            
             if (vals.time >= parseInt(spamUi.get("duration"))) {
                 spamming = false;
-                ui.chat.$container.prepend('<div class="geofs-chat-message" style="color: #6f00ff; text-align: right;"> <b class="label"> END SPAM</b></div>')
+                vals.time = 0;
+                ui.chat.$container.prepend('<div class="geofs-chat-message" style="color: #6f00ff; text-align: center;"> <b class="label">--END SPAM--</b></div>')
             }
         },
-        cssText: "bottom: 90px; left: 10px;"
+        cssText: "bottom: 10px; left: 10px;"
     });
 
     if (!spamUi.isEnabled) panelInstance.destroy(); else panelInstance.create();
@@ -91,11 +101,9 @@
         }
 
         vals._words += e.trim().split(/\s+/).filter(Boolean).length
-        vals.wpm = (vals._words / ((Date.now() - vals._startTime) / 1000)) * 60
         if (e.toLowerCase().includes("lock")) {
             vals.missiles++
         }
-        vals.rate = (vals.missiles / ((Date.now() - vals._startTime) / 1000)) * 60
 
         ui.chat.$container.prepend('<div class="geofs-chat-message" style="color: #6f00ff; text-align: right;">  <i>' + e + '<b class="label"> -SPAM</b></i>  </div>')
     }
