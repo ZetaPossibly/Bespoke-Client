@@ -13,23 +13,23 @@
 
     spamUi
         .addItem("Set Duration(seconds)", "duration", "number", 45)
+        .addItem("Show Notice", "notice", "checkbox", true)
         .addButton("Start New Set", () => {
             
-            spamming = true
+            spamming = false
             vals._words = 0
             vals.wpm = 0
             vals.missiles = 0
             vals._startTime = 1
             vals.time = 1
             vals.rate = 0
-        })
-        .addItem("Show Notice", "notice", "checkbox", true)
-        .addButton("Stop Current Set", () => {
-            spamming = false
             if (spamUi.getBool("notice")) alert("Spam Mode Enabled, Time will begin counting when you send your first message. You can disable this message in the settings. Your messages sent will no longer be sent over Multiplayer and are not visible to others. You can always stop the current set by clicking the Stop Current Set button. View your stats in the HUD panel.")
         })
+        .addButton("Stop Current Set", () => {
+            spamming = false
+        })
 
-    let spamming = spamUi.isEnabled
+    let spamming = false
 
     const panelInstance = window.createHudPanel({
         fields: {
@@ -43,16 +43,20 @@
         onUpdate: (fields) => {
             if (!spamming) {
                 fields.spm.setValue("FALSE");
-                fields.wpm.setColor("red");
+                fields.spm.setColor("red");
                 return
             };
-            vals.time = Math.round((Date.now() - multiplayer._startTime) / 1000);
+            vals.time = Math.round((Date.now() - vals._startTime) / 1000);
+
             fields.wpm.setValue(`${Math.round(vals.wpm)}`);
             fields.missles.setValue(`${Math.round(vals.missiles)}`);
+            
             fields.time.setValue(`${Math.round(vals.time)}/${parseInt(spamUi.get("duration"))}s`);
             fields.rate.setValue(`${Math.round(vals.rate)}/min`);
+            
             fields.spm.setValue(`TRUE`);
-            fields.wpm.setColor("white");
+            fields.spm.setColor("white");
+            
             if (vals.time >= parseInt(spamUi.get("duration"))) {
                 spamming = false;
                 ui.chat.$container.prepend('<div class="geofs-chat-message" style="color: #6f00ff; text-align: right;"> <b class="label"> END SPAM</b></div>')
