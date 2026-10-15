@@ -13,7 +13,7 @@
 
     spamUi
         .addItem("Set Duration(seconds)", "duration", "number", 45)
-        .addButton("Start New Set", "start", () => {
+        .addButton("Start New Set", () => {
             
             spamming = true
             vals._words = 0
