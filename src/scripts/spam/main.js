@@ -16,7 +16,7 @@
         .addItem("Show Notice", "notice", "checkbox", true)
         .addButton("Start New Set", () => {
             
-            spamming = false
+            spamming = true
             vals._words = 0
             vals.wpm = 0
             vals.missiles = 0
