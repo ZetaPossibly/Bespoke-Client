@@ -26,7 +26,7 @@
         .addItem("Show Notice", "notice", "checkbox", true)
         .addButton("Stop Current Set", () => {
             spamming = false
-            if (spamUi.getValue("notice")) alert("Spam Mode Enabled, Time will begin counting when you send your first message. You can disable this message in the settings. Your messages sent will no longer be sent over Multiplayer and are not visible to others. You can always stop the current set by clicking the Stop Current Set button. View your stats in the HUD panel.")
+            if (spamUi.getBool("notice")) alert("Spam Mode Enabled, Time will begin counting when you send your first message. You can disable this message in the settings. Your messages sent will no longer be sent over Multiplayer and are not visible to others. You can always stop the current set by clicking the Stop Current Set button. View your stats in the HUD panel.")
         })
 
     let spamming = spamUi.isEnabled
@@ -49,11 +49,11 @@
             vals.time = Math.round((Date.now() - multiplayer._startTime) / 1000);
             fields.wpm.setValue(`${Math.round(vals.wpm)}`);
             fields.missles.setValue(`${Math.round(vals.missiles)}`);
-            fields.time.setValue(`${Math.round(vals.time)}/${spamUi.getValue("duration")}s`);
+            fields.time.setValue(`${Math.round(vals.time)}/${parseInt(spamUi.getInt("duration"))}s`);
             fields.rate.setValue(`${Math.round(vals.rate)}/min`);
             fields.spm.setValue(`TRUE`);
             fields.wpm.setColor("white");
-            if (vals.time >= spamUi.getValue("duration")) {
+            if (vals.time >= parseInt(spamUi.getInt("duration"))) {
                 spamming = false;
                 ui.chat.$container.prepend('<div class="geofs-chat-message" style="color: #6f00ff; text-align: right;"> <b class="label"> END SPAM</b></div>')
             }
