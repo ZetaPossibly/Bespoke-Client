@@ -46,7 +46,7 @@
                 fields.spm.setColor("red");
                 return
             };
-            vals.time = Math.round((Date.now() - vals._startTime) / 1000);
+            vals.time = Math.round((Date.now() - vals._startTime) / 1000) ? vals._startTime !== 1 : 0
 
             fields.wpm.setValue(`${Math.round(vals.wpm)}`);
             fields.missles.setValue(`${Math.round(vals.missiles)}`);
@@ -65,7 +65,7 @@
         cssText: "bottom: 90px; left: 10px;"
     });
 
-    if (!spamUi.isEnabled) panelInstance.destroy();
+    if (!spamUi.isEnabled) panelInstance.destroy(); else panelInstance.create();
 
     spamUi.on("toggle", () => {
         if (!spamUi.isEnabled) {
