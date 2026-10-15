@@ -49,11 +49,11 @@
             vals.time = Math.round((Date.now() - multiplayer._startTime) / 1000);
             fields.wpm.setValue(`${Math.round(vals.wpm)}`);
             fields.missles.setValue(`${Math.round(vals.missiles)}`);
-            fields.time.setValue(`${Math.round(vals.time)}/${parseInt(spamUi.getInt("duration"))}s`);
+            fields.time.setValue(`${Math.round(vals.time)}/${parseInt(spamUi.get("duration"))}s`);
             fields.rate.setValue(`${Math.round(vals.rate)}/min`);
             fields.spm.setValue(`TRUE`);
             fields.wpm.setColor("white");
-            if (vals.time >= parseInt(spamUi.getInt("duration"))) {
+            if (vals.time >= parseInt(spamUi.get("duration"))) {
                 spamming = false;
                 ui.chat.$container.prepend('<div class="geofs-chat-message" style="color: #6f00ff; text-align: right;"> <b class="label"> END SPAM</b></div>')
             }
